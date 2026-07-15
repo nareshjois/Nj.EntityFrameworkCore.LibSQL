@@ -48,7 +48,10 @@ public class LibSqlDatabaseCreator : RelationalDatabaseCreator
         {
             if (!LibSqlConnectionStringHelpers.IsRemote(Dependencies.Connection.ConnectionString))
             {
-                _rawSqlCommandBuilder.Build("PRAGMA journal_mode = 'wal';")
+                // WAL leaves sidecar files that keep the main db locked on Windows after Close.
+                // Use DELETE journal mode there so EnsureDeleted can remove the file reliably.
+                var journalMode = OperatingSystem.IsWindows() ? "delete" : "wal";
+                _rawSqlCommandBuilder.Build($"PRAGMA journal_mode = '{journalMode}';")
                     .ExecuteNonQuery(
                         new RelationalCommandParameterObject(
                             Dependencies.Connection,
@@ -172,8 +175,8 @@ public class LibSqlDatabaseCreator : RelationalDatabaseCreator
             && !path.Equals(":memory:", StringComparison.OrdinalIgnoreCase)
             && File.Exists(path))
         {
-            // Use a dedicated Nelknet connection we fully dispose so native
-            // SafeHandles release the Windows file lock (EF Close alone is not enough).
+            // Prefer not reopening the EF-owned connection. A short-lived owned
+            // connection + full Dispose + GC releases native locks on Windows.
             using (var ownership = new LibSQLConnection(connectionString))
             {
                 ownership.Open();
@@ -201,6 +204,8 @@ public class LibSqlDatabaseCreator : RelationalDatabaseCreator
                 }
             }
 
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
             DeleteLocalDatabaseFiles(path);
         }
         else if (dbConnection.State == ConnectionState.Open)

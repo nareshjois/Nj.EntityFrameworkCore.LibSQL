@@ -35,6 +35,9 @@ internal static class MigrationCases
         }
 
         // Fresh context so any prior ADO handles are released before file delete (Windows).
+        GC.Collect();
+        GC.WaitForPendingFinalizers();
+
         await using (var context = new MigrationDbContext(MigrationTestHelpers.Configure(connectionString).Options))
         {
             await context.Database.EnsureDeletedAsync(ct);
