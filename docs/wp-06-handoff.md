@@ -1,7 +1,7 @@
 # WP-06 handoff
 
-**Status:** first slice on `wp-06-query-translation` (FunctionalTests LINQ matrix +
-C-001 decimal rewrite).
+**Status:** first slice **merged to `main`** (PR #14). Full G6 EF specification
+suites remain WP-10.
 
 ## Done
 
@@ -33,5 +33,5 @@ dotnet test test/Nj.EntityFrameworkCore.LibSql.FunctionalTests -c Release --filt
 
 ## Next
 
-- Deeper WP-06 coverage and/or WP-10 compliance hosts toward acceptance gate G6.
-- WP-07 updates / transactions.
+- **WP-08** migrations / locking.
+- Deeper WP-06/WP-07 coverage and/or WP-10 compliance hosts toward full G6/G7.
