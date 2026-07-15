@@ -1,0 +1,41 @@
+Nj.EntityFrameworkCore.LibSql
+Copyright (c) 2026 Naresh Jois and contributors
+
+This community package is licensed under the MIT License (see LICENSE).
+
+================================================================================
+Upstream attribution (placeholder — filled when EF Core SQLite source is imported)
+================================================================================
+
+Substantial portions of this provider will be derived from the Microsoft
+Entity Framework Core SQLite provider (`Microsoft.EntityFrameworkCore.Sqlite`),
+which is licensed under the MIT License:
+
+  Copyright (c) .NET Foundation and Contributors
+  https://github.com/dotnet/efcore
+
+Before the first source-import commit (WP-03), this section will record:
+
+  - upstream repository URL
+  - exact tag / commit SHA
+  - published EF Core package patch
+  - imported source paths
+  - import date
+
+Microsoft-authored baseline files retain their original copyright headers.
+Community modifications for libSQL / Nelknet.LibSQL.Data are separate commits
+and remain clearly distinguishable from the attributed baseline.
+
+================================================================================
+Third-party dependencies (runtime)
+================================================================================
+
+This provider depends on public NuGet packages including (non-exhaustive):
+
+  - Microsoft.EntityFrameworkCore / Microsoft.EntityFrameworkCore.Relational
+    Copyright (c) .NET Foundation and Contributors — MIT
+  - Nelknet.LibSQL.Data
+    Copyright (c) Nelknet contributors — see package license on NuGet
+
+Exact pinned versions are recorded in Directory.Packages.props once scaffolding
+(WP-01) lands.
