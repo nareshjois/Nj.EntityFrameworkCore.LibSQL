@@ -12,8 +12,9 @@ with EF Core major/minor lines.
 
 - Soft-fork [nareshjois/Nelknet.LibSQL](https://github.com/nareshjois/Nelknet.LibSQL)
   as git submodule `external/Nelknet.LibSQL` (ProjectReference; ADR-0001) at
-  `@01a8f52`. Fixes `INSERT…RETURNING` / generated-key `SaveChanges` (`C-002`)
-  and remote HTTP Hrana error surfacing + baton-backed transactions.
+  `@b0a9c51`. Fixes `INSERT…RETURNING` / generated-key `SaveChanges` (`C-002`),
+  remote HTTP Hrana error surfacing + baton-backed transactions, and unprefixed
+  parameter names for EF `FromSqlInterpolated`.
 - Type-mapping round-trips use store-generated integer keys (no longer
   `ValueGeneratedNever`).
 - Scaffolding reads COLLATE / AUTOINCREMENT from `sqlite_master` CREATE SQL
@@ -22,6 +23,8 @@ with EF Core major/minor lines.
 
 ### Added
 
+- WP-06 first-slice query translation FunctionalTests matrix (local + remote)
+  with thin SQL capture, and `docs/wp-06-handoff.md`.
 - WP-05 type-mapping / SQL generation round-trips (local + remote), Nelknet
   temporal parameter formats, differential tests vs EF SQLite, `HasTables`
   connection open, and `docs/wp-05-handoff.md`.

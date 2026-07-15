@@ -38,6 +38,16 @@ public sealed class UdfGapTranslationTests
         AssertContainsUdfGap(ex, "EF_DECIMAL");
     }
 
+    [Fact]
+    public void Decimal_Average_fails_at_translation()
+    {
+        using var context = CreateContext();
+        var query = context.Items.Select(i => i.Amount);
+
+        var ex = Assert.ThrowsAny<Exception>(() => query.Average());
+        AssertContainsUdfGap(ex, "ef_avg");
+    }
+
     private static void AssertContainsUdfGap(Exception ex, string feature)
     {
         var text = Flatten(ex);

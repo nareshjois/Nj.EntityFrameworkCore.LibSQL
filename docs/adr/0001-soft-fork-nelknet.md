@@ -25,7 +25,7 @@ initiative (`C-001` stays fail-fast translation).
    instead of the NuGet package pin.
 4. Keep public types (`LibSQLConnection`, etc.) so `UseLibSql` stays stable.
 5. Prefer upstreaming patches to Nelknet; rebase the submodule periodically.
-   Soft-fork `main` is the consumed tip (currently `@01a8f52`).
+   Soft-fork `main` is the consumed tip (currently `@b0a9c51`).
 
 ## Patch set on soft-fork `main`
 
@@ -51,6 +51,12 @@ Fork changes in `LibSQLDataReader` / `LibSQLCommand`:
    stream across HTTP pipeline requests.
 3. Treat COMMIT/ROLLBACK when no transaction is active as a no-op (sqld DDL
    autocommit + EF CreateTables).
+
+### Parameters — unprefixed names
+
+Normalize names lacking `@`/`:`/`$`/`?` by prefixing `@` in `Validate()`, so EF
+`FromSqlInterpolated` (`p0` in the collection, `@p0` in SQL) binds like
+Microsoft.Data.Sqlite.
 
 ## Consequences
 
