@@ -16,6 +16,9 @@ with EF Core major/minor lines.
   and remote HTTP Hrana error surfacing + baton-backed transactions.
 - Type-mapping round-trips use store-generated integer keys (no longer
   `ValueGeneratedNever`).
+- Scaffolding reads COLLATE / AUTOINCREMENT from `sqlite_master` CREATE SQL
+  (replaces deferred `sqlite3_table_column_metadata`). Fix embedded
+  `LibSqlStrings` resource name so scaffolding logs resolve.
 
 ### Added
 

@@ -16,7 +16,6 @@ Branch: `wp-04-provider-core`
 
 ## Deferred
 
-- Design-time scaffolding native metadata (`sqlite3_table_column_metadata`).
 - Full query / compliance suites (WP-06 / WP-10); migrations (WP-08).
 - Embedded replica sync API (Preview 2+).
 - Restore or rewrite `ef_*` / `regexp` / `EF_DECIMAL` after Nelknet UDF APIs
@@ -32,4 +31,5 @@ dotnet test test/Nj.EntityFrameworkCore.LibSql.FunctionalTests -c Release
 ## Next
 
 - ~~WP-05 type mapping / SQL generation round-trips.~~ **Done** — see [wp-05-handoff.md](wp-05-handoff.md).
+- ~~Design-time `sqlite3_table_column_metadata`.~~ **Done** — COLLATE / AUTOINCREMENT from `sqlite_master` CREATE SQL (no Nellknet native API; works over HTTP too).
 - WP-06 query translation.

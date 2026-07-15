@@ -34,7 +34,7 @@ round-trips. Full LINQ / migrations deepen in WP-06–WP-08.
 | Migrations | `LibSqlMigrationsSqlGenerator`, history repository | `SQLite-compatible` | |
 | Database creation | `LibSqlDatabaseCreator` | `Nelknet connection adapt` / `libSQL semantic` | Remote delete unsupported |
 | Relational connection | `LibSqlRelationalConnection`, `ILibSqlRelationalConnection` | `Nelknet connection adapt` | Done (WP-04) |
-| Scaffolding / model factory | `LibSqlDatabaseModelFactory`, `LibSqlCodeGenerator` | `Nelknet connection adapt` | Compiles on LibSQLConnection; native metadata deferred |
+| Scaffolding / model factory | `LibSqlDatabaseModelFactory`, `LibSqlCodeGenerator` | `Nelknet connection adapt` | COLLATE / AUTOINCREMENT from `sqlite_master` SQL (no `sqlite3_table_column_metadata`) |
 | Design-time | `LibSqlDesignTimeServices` | `Nelknet connection adapt` | |
 | Diagnostics | `LibSqlEventId`, logging definitions | `SQLite-compatible` | |
 | SpatiaLite | `SpatialiteLoader`, `UseSpatialite` | `unsupported` | Hard-fail; Nelknet has no load_extension |

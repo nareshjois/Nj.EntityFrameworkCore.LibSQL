@@ -48,7 +48,7 @@
 
   <ItemGroup>
     <EmbeddedResource Update="Properties\LibSqlStrings.resx">
-      <LogicalName>Nj.EntityFrameworkCore.LibSql.Properties.LibSqlStrings</LogicalName>
+      <LogicalName>Nj.EntityFrameworkCore.LibSql.Properties.LibSqlStrings.resources</LogicalName>
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>LibSqlStrings.Designer.cs</LastGenOutput>
     </EmbeddedResource>
@@ -65,5 +65,10 @@
     <PackageReference Include="Microsoft.Extensions.DependencyModel" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="All" />
     <ProjectReference Include="..\..\external\Nelknet.LibSQL\src\Nelknet.LibSQL.Data\Nelknet.LibSQL.Data.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Nj.EntityFrameworkCore.LibSql.UnitTests" />
+    <InternalsVisibleTo Include="Nj.EntityFrameworkCore.LibSql.FunctionalTests" />
   </ItemGroup>
 </Project>

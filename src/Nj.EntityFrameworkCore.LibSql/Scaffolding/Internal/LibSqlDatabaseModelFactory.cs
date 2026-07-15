@@ -255,7 +255,7 @@ WHERE "name" = 'geometry_columns' AND "type" = 'table'
         {
             command.CommandText =
                 $"""
-SELECT "name", "type"
+SELECT "name", "type", "sql"
 FROM "sqlite_master"
 WHERE "type" IN ('table', 'view') AND instr("name", 'sqlite_') <> 1 AND "name" NOT IN (
 '{HistoryRepository.DefaultTableName}',
@@ -282,11 +282,12 @@ WHERE "type" IN ('table', 'view') AND instr("name", 'sqlite_') <> 1 AND "name" N
                 _logger.TableFound(name);
 
                 var type = reader.GetString(1);
+                var createSql = !reader.IsDBNull(2) ? reader.GetString(2) : null;
                 var table = type == "table"
                     ? new DatabaseTable { Database = databaseModel, Name = name }
                     : new DatabaseView { Database = databaseModel, Name = name };
 
-                GetColumns(connection, table);
+                GetColumns(connection, table, createSql);
                 GetPrimaryKey(connection, table);
                 GetUniqueConstraints(connection, table);
                 GetIndexes(connection, table);
@@ -317,7 +318,7 @@ WHERE "type" IN ('table', 'view') AND instr("name", 'sqlite_') <> 1 AND "name" N
         return false;
     }
 
-    private void GetColumns(DbConnection connection, DatabaseTable table)
+    private void GetColumns(DbConnection connection, DatabaseTable table, string? createSql)
     {
         using var command = connection.CreateCommand();
         command.CommandText =
@@ -344,10 +345,14 @@ ORDER BY "cid"
 
             _logger.ColumnFound(table.Name, columnName, dataType, notNull, defaultValueSql);
 
+            // Nelknet does not expose sqlite3_table_column_metadata (and HTTP cannot use it).
+            // Read COLLATE / AUTOINCREMENT from sqlite_master CREATE TABLE SQL instead.
             string? collation = null;
-            var autoIncrement = 0;
-            // Native sqlite3_table_column_metadata is not available through Nelknet.
-            // Collation / AUTOINCREMENT metadata from catalog heuristics only.
+            var autoIncrement = false;
+            if (table is not DatabaseView)
+            {
+                LibSqlCreateSqlColumnFacets.GetFacets(createSql, columnName, out collation, out autoIncrement);
+            }
 
             table.Columns.Add(
                 new DatabaseColumn
@@ -357,7 +362,7 @@ ORDER BY "cid"
                     StoreType = dataType,
                     IsNullable = !notNull,
                     DefaultValueSql = defaultValueSql,
-                    ValueGenerated = autoIncrement != 0
+                    ValueGenerated = autoIncrement
                         ? ValueGenerated.OnAdd
                         : default(ValueGenerated?),
                     ComputedColumnSql = hidden != 2L && hidden != 3L
