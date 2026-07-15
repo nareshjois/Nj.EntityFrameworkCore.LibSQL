@@ -1,9 +1,10 @@
 # UDF / collation gap (Nelknet)
 
 Microsoft EF SQLite registers managed SQL helpers on each connection so LINQ can
-emit exact `decimal` math and `Regex.IsMatch`. Nelknet.LibSQL.Data does **not**
-expose `sqlite3_create_function` / aggregates / collation (see
-[limitations.md](limitations.md)).
+emit exact `decimal` math and `Regex.IsMatch` via `CreateFunction` /
+`CreateCollation`. Nelknet.LibSQL.Data does **not** expose those ADO.NET APIs
+(see [limitations.md](limitations.md)), but **libSQL itself** already provides
+native `REGEXP` / `regexp()` (PCRE2). Decimal paths are rewritten to REAL.
 
 ## Matrix
 
@@ -15,23 +16,25 @@ expose `sqlite3_create_function` / aggregates / collation (see
 | Decimal modulo | was `ef_mod` | same | `%` on `decimal` | **Rewritten** → REAL `%` |
 | Decimal aggregates | was `ef_avg` / `ef_sum` / `ef_min` / `ef_max` | `LibSqlQueryableAggregateMethodTranslator` | `Average`/`Sum`/`Min`/`Max` on `decimal` | **Rewritten** → `avg`/`sum`/`min`/`max` on REAL |
 | Decimal ordering | was `COLLATE EF_DECIMAL` | `LibSqlQueryableMethodTranslatingExpressionVisitor` | `OrderBy`/`ThenBy` on `decimal` | **Rewritten** → `ORDER BY CAST(… AS REAL)` |
-| Regex | `regexp` | `LibSqlRegexMethodTranslator` | `Regex.IsMatch` | **Fail translation** |
+| Regex | `REGEXP` / `regexp()` | `LibSqlRegexMethodTranslator` | `Regex.IsMatch` | **Native libSQL** (PCRE2; not .NET regex) |
 
-## Precision note
+## Precision / dialect notes
 
-Decimals are stored as TEXT (invariant string). Rewritten operators cast to
-SQLite `REAL` (IEEE double). Results are **not** exact `System.Decimal`
-semantics — values near the limits of double precision may round differently
-from Microsoft EF SQLite’s `ef_*` helpers. Prefer client evaluation when exact
-decimal arithmetic is required.
+- **Decimal:** stored as TEXT (invariant string). Rewritten operators cast to
+  SQLite `REAL` (IEEE double). Results are **not** exact `System.Decimal`
+  semantics.
+- **Regex:** translates to libSQL `match REGEXP pattern`. Engine is **PCRE2**,
+  not `System.Text.RegularExpressions`. Patterns that rely on .NET-only
+  constructs may behave differently; prefer testing patterns against libSQL.
+  Full sqlean helpers such as `regexp_like` / `regexp_replace` are **not**
+  required for EF’s `Regex.IsMatch` path and may be missing depending on build.
 
-## Resolution paths
+## Historical note
 
-1. **Upstream Nelknet** — restore registration in `LibSqlRelationalConnection.InitializeDbConnection` (preferred for Microsoft parity / `regexp`).
-2. **Rewrite translations** — decimal paths use option 2 (this doc); `regexp` still fails.
-3. Do **not** use `load_extension` — not exposed by Nelknet.
+WP-04 fail-fast assumed stock SQLite’s missing `regexp` UDF. Nelknet’s embedded
+libSQL already registers `REGEXP` / `regexp()` without ADO.NET `CreateFunction`.
 
 ## Waiver
 
-Permanent skips that depend on remaining fail-fast helpers (`regexp`) must cite
-this doc in [compatibility.md](compatibility.md) (`C-001`).
+`C-001` in [compatibility.md](compatibility.md) documents the intentional
+REAL-precision and PCRE2-vs-.NET dialect differences (not “unsupported”).

@@ -14,14 +14,15 @@ C-001 decimal rewrite).
   patches).
 - **C-001 decimal rewrite:** map negate/arith/compare/mod, OrderBy/ThenBy, and
   Average/Sum/Min/Max to REAL/`CAST` (IEEE precision; see [udf-gap.md](udf-gap.md)).
-  `Regex.IsMatch` remains fail-fast.
+- **C-001 regex:** `Regex.IsMatch` → native libSQL `REGEXP` / PCRE2 (no
+  CreateFunction); engine differs from `System.Text.RegularExpressions`.
 
 ## Deferred (not this slice)
 
 - Full G6 EF relational / SQLite specification suites (WP-10 fixtures).
 - TPH inheritance, compiled queries/models, Glob/Hex/Substring goldens,
   interceptor suites.
-- Nelknet `CreateFunction` / true `regexp` parity.
+- Exact `decimal` / .NET Regex parity via Nelknet CreateFunction (optional).
 
 ## Verify
 

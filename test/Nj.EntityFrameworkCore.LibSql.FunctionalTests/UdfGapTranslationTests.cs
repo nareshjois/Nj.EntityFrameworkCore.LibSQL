@@ -9,8 +9,6 @@ namespace Nj.EntityFrameworkCore.LibSql.FunctionalTests;
 
 public sealed class UdfGapTranslationTests
 {
-    private const string UdfGapDoc = "docs/udf-gap.md";
-
     [Fact]
     public void Decimal_arithmetic_translates_via_real_and_round_trips()
     {
@@ -72,31 +70,13 @@ public sealed class UdfGapTranslationTests
     }
 
     [Fact]
-    public void Regex_IsMatch_fails_at_translation()
+    public void Regex_IsMatch_translates_to_native_regexp()
     {
-        using var context = CreateContext();
-        var query = context.Items.Where(i => Regex.IsMatch(i.Name, "^a"));
+        using var context = CreateSeededContext(out var sql);
+        var names = context.Items.Where(i => Regex.IsMatch(i.Name, "^t")).Select(i => i.Name).ToList();
 
-        var ex = Assert.ThrowsAny<Exception>(() => query.ToList());
-        AssertContainsUdfGap(ex, "regexp");
-    }
-
-    private static void AssertContainsUdfGap(Exception ex, string feature)
-    {
-        var text = Flatten(ex);
-        Assert.Contains(feature, text, StringComparison.Ordinal);
-        Assert.Contains(UdfGapDoc, text, StringComparison.Ordinal);
-    }
-
-    private static string Flatten(Exception ex)
-    {
-        var parts = new List<string>();
-        for (var current = ex; current != null; current = current.InnerException)
-        {
-            parts.Add(current.Message);
-        }
-
-        return string.Join(Environment.NewLine, parts);
+        Assert.Equal(["ten"], names);
+        sql.AssertContainsSql("REGEXP");
     }
 
     private static GapDbContext CreateSeededContext(out SqlCaptureLogger sql)
@@ -118,15 +98,6 @@ public sealed class UdfGapTranslationTests
         context.ChangeTracker.Clear();
         sql.Clear();
         return context;
-    }
-
-    private static GapDbContext CreateContext()
-    {
-        var path = Path.Combine(Path.GetTempPath(), "nj-libsql-udf-" + Guid.NewGuid().ToString("N") + ".db");
-        return new GapDbContext(
-            new DbContextOptionsBuilder<GapDbContext>()
-                .UseLibSql($"Data Source={path}")
-                .Options);
     }
 
     private sealed class GapDbContext(DbContextOptions<GapDbContext> options) : DbContext(options)

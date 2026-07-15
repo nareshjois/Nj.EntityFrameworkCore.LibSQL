@@ -20,9 +20,9 @@ with EF Core major/minor lines.
 - Scaffolding reads COLLATE / AUTOINCREMENT from `sqlite_master` CREATE SQL
   (replaces deferred `sqlite3_table_column_metadata`). Fix embedded
   `LibSqlStrings` resource name so scaffolding logs resolve.
-- **C-001:** rewrite decimal LINQ (`ef_*` / `EF_DECIMAL`) to REAL/`CAST`
-  instead of fail-fast; `Regex.IsMatch` (`regexp`) still fails at translation
-  (see `docs/udf-gap.md`).
+- **C-001:** rewrite decimal LINQ (`ef_*` / `EF_DECIMAL`) to REAL/`CAST`;
+  translate `Regex.IsMatch` to native libSQL `REGEXP` (PCRE2). Document
+  precision / regex-engine differences in `docs/udf-gap.md`.
 
 ### Added
 

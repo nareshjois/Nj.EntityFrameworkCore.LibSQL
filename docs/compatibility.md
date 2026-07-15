@@ -37,7 +37,7 @@ No permanent exclusions yet.
 
 | ID | Area | Test / feature | Reason | Issue | Owner |
 |----|------|----------------|--------|-------|-------|
-| C-001 | Query / UDFs | `regexp` (decimal rewritten to REAL) | Nelknet lacks CreateFunction; `Regex.IsMatch` fails at translation. Decimal `ef_*` / `EF_DECIMAL` rewritten to REAL/`CAST` with documented precision loss — see [udf-gap.md](udf-gap.md) | TBD | — |
+| C-001 | Query / UDFs | decimal REAL rewrite; `Regex.IsMatch` → libSQL `REGEXP` (PCRE2) | Not a hard skip: intentional dialect differences vs Microsoft EF SQLite (`ef_*` exact decimal / .NET Regex UDF). See [udf-gap.md](udf-gap.md). | — | — |
 | C-002 | Updates / keys | `INSERT…RETURNING` / store-generated ints under `SaveChanges` | **Resolved (soft-fork `main` @ `b0a9c51`)** — reader drain; HTTP Hrana errors/baton; unprefixed param normalize for `FromSqlInterpolated` (ADR-0001). Stock NuGet still needs a separate upstream PR. | — | — |
 
 ## How to add a waiver

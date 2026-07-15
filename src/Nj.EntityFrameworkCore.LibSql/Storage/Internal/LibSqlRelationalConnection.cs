@@ -93,6 +93,6 @@ public class LibSqlRelationalConnection : RelationalConnection, ILibSqlRelationa
         }
 
         // Nelknet does not support sqlite3_create_function / aggregates.
-        // Decimal LINQ is rewritten to REAL/CAST (docs/udf-gap.md); Regex.IsMatch still fails at translation.
+        // Decimal LINQ → REAL/CAST; Regex.IsMatch → native REGEXP (docs/udf-gap.md).
     }
 }
