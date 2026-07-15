@@ -5,29 +5,33 @@ emit exact `decimal` math and `Regex.IsMatch`. Nelknet.LibSQL.Data does **not**
 expose `sqlite3_create_function` / aggregates / collation (see
 [limitations.md](limitations.md)).
 
-Until Nelknet adds those APIs **or** this provider rewrites translations to
-native SQL (post–WP-05; still open), the provider **fails at query translation** with
-`NotSupportedException` instead of generating SQL that would fail at execute.
-
 ## Matrix
 
 | Feature | SQL / name | Translator | LINQ shapes | Status |
 |---------|------------|------------|-------------|--------|
-| Decimal negate | `ef_negate` | `LibSqlSqlTranslatingExpressionVisitor` | `-decimal` | **Fail translation** |
-| Decimal arithmetic | `ef_add` / `ef_multiply` / `ef_divide` | same | `+` `-` `*` `/` on `decimal` | **Fail translation** |
-| Decimal compare | `ef_compare` | same | `<` `>` `<=` `>=` on `decimal` | **Fail translation** |
-| Decimal modulo | `ef_mod` | same | `%` on `decimal` | **Fail translation** |
-| Decimal aggregates | `ef_avg` / `ef_sum` / `ef_min` / `ef_max` | `LibSqlQueryableAggregateMethodTranslator` | `Average`/`Sum`/`Min`/`Max` on `decimal` | **Fail translation** |
-| Decimal ordering | `COLLATE EF_DECIMAL` | `LibSqlQueryableMethodTranslatingExpressionVisitor` | `OrderBy`/`ThenBy` on `decimal` | **Fail translation** |
+| Decimal negate | was `ef_negate` | `LibSqlSqlTranslatingExpressionVisitor` | `-decimal` | **Rewritten** → `CAST` + unary `-` on REAL |
+| Decimal arithmetic | was `ef_add` / `ef_multiply` / `ef_divide` | same | `+` `-` `*` `/` on `decimal` | **Rewritten** → REAL ops + `CAST` back |
+| Decimal compare | was `ef_compare` | same | `<` `>` `<=` `>=` on `decimal` | **Rewritten** → REAL compares |
+| Decimal modulo | was `ef_mod` | same | `%` on `decimal` | **Rewritten** → REAL `%` |
+| Decimal aggregates | was `ef_avg` / `ef_sum` / `ef_min` / `ef_max` | `LibSqlQueryableAggregateMethodTranslator` | `Average`/`Sum`/`Min`/`Max` on `decimal` | **Rewritten** → `avg`/`sum`/`min`/`max` on REAL |
+| Decimal ordering | was `COLLATE EF_DECIMAL` | `LibSqlQueryableMethodTranslatingExpressionVisitor` | `OrderBy`/`ThenBy` on `decimal` | **Rewritten** → `ORDER BY CAST(… AS REAL)` |
 | Regex | `regexp` | `LibSqlRegexMethodTranslator` | `Regex.IsMatch` | **Fail translation** |
+
+## Precision note
+
+Decimals are stored as TEXT (invariant string). Rewritten operators cast to
+SQLite `REAL` (IEEE double). Results are **not** exact `System.Decimal`
+semantics — values near the limits of double precision may round differently
+from Microsoft EF SQLite’s `ef_*` helpers. Prefer client evaluation when exact
+decimal arithmetic is required.
 
 ## Resolution paths
 
-1. **Upstream Nelknet** — restore registration in `LibSqlRelationalConnection.InitializeDbConnection` (preferred for Microsoft parity).
-2. **Rewrite translations** (later WP) — map to `REAL`/`CAST` / `GLOB`/`LIKE` with documented precision differences; update this table to `rewritten`.
+1. **Upstream Nelknet** — restore registration in `LibSqlRelationalConnection.InitializeDbConnection` (preferred for Microsoft parity / `regexp`).
+2. **Rewrite translations** — decimal paths use option 2 (this doc); `regexp` still fails.
 3. Do **not** use `load_extension` — not exposed by Nelknet.
 
 ## Waiver
 
-Permanent skips that depend on these helpers must cite this doc in
-[compatibility.md](compatibility.md).
+Permanent skips that depend on remaining fail-fast helpers (`regexp`) must cite
+this doc in [compatibility.md](compatibility.md) (`C-001`).

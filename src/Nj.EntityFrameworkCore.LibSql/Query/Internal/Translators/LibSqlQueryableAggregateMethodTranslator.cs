@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
-using Nj.EntityFrameworkCore.LibSql.Infrastructure.Internal;
 using Nj.EntityFrameworkCore.LibSql.Internal;
 
 // ReSharper disable once CheckNamespace
@@ -13,14 +12,22 @@ namespace Nj.EntityFrameworkCore.LibSql.Query.Internal;
 /// </summary>
 public class LibSqlQueryableAggregateMethodTranslator : IAggregateMethodCallTranslator
 {
+    private readonly ISqlExpressionFactory _sqlExpressionFactory;
+    private readonly IRelationalTypeMappingSource _typeMappingSource;
+
     /// <summary>
     ///     This is an internal API that supports the Entity Framework Core infrastructure and not subject to
     ///     the same compatibility standards as public APIs. It may be changed or removed without notice in
     ///     any release. You should only use it directly in your code with extreme caution and knowing that
     ///     doing so can result in application failures when updating to a new Entity Framework Core release.
     /// </summary>
-    public LibSqlQueryableAggregateMethodTranslator(ISqlExpressionFactory sqlExpressionFactory)
-        => _ = sqlExpressionFactory;
+    public LibSqlQueryableAggregateMethodTranslator(
+        ISqlExpressionFactory sqlExpressionFactory,
+        IRelationalTypeMappingSource typeMappingSource)
+    {
+        _sqlExpressionFactory = sqlExpressionFactory;
+        _typeMappingSource = typeMappingSource;
+    }
 
     /// <summary>
     ///     This is an internal API that supports the Entity Framework Core infrastructure and not subject to
@@ -48,7 +55,8 @@ public class LibSqlQueryableAggregateMethodTranslator : IAggregateMethodCallTran
                     var averageArgumentType = GetProviderType(averageSqlExpression);
                     if (averageArgumentType == typeof(decimal))
                     {
-                        LibSqlUdfGaps.Throw("ef_avg");
+                        // Microsoft SQLite uses ef_avg; rewrite via avg(CAST AS REAL).
+                        return AggregateAsRealThenDecimal(source, averageSqlExpression, "avg");
                     }
 
                     break;
@@ -68,7 +76,7 @@ public class LibSqlQueryableAggregateMethodTranslator : IAggregateMethodCallTran
 
                     if (maxArgumentType == typeof(decimal))
                     {
-                        LibSqlUdfGaps.Throw("ef_max");
+                        return AggregateAsRealThenDecimal(source, maxSqlExpression, "max");
                     }
 
                     break;
@@ -88,7 +96,7 @@ public class LibSqlQueryableAggregateMethodTranslator : IAggregateMethodCallTran
 
                     if (minArgumentType == typeof(decimal))
                     {
-                        LibSqlUdfGaps.Throw("ef_min");
+                        return AggregateAsRealThenDecimal(source, minSqlExpression, "min");
                     }
 
                     break;
@@ -100,7 +108,7 @@ public class LibSqlQueryableAggregateMethodTranslator : IAggregateMethodCallTran
                     var sumArgumentType = GetProviderType(sumSqlExpression);
                     if (sumArgumentType == typeof(decimal))
                     {
-                        LibSqlUdfGaps.Throw("ef_sum");
+                        return AggregateAsRealThenDecimal(source, sumSqlExpression, "sum");
                     }
 
                     break;
@@ -110,8 +118,46 @@ public class LibSqlQueryableAggregateMethodTranslator : IAggregateMethodCallTran
         return null;
     }
 
+    private SqlExpression AggregateAsRealThenDecimal(
+        EnumerableExpression source,
+        SqlExpression sqlExpression,
+        string aggregateFunction)
+    {
+        sqlExpression = CombineTerms(source, sqlExpression);
+        var asReal = _sqlExpressionFactory.Convert(
+            sqlExpression,
+            typeof(double),
+            _typeMappingSource.FindMapping(typeof(double)));
+        var aggregated = _sqlExpressionFactory.Function(
+            aggregateFunction,
+            [asReal],
+            nullable: true,
+            argumentsPropagateNullability: Statics.FalseArrays[1],
+            typeof(double),
+            _typeMappingSource.FindMapping(typeof(double)));
+
+        return _sqlExpressionFactory.Convert(aggregated, typeof(decimal), sqlExpression.TypeMapping);
+    }
+
     private static Type? GetProviderType(SqlExpression expression)
         => expression.TypeMapping?.Converter?.ProviderClrType
             ?? expression.TypeMapping?.ClrType
             ?? expression.Type;
+
+    private SqlExpression CombineTerms(EnumerableExpression enumerableExpression, SqlExpression sqlExpression)
+    {
+        if (enumerableExpression.Predicate != null)
+        {
+            sqlExpression = _sqlExpressionFactory.Case(
+                new List<CaseWhenClause> { new(enumerableExpression.Predicate, sqlExpression) },
+                elseResult: null);
+        }
+
+        if (enumerableExpression.IsDistinct)
+        {
+            sqlExpression = new DistinctExpression(sqlExpression);
+        }
+
+        return sqlExpression;
+    }
 }

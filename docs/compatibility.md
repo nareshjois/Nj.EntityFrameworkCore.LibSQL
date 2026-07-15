@@ -37,7 +37,7 @@ No permanent exclusions yet.
 
 | ID | Area | Test / feature | Reason | Issue | Owner |
 |----|------|----------------|--------|-------|-------|
-| C-001 | Query / UDFs | `ef_*` decimal helpers, `EF_DECIMAL`, `regexp` | Nelknet lacks CreateFunction/CreateAggregate/CreateCollation; fail at translation per [udf-gap.md](udf-gap.md) | TBD | — |
+| C-001 | Query / UDFs | `regexp` (decimal rewritten to REAL) | Nelknet lacks CreateFunction; `Regex.IsMatch` fails at translation. Decimal `ef_*` / `EF_DECIMAL` rewritten to REAL/`CAST` with documented precision loss — see [udf-gap.md](udf-gap.md) | TBD | — |
 | C-002 | Updates / keys | `INSERT…RETURNING` / store-generated ints under `SaveChanges` | **Resolved (soft-fork `main` @ `b0a9c51`)** — reader drain; HTTP Hrana errors/baton; unprefixed param normalize for `FromSqlInterpolated` (ADR-0001). Stock NuGet still needs a separate upstream PR. | — | — |
 
 ## How to add a waiver

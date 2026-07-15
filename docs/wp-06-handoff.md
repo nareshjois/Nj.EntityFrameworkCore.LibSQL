@@ -1,6 +1,7 @@
 # WP-06 handoff
 
-**Status:** first slice on `wp-06-query-translation` (FunctionalTests LINQ matrix).
+**Status:** first slice on `wp-06-query-translation` (FunctionalTests LINQ matrix +
+C-001 decimal rewrite).
 
 ## Done
 
@@ -11,14 +12,16 @@
 - Soft-fork Nelknet `@b0a9c51`: normalize unprefixed parameter names so EF
   `FromSqlInterpolated` (`p0` vs `@p0`) binds (with prior RETURNING + HTTP baton
   patches).
-- UDF fail-fast retained (`C-001`); added decimal `Average` → `ef_avg` coverage.
+- **C-001 decimal rewrite:** map negate/arith/compare/mod, OrderBy/ThenBy, and
+  Average/Sum/Min/Max to REAL/`CAST` (IEEE precision; see [udf-gap.md](udf-gap.md)).
+  `Regex.IsMatch` remains fail-fast.
 
 ## Deferred (not this slice)
 
 - Full G6 EF relational / SQLite specification suites (WP-10 fixtures).
 - TPH inheritance, compiled queries/models, Glob/Hex/Substring goldens,
   interceptor suites.
-- UDF / `ef_*` / `regexp` / `EF_DECIMAL` rewrite (`C-001`).
+- Nelknet `CreateFunction` / true `regexp` parity.
 
 ## Verify
 

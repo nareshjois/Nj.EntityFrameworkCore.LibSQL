@@ -20,6 +20,9 @@ with EF Core major/minor lines.
 - Scaffolding reads COLLATE / AUTOINCREMENT from `sqlite_master` CREATE SQL
   (replaces deferred `sqlite3_table_column_metadata`). Fix embedded
   `LibSqlStrings` resource name so scaffolding logs resolve.
+- **C-001:** rewrite decimal LINQ (`ef_*` / `EF_DECIMAL`) to REAL/`CAST`
+  instead of fail-fast; `Regex.IsMatch` (`regexp`) still fails at translation
+  (see `docs/udf-gap.md`).
 
 ### Added
 
@@ -30,8 +33,8 @@ with EF Core major/minor lines.
   connection open, and `docs/wp-05-handoff.md`.
 - WP-04 Nelknet-backed `UseLibSql` / relational connection (local + remote
   `SELECT 1`, DI/factory/pooled factory smoke tests). Dropped temporary
-  `Microsoft.Data.Sqlite.Core`. Fail-fast translation for Microsoft EF SQLite
-  UDF paths (`ef_*`, `regexp`, `EF_DECIMAL`); see `docs/udf-gap.md`.
+  `Microsoft.Data.Sqlite.Core`. Catalogued Microsoft EF SQLite UDF gaps
+  (`docs/udf-gap.md`); decimal paths later rewritten (Unreleased Changed).
 - WP-03 attributed EF Core 10.0.10 `EFCore.Sqlite.Core` baseline import, mechanical
   `LibSql` rename, service map / capabilities docs, and upstream-diff tooling.
 - WP-02 Nelknet ADO.NET driver contract tests (local + remote via Testcontainers)

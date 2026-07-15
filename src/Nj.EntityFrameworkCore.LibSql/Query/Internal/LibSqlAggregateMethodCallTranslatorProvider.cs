@@ -21,10 +21,11 @@ public class LibSqlAggregateMethodCallTranslatorProvider : RelationalAggregateMe
         : base(dependencies)
     {
         var sqlExpressionFactory = dependencies.SqlExpressionFactory;
+        var typeMappingSource = dependencies.RelationalTypeMappingSource;
 
         AddTranslators(
         [
-            new LibSqlQueryableAggregateMethodTranslator(sqlExpressionFactory),
+            new LibSqlQueryableAggregateMethodTranslator(sqlExpressionFactory, typeMappingSource),
             new LibSqlStringAggregateMethodTranslator(sqlExpressionFactory)
         ]);
     }
