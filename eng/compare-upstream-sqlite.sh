@@ -43,11 +43,14 @@ rsync -a \
   --exclude 'LibSqlProviderInfo.cs' \
   "${LOCAL_SRC}/" "${WORK}/local-as-sqlite/"
 
-LOCAL_MAPPED="${WORK}/local-as-sqlite" python3 - <<'PY'
+export COMPARE_UPSTREAM="${WORK}/upstream"
+export COMPARE_LOCAL="${WORK}/local-as-sqlite"
+
+python3 - <<'PY'
 import os
 from pathlib import Path
 
-root = Path(os.environ["LOCAL_MAPPED"])
+text_exts = {".cs", ".resx", ".tt", ".md"}
 protect = [
     ("Microsoft.Data.Sqlite", "[[[MDS]]]"),
     ("SqliteConnectionStringBuilder", "[[[SCSB]]]"),
@@ -64,27 +67,50 @@ replacements = [
     ("ILibSql", "ISqlite"),
     ("LibSql", "Sqlite"),
 ]
-text_exts = {".cs", ".resx", ".tt", ".md"}
-for path in sorted(root.rglob("*")):
-    if not path.is_file() or path.suffix not in text_exts:
-        continue
-    text = path.read_text(encoding="utf-8")
-    for a, b in protect:
-        text = text.replace(a, b)
-    for a, b in replacements:
-        text = text.replace(a, b)
-    for a, b in protect:
-        text = text.replace(b, a)
-    path.write_text(text, encoding="utf-8")
 
-# Rename files deepest-first
-for path in sorted(root.rglob("*"), key=lambda p: len(p.parts), reverse=True):
-    if not path.is_file():
-        continue
-    name = path.name
-    new_name = name.replace("ILibSql", "ISqlite").replace("LibSql", "Sqlite")
-    if new_name != name:
-        path.rename(path.with_name(new_name))
+
+def normalize_bytes(path: Path) -> None:
+    data = path.read_bytes()
+    if data.startswith(b"\xef\xbb\xbf"):
+        data = data[3:]
+    if data and not data.endswith(b"\n"):
+        data += b"\n"
+    path.write_bytes(data)
+
+
+def normalize_tree(root: Path) -> None:
+    for path in sorted(root.rglob("*")):
+        if path.is_file() and path.suffix in text_exts:
+            normalize_bytes(path)
+
+
+def reverse_rename_local(root: Path) -> None:
+    for path in sorted(root.rglob("*")):
+        if not path.is_file() or path.suffix not in text_exts:
+            continue
+        text = path.read_text(encoding="utf-8")
+        for a, b in protect:
+            text = text.replace(a, b)
+        for a, b in replacements:
+            text = text.replace(a, b)
+        for a, b in protect:
+            text = text.replace(b, a)
+        path.write_text(text, encoding="utf-8", newline="\n")
+
+    for path in sorted(root.rglob("*"), key=lambda p: len(p.parts), reverse=True):
+        if not path.is_file():
+            continue
+        name = path.name
+        new_name = name.replace("ILibSql", "ISqlite").replace("LibSql", "Sqlite")
+        if new_name != name:
+            path.rename(path.with_name(new_name))
+
+
+upstream = Path(os.environ["COMPARE_UPSTREAM"])
+local = Path(os.environ["COMPARE_LOCAL"])
+normalize_tree(upstream)
+normalize_tree(local)
+reverse_rename_local(local)
 PY
 
 REPORT="${OUT_DIR}/report.txt"
@@ -92,11 +118,9 @@ REPORT="${OUT_DIR}/report.txt"
   echo "Baseline tag=${TAG} commit=${COMMIT}"
   echo "Generated=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
   echo
-  # Ignore binary noise; unified recursive text diff
   diff -ruN "${WORK}/upstream" "${WORK}/local-as-sqlite" || true
 } > "${REPORT}"
 
 DIFF_COUNT="$(grep -c '^diff ' "${REPORT}" || true)"
 echo "Wrote ${REPORT} (${DIFF_COUNT} file hunks)."
-# Expected drift includes Description strings / csproj exclusions — always success for local maintenance.
 exit 0
