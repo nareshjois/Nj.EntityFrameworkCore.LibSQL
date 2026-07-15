@@ -10,7 +10,9 @@
 | [release-policy.md](release-policy.md) | Versioning, approval, NuGet publishing |
 | [testing.md](testing.md) | How to run tests and `sqld` locally |
 | [versions.md](versions.md) | Pinned EF / Nelknet / SDK / image versions |
+| [driver-contract.md](driver-contract.md) | Nelknet ADO.NET contract findings (WP-02) |
 | [wp-01-handoff.md](wp-01-handoff.md) | Scaffold handoff checklist |
+| [wp-02-handoff.md](wp-02-handoff.md) | Driver contract handoff checklist |
 
 Governance at the repository root: [README](../README.md),
 [CONTRIBUTING](../CONTRIBUTING.md), [SECURITY](../SECURITY.md),

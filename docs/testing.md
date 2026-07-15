@@ -11,6 +11,10 @@
 | `Nj.EntityFrameworkCore.LibSql.PackageTests` | Pack + clean NuGet install verification |
 | `TestUtilities` | Shared helpers (connection strings, env) |
 
+Primary suites use **xUnit v3** (`xunit.v3`, `OutputType=Exe`). `ComplianceTests`
+stays on xUnit v2 while EF `Specification.Tests` packages depend on `xunit.core`
+2.9.x.
+
 ## Commands
 
 ```bash
@@ -37,14 +41,20 @@ On Windows, use the corresponding `eng/*.ps1` scripts.
 
 ## Remote `sqld`
 
+Driver remote tests start the pinned `libsql-server` image via **Testcontainers**
+(Docker required). Override with an external endpoint if needed:
+
 ```bash
-./eng/start-sqld.sh
-./eng/wait-for-sqld.sh
-export LIBSQL_TEST_URL=http://127.0.0.1:8080
+export LIBSQL_TEST_URL=http://127.0.0.1:8080   # skip Testcontainers
+# or
+export LIBSQL_DISABLE_REMOTE_TESTS=1            # skip remote suite
+# or
+export LIBSQL_DISABLE_TESTCONTAINERS=1          # require LIBSQL_TEST_URL
+
 dotnet test test/Nj.EntityFrameworkCore.LibSql.DriverContractTests -c Release
 ```
 
-Compose definition: [`eng/sqld/docker-compose.yml`](../eng/sqld/docker-compose.yml)
+Optional manual compose (same digest as Testcontainers): [`eng/sqld/docker-compose.yml`](../eng/sqld/docker-compose.yml)
 (image pinned by digest; see [versions.md](versions.md)).
 
 CI uploads test results (and `sqld` logs on integration failure). Caches cover

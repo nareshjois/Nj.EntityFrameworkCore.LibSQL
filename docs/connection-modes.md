@@ -37,9 +37,9 @@ Data Source=http://127.0.0.1:8080
 Data Source=https://<db>-<org>.turso.io;Auth Token=<token>
 ```
 
-CI starts a pinned `libsql-server` image via `eng/sqld/docker-compose.yml` and
-exposes `LIBSQL_TEST_URL` (default `http://127.0.0.1:8080`). See
-[testing.md](testing.md).
+Driver remote tests start a pinned `libsql-server` image via Testcontainers.
+Override with `LIBSQL_TEST_URL`, or use optional `eng/sqld/docker-compose.yml`.
+See [testing.md](testing.md).
 
 Creating the remote database/namespace and minting tokens is **outside** this
 provider ([limitations.md](limitations.md)).

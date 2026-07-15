@@ -30,27 +30,13 @@ jobs:
           restore-keys: |
             nuget-${{ runner.os }}-
 
-      - name: Start sqld
-        run: |
-          chmod +x eng/*.sh
-          ./eng/start-sqld.sh
-          ./eng/wait-for-sqld.sh 90
-
-      - name: Restore + test driver contract (remote env ready)
-        env:
-          LIBSQL_TEST_URL: http://127.0.0.1:8080
+      - name: Driver contract (Testcontainers sqld)
         run: |
           dotnet restore Nj.EntityFrameworkCore.LibSql.slnx
           dotnet test test/Nj.EntityFrameworkCore.LibSql.DriverContractTests/Nj.EntityFrameworkCore.LibSql.DriverContractTests.csproj \
             -c Release \
             --logger "trx;LogFileName=driver-remote.trx" \
             --results-directory artifacts/test-results
-
-      - name: Collect sqld logs
-        if: failure()
-        run: |
-          mkdir -p artifacts/sqld-logs
-          docker compose -f eng/sqld/docker-compose.yml logs > artifacts/sqld-logs/sqld.log || true
 
       - name: Upload failure artifacts
         if: failure()
@@ -59,4 +45,3 @@ jobs:
           name: integration-failure
           path: |
             artifacts/test-results
-            artifacts/sqld-logs

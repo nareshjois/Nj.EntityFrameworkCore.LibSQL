@@ -1,5 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <!-- Remains on xUnit v2 until EF Specification.Tests moves off xunit.core 2.9.x. -->
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
     <RootNamespace>Nj.EntityFrameworkCore.LibSql.ComplianceTests</RootNamespace>
