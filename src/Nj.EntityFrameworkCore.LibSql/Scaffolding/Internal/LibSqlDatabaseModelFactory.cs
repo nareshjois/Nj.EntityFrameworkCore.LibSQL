@@ -5,10 +5,9 @@ using System.Data;
 using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
-using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore.Scaffolding.Metadata;
+using Nelknet.LibSQL.Data;
 using Nj.EntityFrameworkCore.LibSql.Internal;
-using static SQLitePCL.raw;
 
 namespace Nj.EntityFrameworkCore.LibSql.Scaffolding.Internal;
 
@@ -160,7 +159,7 @@ public class LibSqlDatabaseModelFactory : DatabaseModelFactory
     /// </summary>
     public override DatabaseModel Create(string connectionString, DatabaseModelFactoryOptions options)
     {
-        using var connection = new SqliteConnection(connectionString);
+        using var connection = new LibSQLConnection(connectionString);
         return Create(connection, options);
     }
 
@@ -347,22 +346,8 @@ ORDER BY "cid"
 
             string? collation = null;
             var autoIncrement = 0;
-            if (connection is SqliteConnection sqliteConnection
-                && table is not DatabaseView)
-            {
-                var db = sqliteConnection.Handle;
-                var rc = sqlite3_table_column_metadata(
-                    db,
-                    connection.Database,
-                    table.Name,
-                    columnName,
-                    out _,
-                    out collation,
-                    out _,
-                    out _,
-                    out autoIncrement);
-                SqliteException.ThrowExceptionForRC(rc, db);
-            }
+            // Native sqlite3_table_column_metadata is not available through Nelknet.
+            // Collation / AUTOINCREMENT metadata from catalog heuristics only.
 
             table.Columns.Add(
                 new DatabaseColumn

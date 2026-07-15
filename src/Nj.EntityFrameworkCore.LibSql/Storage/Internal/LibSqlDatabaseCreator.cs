@@ -2,7 +2,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System.Data;
-using Microsoft.Data.Sqlite;
+using Nelknet.LibSQL.Data;
+using Nj.EntityFrameworkCore.LibSql.Infrastructure.Internal;
 
 namespace Nj.EntityFrameworkCore.LibSql.Storage.Internal;
 
@@ -14,9 +15,6 @@ namespace Nj.EntityFrameworkCore.LibSql.Storage.Internal;
 /// </summary>
 public class LibSqlDatabaseCreator : RelationalDatabaseCreator
 {
-    // ReSharper disable once InconsistentNaming
-    private const int SQLITE_CANTOPEN = 14;
-
     private readonly ILibSqlRelationalConnection _connection;
     private readonly IRawSqlCommandBuilder _rawSqlCommandBuilder;
 
@@ -46,16 +44,24 @@ public class LibSqlDatabaseCreator : RelationalDatabaseCreator
     {
         Dependencies.Connection.Open();
 
-        _rawSqlCommandBuilder.Build("PRAGMA journal_mode = 'wal';")
-            .ExecuteNonQuery(
-                new RelationalCommandParameterObject(
-                    Dependencies.Connection,
-                    null,
-                    null,
-                    Dependencies.CurrentContext.Context,
-                    Dependencies.CommandLogger, CommandSource.Migrations));
-
-        Dependencies.Connection.Close();
+        try
+        {
+            if (!LibSqlConnectionStringHelpers.IsRemote(Dependencies.Connection.ConnectionString))
+            {
+                _rawSqlCommandBuilder.Build("PRAGMA journal_mode = 'wal';")
+                    .ExecuteNonQuery(
+                        new RelationalCommandParameterObject(
+                            Dependencies.Connection,
+                            null,
+                            null,
+                            Dependencies.CurrentContext.Context,
+                            Dependencies.CommandLogger, CommandSource.Migrations));
+            }
+        }
+        finally
+        {
+            Dependencies.Connection.Close();
+        }
     }
 
     /// <summary>
@@ -66,24 +72,30 @@ public class LibSqlDatabaseCreator : RelationalDatabaseCreator
     /// </summary>
     public override bool Exists()
     {
-        var connectionOptions = new SqliteConnectionStringBuilder(_connection.ConnectionString);
-        if (connectionOptions.DataSource.Equals(":memory:", StringComparison.OrdinalIgnoreCase)
-            || connectionOptions.Mode == SqliteOpenMode.Memory)
+        var connectionString = _connection.ConnectionString;
+        if (LibSqlConnectionStringHelpers.IsInMemory(connectionString)
+            || LibSqlConnectionStringHelpers.IsRemote(connectionString))
+        {
+            // Memory always exists; remote databases are pre-provisioned endpoints.
+            return true;
+        }
+
+        var path = LibSqlConnectionStringHelpers.TryGetLocalFilePath(connectionString);
+        if (!string.IsNullOrEmpty(path) && File.Exists(path))
         {
             return true;
         }
 
-        using var readOnlyConnection = _connection.CreateReadOnlyConnection();
+        using var probe = _connection.CreateReadOnlyConnection();
         try
         {
-            readOnlyConnection.Open(errorsExpected: true);
+            probe.Open(errorsExpected: true);
+            return true;
         }
-        catch (SqliteException ex) when (ex.SqliteErrorCode == SQLITE_CANTOPEN)
+        catch (Exception)
         {
             return false;
         }
-
-        return true;
     }
 
     /// <summary>
@@ -115,32 +127,40 @@ public class LibSqlDatabaseCreator : RelationalDatabaseCreator
     /// </summary>
     public override void Delete()
     {
+        if (LibSqlConnectionStringHelpers.IsRemote(Dependencies.Connection.ConnectionString))
+        {
+            throw new NotSupportedException(
+                "EnsureDeleted / database delete is not supported for remote libSQL endpoints. "
+                + "Provision and tear down remote databases with Turso / sqld tooling.");
+        }
+
         string? path = null;
 
         Dependencies.Connection.Open();
         var dbConnection = Dependencies.Connection.DbConnection;
         try
         {
-            path = dbConnection.DataSource;
+            path = LibSqlConnectionStringHelpers.TryGetLocalFilePath(Dependencies.Connection.ConnectionString)
+                   ?? dbConnection.DataSource;
         }
         catch
         {
-            // any exceptions here can be ignored
+            // Ignore DataSource resolution failures.
         }
         finally
         {
             Dependencies.Connection.Close();
         }
 
-        if (!string.IsNullOrEmpty(path))
+        if (!string.IsNullOrEmpty(path)
+            && !path.Equals(":memory:", StringComparison.OrdinalIgnoreCase)
+            && File.Exists(path))
         {
-            SqliteConnection.ClearAllPools();
             File.Delete(path);
         }
         else if (dbConnection.State == ConnectionState.Open)
         {
             dbConnection.Close();
-            SqliteConnection.ClearPool(new SqliteConnection(Dependencies.Connection.ConnectionString));
             dbConnection.Open();
         }
     }

@@ -2,8 +2,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System.Diagnostics.CodeAnalysis;
-using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
+using Nj.EntityFrameworkCore.LibSql.Infrastructure.Internal;
 using Nj.EntityFrameworkCore.LibSql.Internal;
 
 namespace Nj.EntityFrameworkCore.LibSql.Query.Internal;
@@ -55,7 +55,7 @@ public class LibSqlQueryableMethodTranslatingExpressionVisitor : RelationalQuery
         _sqlExpressionFactory = (LibSqlSqlExpressionFactory)relationalDependencies.SqlExpressionFactory;
         _sqlAliasManager = queryCompilationContext.SqlAliasManager;
 
-        _areJsonFunctionsSupported = new Version(new SqliteConnection().ServerVersion) >= new Version(3, 38);
+        _areJsonFunctionsSupported = LibSqlDatabaseCapabilities.SupportsJsonFunctions;
     }
 
     /// <summary>
@@ -246,7 +246,9 @@ public class LibSqlQueryableMethodTranslatingExpressionVisitor : RelationalQuery
         // This determines whether we have json_each, which is needed to query into JSON columns.
         if (!_areJsonFunctionsSupported)
         {
-            AddTranslationErrorDetails(LibSqlStrings.QueryingIntoJsonCollectionsNotSupported(new SqliteConnection().ServerVersion));
+            AddTranslationErrorDetails(
+                LibSqlStrings.QueryingIntoJsonCollectionsNotSupported(
+                    LibSqlDatabaseCapabilities.BundledSqliteVersion.ToString()));
 
             return null;
         }

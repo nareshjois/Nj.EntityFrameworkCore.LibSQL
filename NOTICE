@@ -40,9 +40,6 @@ Pinned versions live in Directory.Packages.props (see docs/versions.md).
       Copyright (c) .NET Foundation and Contributors — MIT
       https://github.com/dotnet/efcore
 
-  - Microsoft.Data.Sqlite.Core (temporary through WP-04 Nelknet connection adapt)
-      Copyright (c) .NET Foundation and Contributors — MIT
-
   - Nelknet.LibSQL.Data (and its binding package)
       Copyright (c) Nelknet contributors — see the package license on NuGet
       https://www.nuget.org/packages/Nelknet.LibSQL.Data

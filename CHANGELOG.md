@@ -10,6 +10,9 @@ with EF Core major/minor lines.
 
 ### Added
 
+- WP-04 Nelknet-backed `UseLibSql` / relational connection (local + remote
+  `SELECT 1`, DI/factory/pooled factory smoke tests). Dropped temporary
+  `Microsoft.Data.Sqlite.Core`.
 - WP-03 attributed EF Core 10.0.10 `EFCore.Sqlite.Core` baseline import, mechanical
   `LibSql` rename, service map / capabilities docs, and upstream-diff tooling.
 - WP-02 Nelknet ADO.NET driver contract tests (local + remote via Testcontainers)
