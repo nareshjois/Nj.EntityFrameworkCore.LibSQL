@@ -3,7 +3,10 @@
     <RepoRoot>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)'))</RepoRoot>
     <ArtifactsDir>$(RepoRoot)artifacts/</ArtifactsDir>
     <ContinuousIntegrationBuild Condition="'$(CI)' == 'true' or '$(GITHUB_ACTIONS)' == 'true'">true</ContinuousIntegrationBuild>
+  </PropertyGroup>
 
+  <!-- Do not override the Nelknet soft-fork submodule build props. -->
+  <PropertyGroup Condition="!$(MSBuildProjectDirectory.Contains('$(RepoRoot)external'))">
     <TargetFramework>net10.0</TargetFramework>
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>

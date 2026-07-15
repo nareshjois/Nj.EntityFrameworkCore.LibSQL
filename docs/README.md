@@ -2,6 +2,7 @@
 
 | Document | Purpose |
 |----------|---------|
+| [adr/0001-soft-fork-nelknet.md](adr/0001-soft-fork-nelknet.md) | Soft-fork Nelknet via git submodule (ADO.NET fixes) |
 | [compatibility.md](compatibility.md) | Capability / waiver manifesto |
 | [capabilities.md](capabilities.md) | Local / remote / replica capability matrix |
 | [connection-modes.md](connection-modes.md) | Local, remote, and embedded-replica connection strings |

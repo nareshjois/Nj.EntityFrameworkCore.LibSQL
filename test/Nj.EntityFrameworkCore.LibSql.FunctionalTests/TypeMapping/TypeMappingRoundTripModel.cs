@@ -74,9 +74,9 @@ public sealed class TypeMappingDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        // Database-generated keys via INSERT…RETURNING (or INSERT+SELECT last_insert_rowid)
-        // do not persist correctly with Nelknet 0.2.10 under EF SaveChanges — deferred to WP-07.
-        // Round-trips use client-assigned keys so type mapping can be validated independently.
+        // Round-trips use client-assigned keys so type-mapping coverage stays independent of
+        // remote HTTP RETURNING. Database-generated keys are covered by GeneratedKeySaveChangesTests
+        // (local Nelknet soft-fork fix; see C-002 / ADR-0001).
         modelBuilder.Entity<BuiltInRow>(e => e.Property(x => x.Id).ValueGeneratedNever());
         modelBuilder.Entity<JsonRow>(e => e.Property(x => x.Id).ValueGeneratedNever());
         modelBuilder.Entity<DefaultRow>(e => e.Property(x => x.Id).ValueGeneratedNever());

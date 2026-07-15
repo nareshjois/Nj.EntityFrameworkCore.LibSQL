@@ -11,11 +11,11 @@
     <PackageReference Include="xunit.v3" />
     <PackageReference Include="xunit.runner.visualstudio" />
     <PackageReference Include="coverlet.collector" />
-    <PackageReference Include="Nelknet.LibSQL.Data" />
     <PackageReference Include="Testcontainers" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\external\Nelknet.LibSQL\src\Nelknet.LibSQL.Data\Nelknet.LibSQL.Data.csproj" />
     <ProjectReference Include="..\TestUtilities\TestUtilities.csproj" />
   </ItemGroup>
 </Project>

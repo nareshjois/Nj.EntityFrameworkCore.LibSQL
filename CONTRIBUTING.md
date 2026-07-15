@@ -13,6 +13,16 @@ Participation is governed by [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).
 - Docker Desktop (or compatible engine) for remote `sqld` integration tests
 - Optional: `dotnet tool restore` for local `dotnet-ef`
 
+Clone with submodules (ADO.NET soft-fork):
+
+```bash
+git clone --recurse-submodules https://github.com/nareshjois/Nj.EntityFrameworkCore.LibSQL.git
+# or after a plain clone:
+git submodule update --init --recursive
+```
+
+See [`docs/adr/0001-soft-fork-nelknet.md`](docs/adr/0001-soft-fork-nelknet.md).
+
 ## Development workflow
 
 1. Open an issue for non-trivial design changes before investing large effort.

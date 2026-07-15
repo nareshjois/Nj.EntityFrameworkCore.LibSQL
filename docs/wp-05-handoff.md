@@ -1,6 +1,6 @@
 # WP-05 handoff
 
-Branch: `wp-05-type-mapping`
+Branch: `wp-05-type-mapping` (G5); soft-fork continuation on `soft-fork-nelknet`.
 
 ## Done (G5)
 
@@ -17,10 +17,14 @@ Branch: `wp-05-type-mapping`
 
 ## Deferred
 
-- Database-generated keys / `INSERT…RETURNING` under EF SaveChanges —
-  documented as `C-002`. Soft-fork follow-up: PR #9 (`soft-fork-nelknet`).
 - UDF / `ef_*` / `regexp` / `EF_DECIMAL` rewrite (keep fail-fast; `C-001`).
 - Full EF BuiltInDataTypes specification host (WP-10).
+
+## Note (post–soft-fork)
+
+`C-002` (`INSERT…RETURNING` / generated keys) is fixed in the Nelknet soft-fork
+submodule — see [adr/0001-soft-fork-nelknet.md](adr/0001-soft-fork-nelknet.md) and
+`GeneratedKeySaveChangesTests` (PR #9).
 
 ## Verify
 
@@ -31,5 +35,4 @@ dotnet test test/Nj.EntityFrameworkCore.LibSql.TypeMappingDifferentialTests -c R
 
 ## Next
 
-- Merge this PR (#8), then soft-fork (#9).
-- WP-06 query translation.
+- WP-06 query translation / update pipeline hardening on the soft-fork driver.
