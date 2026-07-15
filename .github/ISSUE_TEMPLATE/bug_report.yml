@@ -1,0 +1,22 @@
+name: Bug report
+description: Report incorrect provider or build behavior
+title: "[bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Security issues: use GitHub private vulnerability reporting (see SECURITY.md).
+  - type: textarea
+    id: repro
+    attributes:
+      label: Minimal reproduction
+      description: Steps, connection mode (local/remote), versions
+    validations:
+      required: true
+  - type: input
+    id: versions
+    attributes:
+      label: Package / EF / Nelknet versions
+    validations:
+      required: true

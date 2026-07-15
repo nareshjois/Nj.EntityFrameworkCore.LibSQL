@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>Nj.EntityFrameworkCore.LibSql</RootNamespace>
+    <AssemblyName>Nj.EntityFrameworkCore.LibSql</AssemblyName>
+    <Description>EF Core 10 provider for libSQL using Nelknet.LibSQL.Data.</Description>
+    <PackageId>Nj.EntityFrameworkCore.LibSql</PackageId>
+    <PackageTags>EntityFrameworkCore;EFCore;libSQL;LibSql;Turso;SQLite;Nelknet</PackageTags>
+    <IsPackable>true</IsPackable>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <PackageOutputPath>$(ArtifactsDir)packages/</PackageOutputPath>
+    <EnablePackageValidation>true</EnablePackageValidation>
+    <NoWarn>$(NoWarn);NU5105</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="$(RepoRoot)README.md" Pack="true" PackagePath="\" />
+    <None Include="$(RepoRoot)LICENSE" Pack="true" PackagePath="\" />
+    <None Include="$(RepoRoot)NOTICE" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" />
+    <PackageReference Include="Nelknet.LibSQL.Data" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="All" />
+  </ItemGroup>
+</Project>

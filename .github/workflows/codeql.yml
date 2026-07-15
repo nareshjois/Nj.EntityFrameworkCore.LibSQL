@@ -1,0 +1,29 @@
+name: codeql
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: "31 7 * * 1"
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+      - uses: github/codeql-action/init@v3
+        with:
+          languages: csharp
+      - name: Build
+        run: |
+          dotnet restore Nj.EntityFrameworkCore.LibSql.slnx
+          dotnet build Nj.EntityFrameworkCore.LibSql.slnx -c Release --no-restore
+      - uses: github/codeql-action/analyze@v3

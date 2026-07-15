@@ -1,0 +1,98 @@
+name: build
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: build-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - name: Cache NuGet
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('**/Directory.Packages.props', '**/NuGet.config', '**/global.json') }}
+          restore-keys: |
+            nuget-${{ runner.os }}-
+
+      - name: Restore
+        run: dotnet restore Nj.EntityFrameworkCore.LibSql.slnx
+
+      - name: Format (verify)
+        if: runner.os == 'Linux'
+        run: dotnet format Nj.EntityFrameworkCore.LibSql.slnx --verify-no-changes --no-restore
+
+      - name: Build
+        run: dotnet build Nj.EntityFrameworkCore.LibSql.slnx -c Release --no-restore
+
+      - name: Unit tests
+        run: >
+          dotnet test test/Nj.EntityFrameworkCore.LibSql.UnitTests/Nj.EntityFrameworkCore.LibSql.UnitTests.csproj
+          -c Release --no-build
+          --logger "trx;LogFileName=unit-${{ matrix.os }}.trx"
+          --results-directory artifacts/test-results
+
+      - name: Driver + functional placeholders
+        run: >
+          dotnet test
+          test/Nj.EntityFrameworkCore.LibSql.DriverContractTests/Nj.EntityFrameworkCore.LibSql.DriverContractTests.csproj
+          test/Nj.EntityFrameworkCore.LibSql.FunctionalTests/Nj.EntityFrameworkCore.LibSql.FunctionalTests.csproj
+          -c Release --no-build
+          --logger "trx;LogFileName=func-${{ matrix.os }}.trx"
+          --results-directory artifacts/test-results
+
+      - name: Pack
+        run: >
+          dotnet pack src/Nj.EntityFrameworkCore.LibSql/Nj.EntityFrameworkCore.LibSql.csproj
+          -c Release --no-build -o artifacts/packages
+
+      - name: Verify package install
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts/test-results
+          if [[ "${{ runner.os }}" == "Windows" ]]; then
+            pwsh -File eng/verify-package.ps1
+          else
+            dotnet restore test/Nj.EntityFrameworkCore.LibSql.PackageTests/Nj.EntityFrameworkCore.LibSql.PackageTests.csproj \
+              -p:VerifyPackedPackage=true --force --force-evaluate \
+              --source "${GITHUB_WORKSPACE}/artifacts/packages" \
+              --source "https://api.nuget.org/v3/index.json"
+            dotnet test test/Nj.EntityFrameworkCore.LibSql.PackageTests/Nj.EntityFrameworkCore.LibSql.PackageTests.csproj \
+              -c Release -p:VerifyPackedPackage=true \
+              --logger "trx;LogFileName=package-${{ matrix.os }}.trx" \
+              --results-directory artifacts/test-results
+            dotnet run --project samples/LocalSample/LocalSample.csproj -c Release --no-build
+          fi
+
+      - name: Upload test results
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-${{ matrix.os }}
+          path: artifacts/test-results
+
+      - name: Upload packages
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: packages-${{ matrix.os }}
+          path: artifacts/packages
+          if-no-files-found: error

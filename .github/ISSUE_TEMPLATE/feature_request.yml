@@ -1,0 +1,24 @@
+name: Feature request
+description: Propose provider API or capability work
+title: "[feature] "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposal
+    validations:
+      required: true
+  - type: checkboxes
+    id: scope
+    attributes:
+      label: Scope checks
+      options:
+        - label: Not a Turso/sqld admin API request
+        - label: Compatible with locked LibSql naming / connection-string mode selection
