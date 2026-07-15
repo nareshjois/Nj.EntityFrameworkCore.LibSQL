@@ -95,7 +95,7 @@ def reverse_rename_local(root: Path) -> None:
             text = text.replace(a, b)
         for a, b in protect:
             text = text.replace(b, a)
-        path.write_text(text, encoding="utf-8", newline="\n")
+        path.write_text(text, encoding="utf-8")
 
     for path in sorted(root.rglob("*"), key=lambda p: len(p.parts), reverse=True):
         if not path.is_file():
