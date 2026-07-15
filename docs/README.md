@@ -19,6 +19,7 @@
 | [wp-02-handoff.md](wp-02-handoff.md) | Driver contract handoff checklist |
 | [wp-03-handoff.md](wp-03-handoff.md) | SQLite baseline import handoff checklist |
 | [wp-04-handoff.md](wp-04-handoff.md) | Provider core / UseLibSql handoff checklist |
+| [wp-05-handoff.md](wp-05-handoff.md) | Type mapping / SQL generation handoff checklist |
 
 Governance at the repository root: [README](../README.md),
 [CONTRIBUTING](../CONTRIBUTING.md), [SECURITY](../SECURITY.md),

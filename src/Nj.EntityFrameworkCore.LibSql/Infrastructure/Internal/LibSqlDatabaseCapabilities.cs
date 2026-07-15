@@ -19,6 +19,9 @@ public static class LibSqlDatabaseCapabilities
     ///     INSERT/UPDATE/DELETE … RETURNING (SQLite 3.35+).
     /// </summary>
     public static bool SupportsReturningClause
+        // SQLite 3.35+ / libSQL advertise RETURNING, but Nelknet 0.2.10 + EF SaveChanges
+        // leave statements in progress and values do not persist (compatibility C-002).
+        // Keep the gate true to match upstream SQL generation; WP-07 must fix batching.
         => BundledSqliteVersion >= new Version(3, 35);
 
     /// <summary>

@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System.Data;
+using System.Globalization;
 using Nj.EntityFrameworkCore.LibSql.Storage.Json.Internal;
 
 namespace Nj.EntityFrameworkCore.LibSql.Storage.Internal;
@@ -68,4 +69,16 @@ public class LibSqlDateTimeOffsetTypeMapping : DateTimeOffsetTypeMapping
     /// </summary>
     protected override string SqlLiteralFormatString
         => DateTimeOffsetFormatConst;
+
+    /// <inheritdoc />
+    protected override void ConfigureParameter(DbParameter parameter)
+    {
+        if (parameter.Value is DateTimeOffset dto)
+        {
+            parameter.Value = dto.ToString("yyyy-MM-dd HH:mm:ss.fffzzz", CultureInfo.InvariantCulture);
+            parameter.DbType = System.Data.DbType.String;
+        }
+
+        base.ConfigureParameter(parameter);
+    }
 }

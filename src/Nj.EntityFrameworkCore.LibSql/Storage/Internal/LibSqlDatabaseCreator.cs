@@ -106,17 +106,28 @@ public class LibSqlDatabaseCreator : RelationalDatabaseCreator
     /// </summary>
     public override bool HasTables()
     {
-        var count = (long)_rawSqlCommandBuilder
-            .Build("SELECT COUNT(*) FROM \"sqlite_master\" WHERE \"type\" = 'table' AND \"rootpage\" IS NOT NULL;")
-            .ExecuteScalar(
-                new RelationalCommandParameterObject(
-                    Dependencies.Connection,
-                    null,
-                    null,
-                    Dependencies.CurrentContext.Context,
-                    Dependencies.CommandLogger, CommandSource.Migrations))!;
+        var opened = Dependencies.Connection.Open();
+        try
+        {
+            var count = (long)_rawSqlCommandBuilder
+                .Build("SELECT COUNT(*) FROM \"sqlite_master\" WHERE \"type\" = 'table' AND \"rootpage\" IS NOT NULL;")
+                .ExecuteScalar(
+                    new RelationalCommandParameterObject(
+                        Dependencies.Connection,
+                        null,
+                        null,
+                        Dependencies.CurrentContext.Context,
+                        Dependencies.CommandLogger, CommandSource.Migrations))!;
 
-        return count != 0;
+            return count != 0;
+        }
+        finally
+        {
+            if (opened)
+            {
+                Dependencies.Connection.Close();
+            }
+        }
     }
 
     /// <summary>

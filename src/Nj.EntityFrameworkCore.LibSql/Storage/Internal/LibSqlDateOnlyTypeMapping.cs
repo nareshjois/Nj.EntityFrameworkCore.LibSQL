@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System.Data;
+using System.Globalization;
 
 namespace Nj.EntityFrameworkCore.LibSql.Storage.Internal;
 
@@ -14,6 +15,7 @@ namespace Nj.EntityFrameworkCore.LibSql.Storage.Internal;
 public class LibSqlDateOnlyTypeMapping : DateOnlyTypeMapping
 {
     private const string DateOnlyFormatConst = @"'{0:yyyy\-MM\-dd}'";
+    private const string StoreFormat = "yyyy-MM-dd";
 
     /// <summary>
     ///     This is an internal API that supports the Entity Framework Core infrastructure and not subject to
@@ -63,4 +65,17 @@ public class LibSqlDateOnlyTypeMapping : DateOnlyTypeMapping
     /// </summary>
     protected override string SqlLiteralFormatString
         => DateOnlyFormatConst;
+
+    /// <inheritdoc />
+    protected override void ConfigureParameter(DbParameter parameter)
+    {
+        // Nelknet remote readers parse DateOnly via invariant ISO; culture ToString breaks GetFieldValue.
+        if (parameter.Value is DateOnly dateOnly)
+        {
+            parameter.Value = dateOnly.ToString(StoreFormat, CultureInfo.InvariantCulture);
+            parameter.DbType = System.Data.DbType.String;
+        }
+
+        base.ConfigureParameter(parameter);
+    }
 }

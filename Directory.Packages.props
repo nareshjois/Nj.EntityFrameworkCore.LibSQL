@@ -15,6 +15,7 @@
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Specification.Tests" Version="$(EfCoreVersion)" />
     <PackageVersion Include="Microsoft.Extensions.DependencyModel" Version="$(EfCoreVersion)" />
     <!-- libSQL ADO.NET -->
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Sqlite" Version="$(EfCoreVersion)" />
     <PackageVersion Include="Nelknet.LibSQL.Data" Version="$(NelknetLibSqlVersion)" />
     <!-- Build / packaging -->
     <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="10.0.301" />
