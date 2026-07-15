@@ -10,6 +10,8 @@ with EF Core major/minor lines.
 
 ### Added
 
+- WP-03 attributed EF Core 10.0.10 `EFCore.Sqlite.Core` baseline import, mechanical
+  `LibSql` rename, service map / capabilities docs, and upstream-diff tooling.
 - WP-02 Nelknet ADO.NET driver contract tests (local + remote via Testcontainers)
   and `docs/driver-contract.md` findings.
 - Migrated primary test suites to `xunit.v3` (`3.2.2`); ComplianceTests stays on

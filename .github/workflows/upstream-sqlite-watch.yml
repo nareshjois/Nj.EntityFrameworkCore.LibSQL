@@ -1,0 +1,57 @@
+name: upstream-sqlite-watch
+
+on:
+  schedule:
+    # Mondays 06:00 UTC
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check-newer-tags:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Compare latest v10.0.* tag to recorded baseline
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          PINNED_TAG="v10.0.10"
+          PINNED_COMMIT="db55508a7fbc1535bdb65b85159a8d0d36d6942a"
+
+          mapfile -t TAGS < <(gh api repos/dotnet/efcore/tags --paginate --jq '.[].name' \
+            | grep -E '^v10\.0\.[0-9]+$' | sort -V)
+          LATEST="${TAGS[-1]}"
+
+          echo "Pinned: ${PINNED_TAG} (${PINNED_COMMIT})"
+          echo "Latest v10.0.* tag on dotnet/efcore: ${LATEST}"
+
+          if [[ "${LATEST}" == "${PINNED_TAG}" ]]; then
+            echo "Baseline is current."
+            exit 0
+          fi
+
+          TITLE="EF Core SQLite upstream newer than ${PINNED_TAG}: ${LATEST}"
+          if gh issue list --search "${TITLE} in:title" --state open --json number --jq 'length' | grep -qx '0'; then
+            gh issue create \
+              --title "${TITLE}" \
+              --body "$(cat <<EOF
+          The weekly upstream watch detected a newer \`dotnet/efcore\` tag on the 10.0 line.
+
+          | | |
+          |---|---|
+          | Pinned baseline | \`${PINNED_TAG}\` / \`${PINNED_COMMIT}\` |
+          | Latest tag | \`${LATEST}\` |
+
+          Update \`docs/upstream-baseline.md\`, \`docs/versions.md\`, and \`NOTICE\`, then re-run \`./eng/compare-upstream-sqlite.sh\` for a dedicated baseline bump PR.
+          EOF
+          )"
+            echo "Opened tracking issue."
+          else
+            echo "Tracking issue already open."
+          fi

@@ -1,0 +1,7 @@
+<#
+    Session = new System.Collections.Generic.Dictionary<string, object>();
+    Session["ResourceFile"] = "LibSqlStrings.resx";
+    Session["ResourceNamespace"] = "Nj.EntityFrameworkCore.LibSql.Properties";
+    Session["LoggingDefinitionsClass"] = "Diagnostics.Internal.LibSqlLoggingDefinitions";
+#>
+<#@ include file="..\..\..\tools\Resources.tt" #>

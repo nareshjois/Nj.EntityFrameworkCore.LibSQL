@@ -7,7 +7,7 @@ This community package is licensed under the MIT License (see LICENSE).
 Upstream EF Core SQLite attribution
 ================================================================================
 
-Substantial portions of this provider will be derived from the Microsoft
+Substantial portions of this provider are derived from the Microsoft
 Entity Framework Core SQLite provider (`Microsoft.EntityFrameworkCore.Sqlite`
 / `src/EFCore.Sqlite.Core` in the EF Core repository), which is licensed under
 the MIT License:
@@ -15,13 +15,15 @@ the MIT License:
   Copyright (c) .NET Foundation and Contributors
   https://github.com/dotnet/efcore
 
-When the upstream import commit lands, this section will record:
+Baseline recorded 2026-07-15:
 
   - Upstream repository: https://github.com/dotnet/efcore
-  - Exact tag and commit SHA
-  - Published EF Core package patch (currently targeting 10.0.10 — see docs/versions.md)
-  - Imported source paths under this repository
-  - Import date
+  - Tag: v10.0.10
+  - Commit: db55508a7fbc1535bdb65b85159a8d0d36d6942a
+  - Published EF Core package patch: 10.0.10
+  - Upstream paths: src/EFCore.Sqlite.Core; supporting helpers from src/Shared
+  - Local path: src/Nj.EntityFrameworkCore.LibSql
+  - Details: docs/upstream-baseline.md
 
 Microsoft-authored baseline files retain their original copyright headers.
 Community modifications for libSQL / Nelknet.LibSQL.Data remain in separate
@@ -37,6 +39,9 @@ Pinned versions live in Directory.Packages.props (see docs/versions.md).
   - Microsoft.EntityFrameworkCore.Relational
       Copyright (c) .NET Foundation and Contributors — MIT
       https://github.com/dotnet/efcore
+
+  - Microsoft.Data.Sqlite.Core (temporary through WP-04 Nelknet connection adapt)
+      Copyright (c) .NET Foundation and Contributors — MIT
 
   - Nelknet.LibSQL.Data (and its binding package)
       Copyright (c) Nelknet contributors — see the package license on NuGet

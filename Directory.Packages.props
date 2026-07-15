@@ -2,28 +2,25 @@
   <PropertyGroup>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
-
     <!-- Keep all EF packages on the identical patch. -->
     <EfCoreVersion>10.0.10</EfCoreVersion>
     <NelknetLibSqlVersion>0.2.10</NelknetLibSqlVersion>
   </PropertyGroup>
-
   <ItemGroup>
     <!-- EF Core -->
+    <PackageVersion Include="Microsoft.Data.Sqlite.Core" Version="$(EfCoreVersion)" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="$(EfCoreVersion)" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Relational" Version="$(EfCoreVersion)" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="$(EfCoreVersion)" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Relational.Specification.Tests" Version="$(EfCoreVersion)" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Specification.Tests" Version="$(EfCoreVersion)" />
-
+    <PackageVersion Include="Microsoft.Extensions.DependencyModel" Version="$(EfCoreVersion)" />
     <!-- libSQL ADO.NET -->
     <PackageVersion Include="Nelknet.LibSQL.Data" Version="$(NelknetLibSqlVersion)" />
-
     <!-- Build / packaging -->
     <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="10.0.301" />
     <!-- Public API analyzers activate with the real UseLibSql surface (WP-04). -->
     <PackageVersion Include="Microsoft.CodeAnalysis.PublicApiAnalyzers" Version="3.3.4" />
-
     <!-- Test -->
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.8.1" />
     <!-- xunit.v3 for our suites; xunit 2.x retained for EF Specification.Tests (still v2-bound). -->

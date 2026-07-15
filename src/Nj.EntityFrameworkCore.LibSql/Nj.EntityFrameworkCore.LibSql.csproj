@@ -2,15 +2,43 @@
   <PropertyGroup>
     <RootNamespace>Nj.EntityFrameworkCore.LibSql</RootNamespace>
     <AssemblyName>Nj.EntityFrameworkCore.LibSql</AssemblyName>
-    <Description>EF Core 10 provider for libSQL using Nelknet.LibSQL.Data.</Description>
+    <Description>EF Core 10 provider for libSQL using Nelknet.LibSQL.Data. Attributed baseline from Microsoft.EntityFrameworkCore.Sqlite.Core (WP-03).</Description>
     <PackageId>Nj.EntityFrameworkCore.LibSql</PackageId>
     <PackageTags>EntityFrameworkCore;EFCore;libSQL;LibSql;Turso;SQLite;Nelknet</PackageTags>
     <IsPackable>true</IsPackable>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PackageOutputPath>$(ArtifactsDir)packages/</PackageOutputPath>
     <EnablePackageValidation>true</EnablePackageValidation>
-    <NoWarn>$(NoWarn);NU5105</NoWarn>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <NoWarn>$(NoWarn);NU5105;EF9100;EF1001</NoWarn>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Using Include="System.Data.Common" />
+    <Using Include="System.Diagnostics" />
+    <Using Include="System.Linq.Expressions" />
+    <Using Include="System.Reflection" />
+    <Using Include="Microsoft.EntityFrameworkCore" />
+    <Using Include="Microsoft.EntityFrameworkCore.ChangeTracking" />
+    <Using Include="Microsoft.EntityFrameworkCore.Diagnostics" />
+    <Using Include="Microsoft.EntityFrameworkCore.Design" />
+    <Using Include="Microsoft.EntityFrameworkCore.Infrastructure" />
+    <Using Include="Microsoft.EntityFrameworkCore.Metadata" />
+    <Using Include="Microsoft.EntityFrameworkCore.Metadata.Builders" />
+    <Using Include="Microsoft.EntityFrameworkCore.Metadata.Conventions" />
+    <Using Include="Microsoft.EntityFrameworkCore.Metadata.Conventions.Infrastructure" />
+    <Using Include="Microsoft.EntityFrameworkCore.Migrations" />
+    <Using Include="Microsoft.EntityFrameworkCore.Migrations.Operations" />
+    <Using Include="Microsoft.EntityFrameworkCore.Query" />
+    <Using Include="Microsoft.EntityFrameworkCore.Scaffolding" />
+    <Using Include="Microsoft.EntityFrameworkCore.Storage" />
+    <Using Include="Microsoft.EntityFrameworkCore.Storage.ValueConversion" />
+    <Using Include="Microsoft.EntityFrameworkCore.Update" />
+    <Using Include="Microsoft.EntityFrameworkCore.ValueGeneration" />
+    <Using Include="Microsoft.EntityFrameworkCore.Utilities" />
+    <Using Include="Microsoft.Extensions.Logging" />
+    <Using Include="Microsoft.Extensions.DependencyInjection" />
+  </ItemGroup>
 
   <ItemGroup>
     <None Include="$(RepoRoot)README.md" Pack="true" PackagePath="\" />
@@ -19,7 +47,24 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Update="Properties\LibSqlStrings.resx">
+      <LogicalName>Nj.EntityFrameworkCore.LibSql.Properties.LibSqlStrings</LogicalName>
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>LibSqlStrings.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <Compile Update="Properties\LibSqlStrings.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>LibSqlStrings.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" PrivateAssets="all" />
+    <!-- Temporary through WP-04; prefer Core (no native e_sqlite3 bundle). -->
+    <PackageReference Include="Microsoft.Data.Sqlite.Core" />
+    <PackageReference Include="Microsoft.Extensions.DependencyModel" />
     <PackageReference Include="Nelknet.LibSQL.Data" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="All" />
   </ItemGroup>

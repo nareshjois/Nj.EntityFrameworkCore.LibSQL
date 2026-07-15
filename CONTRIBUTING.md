@@ -29,7 +29,7 @@ Participation is governed by [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).
 
 ```bash
 dotnet restore Nj.EntityFrameworkCore.LibSql.slnx
-dotnet format Nj.EntityFrameworkCore.LibSql.slnx --verify-no-changes
+dotnet format Nj.EntityFrameworkCore.LibSql.slnx --verify-no-changes --exclude ./src/Nj.EntityFrameworkCore.LibSql/**
 dotnet build Nj.EntityFrameworkCore.LibSql.slnx -c Release
 dotnet test test/Nj.EntityFrameworkCore.LibSql.UnitTests -c Release
 dotnet test test/Nj.EntityFrameworkCore.LibSql.DriverContractTests -c Release
