@@ -33,5 +33,5 @@ dotnet test test/Nj.EntityFrameworkCore.LibSql.FunctionalTests -c Release --filt
 
 ## Next
 
-- **WP-08** migrations / locking.
-- Deeper WP-06/WP-07 coverage and/or WP-10 compliance hosts toward full G6/G7.
+- **WP-09** design-time / scaffolding (or deeper WP-08).
+- Deeper WP-06/WP-07 coverage and/or WP-10 compliance toward full G6/G7.

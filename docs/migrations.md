@@ -1,10 +1,24 @@
 # Migrations
 
-This provider will support the normal EF Core migrations workflow
-(`Add-Migration` / `dotnet ef migrations add`, `Database.Migrate`, history table,
-and migration locking) once the migrations work package is complete.
+This provider supports the EF Core migrations **runtime** workflow
+(`Database.Migrate`, history table, migration locking) as validated by the
+WP-08 FunctionalTests matrix. Design-time (`dotnet ef migrations add` /
+`database update`) lands with WP-09; samples under `samples/MigrationsSample`
+remain stubs until then.
 
-Until then, design-time samples under `samples/MigrationsSample` are stubs.
+## Preview status
+
+| Surface | Status |
+|---------|--------|
+| `EnsureCreated` (schema in addressable DB) | Working (local + remote) |
+| `EnsureDeleted` local | Working (may delete file) |
+| `EnsureDeleted` remote / replica | Throws `NotSupportedException` |
+| `Database.Migrate` up / down | Working (FunctionalTests matrix) |
+| Migration lock table acquire/release | Working (Nelknet-safe split commands) |
+| Idempotent SQL script generation | Not supported (SQLite/libSQL limitation; throws) |
+| `dotnet ef` design-time | WP-09 |
+
+See [wp-08-handoff.md](wp-08-handoff.md).
 
 ## Locked create / delete policy
 
@@ -18,9 +32,10 @@ These rules will not change without a documented compatibility impact:
 
 ## Migration history
 
-History schema is expected to remain compatible with the EF SQLite provider
-unless a Nelknet/libSQL incompatibility forces a documented delta. Any
-divergence must be recorded in [compatibility.md](compatibility.md).
+History schema remains compatible with the EF SQLite provider
+(`__EFMigrationsHistory`, `__EFMigrationsLock`) unless a Nelknet/libSQL
+incompatibility forces a documented delta. Any divergence must be recorded in
+[compatibility.md](compatibility.md).
 
 ## Design-time tooling
 
