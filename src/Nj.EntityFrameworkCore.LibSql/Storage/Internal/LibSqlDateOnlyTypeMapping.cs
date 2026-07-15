@@ -1,7 +1,9 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-namespace Nj.EntityFrameworkCore.LibSql.Diagnostics.Internal;
+using System.Data;
+
+namespace Nj.EntityFrameworkCore.LibSql.Storage.Internal;
 
 /// <summary>
 ///     This is an internal API that supports the Entity Framework Core infrastructure and not subject to
@@ -9,23 +11,29 @@ namespace Nj.EntityFrameworkCore.LibSql.Diagnostics.Internal;
 ///     any release. You should only use it directly in your code with extreme caution and knowing that
 ///     doing so can result in application failures when updating to a new Entity Framework Core release.
 /// </summary>
-public class TableRebuildEventData : EventData
+public class LibSqlDateOnlyTypeMapping : DateOnlyTypeMapping
 {
+    private const string DateOnlyFormatConst = @"'{0:yyyy\-MM\-dd}'";
+
     /// <summary>
     ///     This is an internal API that supports the Entity Framework Core infrastructure and not subject to
     ///     the same compatibility standards as public APIs. It may be changed or removed without notice in
     ///     any release. You should only use it directly in your code with extreme caution and knowing that
     ///     doing so can result in application failures when updating to a new Entity Framework Core release.
     /// </summary>
-    public TableRebuildEventData(
-        EventDefinitionBase eventDefinition,
-        Func<EventDefinitionBase, EventData, string> messageGenerator,
-        Type operationType,
-        string? tableName)
-        : base(eventDefinition, messageGenerator)
+    public static new LibSqlDateOnlyTypeMapping Default { get; } = new(LibSqlTypeMappingSource.TextTypeName);
+
+    /// <summary>
+    ///     This is an internal API that supports the Entity Framework Core infrastructure and not subject to
+    ///     the same compatibility standards as public APIs. It may be changed or removed without notice in
+    ///     any release. You should only use it directly in your code with extreme caution and knowing that
+    ///     doing so can result in application failures when updating to a new Entity Framework Core release.
+    /// </summary>
+    public LibSqlDateOnlyTypeMapping(
+        string storeType,
+        DbType? dbType = System.Data.DbType.Date)
+        : base(storeType, dbType)
     {
-        OperationType = operationType;
-        TableName = tableName;
     }
 
     /// <summary>
@@ -34,7 +42,18 @@ public class TableRebuildEventData : EventData
     ///     any release. You should only use it directly in your code with extreme caution and knowing that
     ///     doing so can result in application failures when updating to a new Entity Framework Core release.
     /// </summary>
-    public virtual Type OperationType { get; }
+    protected LibSqlDateOnlyTypeMapping(RelationalTypeMappingParameters parameters)
+        : base(parameters)
+    {
+    }
+
+    /// <summary>
+    ///     Creates a copy of this mapping.
+    /// </summary>
+    /// <param name="parameters">The parameters for this mapping.</param>
+    /// <returns>The newly created mapping.</returns>
+    protected override RelationalTypeMapping Clone(RelationalTypeMappingParameters parameters)
+        => new LibSqlDateOnlyTypeMapping(parameters);
 
     /// <summary>
     ///     This is an internal API that supports the Entity Framework Core infrastructure and not subject to
@@ -42,5 +61,6 @@ public class TableRebuildEventData : EventData
     ///     any release. You should only use it directly in your code with extreme caution and knowing that
     ///     doing so can result in application failures when updating to a new Entity Framework Core release.
     /// </summary>
-    public virtual string? TableName { get; }
+    protected override string SqlLiteralFormatString
+        => DateOnlyFormatConst;
 }

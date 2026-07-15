@@ -1,9 +1,9 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 
-// ReSharper disable once CheckNamespace
 namespace Nj.EntityFrameworkCore.LibSql.Query.Internal;
 
 /// <summary>
@@ -12,21 +12,19 @@ namespace Nj.EntityFrameworkCore.LibSql.Query.Internal;
 ///     any release. You should only use it directly in your code with extreme caution and knowing that
 ///     doing so can result in application failures when updating to a new Entity Framework Core release.
 /// </summary>
-public class RegexpExpression : SqlExpression
+public class LibSqlSqlNullabilityProcessor : SqlNullabilityProcessor
 {
-    private static ConstructorInfo? _quotingConstructor;
-
     /// <summary>
     ///     This is an internal API that supports the Entity Framework Core infrastructure and not subject to
     ///     the same compatibility standards as public APIs. It may be changed or removed without notice in
     ///     any release. You should only use it directly in your code with extreme caution and knowing that
     ///     doing so can result in application failures when updating to a new Entity Framework Core release.
     /// </summary>
-    public RegexpExpression(SqlExpression match, SqlExpression pattern, RelationalTypeMapping typeMapping)
-        : base(typeof(bool), typeMapping)
+    public LibSqlSqlNullabilityProcessor(
+        RelationalParameterBasedSqlProcessorDependencies dependencies,
+        RelationalParameterBasedSqlProcessorParameters parameters)
+        : base(dependencies, parameters)
     {
-        Match = match;
-        Pattern = pattern;
     }
 
     /// <summary>
@@ -35,8 +33,16 @@ public class RegexpExpression : SqlExpression
     ///     any release. You should only use it directly in your code with extreme caution and knowing that
     ///     doing so can result in application failures when updating to a new Entity Framework Core release.
     /// </summary>
-    public override RelationalTypeMapping TypeMapping
-        => base.TypeMapping!;
+    protected override SqlExpression VisitCustomSqlExpression(
+        SqlExpression sqlExpression,
+        bool allowOptimizedExpansion,
+        out bool nullable)
+        => sqlExpression switch
+        {
+            GlobExpression globExpression => VisitGlob(globExpression, allowOptimizedExpansion, out nullable),
+            RegexpExpression regexpExpression => VisitRegexp(regexpExpression, allowOptimizedExpansion, out nullable),
+            _ => base.VisitCustomSqlExpression(sqlExpression, allowOptimizedExpansion, out nullable)
+        };
 
     /// <summary>
     ///     This is an internal API that supports the Entity Framework Core infrastructure and not subject to
@@ -44,28 +50,17 @@ public class RegexpExpression : SqlExpression
     ///     any release. You should only use it directly in your code with extreme caution and knowing that
     ///     doing so can result in application failures when updating to a new Entity Framework Core release.
     /// </summary>
-    public virtual SqlExpression Match { get; }
-
-    /// <summary>
-    ///     This is an internal API that supports the Entity Framework Core infrastructure and not subject to
-    ///     the same compatibility standards as public APIs. It may be changed or removed without notice in
-    ///     any release. You should only use it directly in your code with extreme caution and knowing that
-    ///     doing so can result in application failures when updating to a new Entity Framework Core release.
-    /// </summary>
-    public virtual SqlExpression Pattern { get; }
-
-    /// <summary>
-    ///     This is an internal API that supports the Entity Framework Core infrastructure and not subject to
-    ///     the same compatibility standards as public APIs. It may be changed or removed without notice in
-    ///     any release. You should only use it directly in your code with extreme caution and knowing that
-    ///     doing so can result in application failures when updating to a new Entity Framework Core release.
-    /// </summary>
-    protected override Expression VisitChildren(ExpressionVisitor visitor)
+    protected virtual SqlExpression VisitGlob(
+        GlobExpression globExpression,
+        bool allowOptimizedExpansion,
+        out bool nullable)
     {
-        var match = (SqlExpression)visitor.Visit(Match);
-        var pattern = (SqlExpression)visitor.Visit(Pattern);
+        var match = Visit(globExpression.Match, out var matchNullable);
+        var pattern = Visit(globExpression.Pattern, out var patternNullable);
 
-        return Update(match, pattern);
+        nullable = matchNullable || patternNullable;
+
+        return globExpression.Update(match, pattern);
     }
 
     /// <summary>
@@ -74,31 +69,61 @@ public class RegexpExpression : SqlExpression
     ///     any release. You should only use it directly in your code with extreme caution and knowing that
     ///     doing so can result in application failures when updating to a new Entity Framework Core release.
     /// </summary>
-    public virtual RegexpExpression Update(SqlExpression match, SqlExpression pattern)
-        => match != Match || pattern != Pattern
-            ? new RegexpExpression(match, pattern, TypeMapping)
-            : this;
+    protected virtual SqlExpression VisitRegexp(
+        RegexpExpression regexpExpression,
+        bool allowOptimizedExpansion,
+        out bool nullable)
+    {
+        Check.NotNull(regexpExpression);
+
+        var match = Visit(regexpExpression.Match, out var matchNullable);
+        var pattern = Visit(regexpExpression.Pattern, out var patternNullable);
+
+        nullable = matchNullable || patternNullable;
+
+        return regexpExpression.Update(match, pattern);
+    }
 
     /// <inheritdoc />
-    public override Expression Quote()
-        => New(
-            _quotingConstructor ??= typeof(RegexpExpression).GetConstructor(
-                [typeof(SqlExpression), typeof(SqlExpression), typeof(RelationalTypeMapping)])!,
-            Match.Quote(),
-            Pattern.Quote(),
-            RelationalExpressionQuotingUtilities.QuoteTypeMapping(TypeMapping));
+    protected override SqlExpression VisitSqlFunction(
+        SqlFunctionExpression sqlFunctionExpression,
+        bool allowOptimizedExpansion,
+        out bool nullable)
+    {
+        var result = base.VisitSqlFunction(sqlFunctionExpression, allowOptimizedExpansion, out nullable);
 
+        if (result is SqlFunctionExpression resultFunctionExpression
+            && resultFunctionExpression.IsBuiltIn
+            && string.Equals(resultFunctionExpression.Name, "ef_sum", StringComparison.OrdinalIgnoreCase))
+        {
+            nullable = false;
+
+            var sqlExpressionFactory = Dependencies.SqlExpressionFactory;
+            return sqlExpressionFactory.Coalesce(
+                result,
+                sqlExpressionFactory.Constant(0, resultFunctionExpression.TypeMapping),
+                resultFunctionExpression.TypeMapping);
+        }
+
+        return result;
+    }
+
+#pragma warning disable EF1001
     /// <summary>
     ///     This is an internal API that supports the Entity Framework Core infrastructure and not subject to
     ///     the same compatibility standards as public APIs. It may be changed or removed without notice in
     ///     any release. You should only use it directly in your code with extreme caution and knowing that
     ///     doing so can result in application failures when updating to a new Entity Framework Core release.
     /// </summary>
-    protected override void Print(ExpressionPrinter expressionPrinter)
+    protected override bool IsCollectionTable(TableExpressionBase table, [NotNullWhen(true)] out Expression? collection)
     {
-        expressionPrinter.Visit(Match);
-        expressionPrinter.Append(" REGEXP ");
-        expressionPrinter.Visit(Pattern);
+        if (table is TableValuedFunctionExpression { Name: "json_each", Schema: null, IsBuiltIn: true, Arguments: [var argument] })
+        {
+            collection = argument;
+            return true;
+        }
+
+        return base.IsCollectionTable(table, out collection);
     }
 
     /// <summary>
@@ -107,23 +132,11 @@ public class RegexpExpression : SqlExpression
     ///     any release. You should only use it directly in your code with extreme caution and knowing that
     ///     doing so can result in application failures when updating to a new Entity Framework Core release.
     /// </summary>
-    public override bool Equals(object? obj)
-        => obj != null
-            && (ReferenceEquals(this, obj)
-                || obj is RegexpExpression regexpExpression
-                && Equals(regexpExpression));
-
-    private bool Equals(RegexpExpression regexpExpression)
-        => base.Equals(regexpExpression)
-            && Match.Equals(regexpExpression.Match)
-            && Pattern.Equals(regexpExpression.Pattern);
-
-    /// <summary>
-    ///     This is an internal API that supports the Entity Framework Core infrastructure and not subject to
-    ///     the same compatibility standards as public APIs. It may be changed or removed without notice in
-    ///     any release. You should only use it directly in your code with extreme caution and knowing that
-    ///     doing so can result in application failures when updating to a new Entity Framework Core release.
-    /// </summary>
-    public override int GetHashCode()
-        => HashCode.Combine(base.GetHashCode(), Match, Pattern);
+    protected override TableExpressionBase UpdateParameterCollection(
+        TableExpressionBase table,
+        SqlParameterExpression newCollectionParameter)
+        => table is TableValuedFunctionExpression { Arguments: [SqlParameterExpression] } jsonEachExpression
+            ? jsonEachExpression.Update([newCollectionParameter])
+            : base.UpdateParameterCollection(table, newCollectionParameter);
+#pragma warning restore EF1001
 }

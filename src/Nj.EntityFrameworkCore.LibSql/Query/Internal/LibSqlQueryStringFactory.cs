@@ -1,7 +1,9 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-namespace Nj.EntityFrameworkCore.LibSql.Diagnostics.Internal;
+using System.Text;
+
+namespace Nj.EntityFrameworkCore.LibSql.Query.Internal;
 
 /// <summary>
 ///     This is an internal API that supports the Entity Framework Core infrastructure and not subject to
@@ -9,38 +11,49 @@ namespace Nj.EntityFrameworkCore.LibSql.Diagnostics.Internal;
 ///     any release. You should only use it directly in your code with extreme caution and knowing that
 ///     doing so can result in application failures when updating to a new Entity Framework Core release.
 /// </summary>
-public class TableRebuildEventData : EventData
+public class LibSqlQueryStringFactory : IRelationalQueryStringFactory
 {
+    private readonly IRelationalTypeMappingSource _typeMapper;
+
     /// <summary>
     ///     This is an internal API that supports the Entity Framework Core infrastructure and not subject to
     ///     the same compatibility standards as public APIs. It may be changed or removed without notice in
     ///     any release. You should only use it directly in your code with extreme caution and knowing that
     ///     doing so can result in application failures when updating to a new Entity Framework Core release.
     /// </summary>
-    public TableRebuildEventData(
-        EventDefinitionBase eventDefinition,
-        Func<EventDefinitionBase, EventData, string> messageGenerator,
-        Type operationType,
-        string? tableName)
-        : base(eventDefinition, messageGenerator)
+    public LibSqlQueryStringFactory(IRelationalTypeMappingSource typeMapper)
+        => _typeMapper = typeMapper;
+
+    /// <summary>
+    ///     This is an internal API that supports the Entity Framework Core infrastructure and not subject to
+    ///     the same compatibility standards as public APIs. It may be changed or removed without notice in
+    ///     any release. You should only use it directly in your code with extreme caution and knowing that
+    ///     doing so can result in application failures when updating to a new Entity Framework Core release.
+    /// </summary>
+    public virtual string Create(DbCommand command)
     {
-        OperationType = operationType;
-        TableName = tableName;
+        if (command.Parameters.Count == 0)
+        {
+            return command.CommandText;
+        }
+
+        var builder = new StringBuilder();
+        foreach (DbParameter parameter in command.Parameters)
+        {
+            var value = parameter.Value;
+            builder
+                .Append(".param set ")
+                .Append(parameter.ParameterName)
+                .Append(' ')
+                .AppendLine(
+                    value == null || value == DBNull.Value
+                        ? "NULL"
+                        : _typeMapper.FindMapping(value.GetType())?.GenerateSqlLiteral(value)
+                        ?? value.ToString());
+        }
+
+        return builder
+            .AppendLine()
+            .Append(command.CommandText).ToString();
     }
-
-    /// <summary>
-    ///     This is an internal API that supports the Entity Framework Core infrastructure and not subject to
-    ///     the same compatibility standards as public APIs. It may be changed or removed without notice in
-    ///     any release. You should only use it directly in your code with extreme caution and knowing that
-    ///     doing so can result in application failures when updating to a new Entity Framework Core release.
-    /// </summary>
-    public virtual Type OperationType { get; }
-
-    /// <summary>
-    ///     This is an internal API that supports the Entity Framework Core infrastructure and not subject to
-    ///     the same compatibility standards as public APIs. It may be changed or removed without notice in
-    ///     any release. You should only use it directly in your code with extreme caution and knowing that
-    ///     doing so can result in application failures when updating to a new Entity Framework Core release.
-    /// </summary>
-    public virtual string? TableName { get; }
 }

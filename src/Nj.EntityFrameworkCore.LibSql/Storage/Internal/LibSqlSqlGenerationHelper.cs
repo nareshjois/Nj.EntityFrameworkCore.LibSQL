@@ -1,7 +1,9 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-namespace Nj.EntityFrameworkCore.LibSql.Diagnostics.Internal;
+using System.Text;
+
+namespace Nj.EntityFrameworkCore.LibSql.Storage.Internal;
 
 /// <summary>
 ///     This is an internal API that supports the Entity Framework Core infrastructure and not subject to
@@ -9,7 +11,7 @@ namespace Nj.EntityFrameworkCore.LibSql.Diagnostics.Internal;
 ///     any release. You should only use it directly in your code with extreme caution and knowing that
 ///     doing so can result in application failures when updating to a new Entity Framework Core release.
 /// </summary>
-public class TableRebuildEventData : EventData
+public class LibSqlSqlGenerationHelper : RelationalSqlGenerationHelper
 {
     /// <summary>
     ///     This is an internal API that supports the Entity Framework Core infrastructure and not subject to
@@ -17,15 +19,9 @@ public class TableRebuildEventData : EventData
     ///     any release. You should only use it directly in your code with extreme caution and knowing that
     ///     doing so can result in application failures when updating to a new Entity Framework Core release.
     /// </summary>
-    public TableRebuildEventData(
-        EventDefinitionBase eventDefinition,
-        Func<EventDefinitionBase, EventData, string> messageGenerator,
-        Type operationType,
-        string? tableName)
-        : base(eventDefinition, messageGenerator)
+    public LibSqlSqlGenerationHelper(RelationalSqlGenerationHelperDependencies dependencies)
+        : base(dependencies)
     {
-        OperationType = operationType;
-        TableName = tableName;
     }
 
     /// <summary>
@@ -34,7 +30,8 @@ public class TableRebuildEventData : EventData
     ///     any release. You should only use it directly in your code with extreme caution and knowing that
     ///     doing so can result in application failures when updating to a new Entity Framework Core release.
     /// </summary>
-    public virtual Type OperationType { get; }
+    public override string StartTransactionStatement
+        => "BEGIN TRANSACTION" + StatementTerminator;
 
     /// <summary>
     ///     This is an internal API that supports the Entity Framework Core infrastructure and not subject to
@@ -42,5 +39,15 @@ public class TableRebuildEventData : EventData
     ///     any release. You should only use it directly in your code with extreme caution and knowing that
     ///     doing so can result in application failures when updating to a new Entity Framework Core release.
     /// </summary>
-    public virtual string? TableName { get; }
+    public override string DelimitIdentifier(string name, string? schema)
+        => base.DelimitIdentifier(name);
+
+    /// <summary>
+    ///     This is an internal API that supports the Entity Framework Core infrastructure and not subject to
+    ///     the same compatibility standards as public APIs. It may be changed or removed without notice in
+    ///     any release. You should only use it directly in your code with extreme caution and knowing that
+    ///     doing so can result in application failures when updating to a new Entity Framework Core release.
+    /// </summary>
+    public override void DelimitIdentifier(StringBuilder builder, string name, string? schema)
+        => base.DelimitIdentifier(builder, name);
 }

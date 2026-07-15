@@ -1,31 +1,35 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-namespace Nj.EntityFrameworkCore.LibSql.Diagnostics.Internal;
+using System.Text.Json;
+using Microsoft.EntityFrameworkCore.Storage.Json;
+
+namespace Nj.EntityFrameworkCore.LibSql.Storage.Json.Internal;
 
 /// <summary>
+///     The LibSql-specific JsonValueReaderWrite for byte[]. Generates the SQLite representation (e.g. X'0102') rather than base64, in order
+///     to match our SQLite non-JSON representation.
+/// </summary>
+/// <remarks>
 ///     This is an internal API that supports the Entity Framework Core infrastructure and not subject to
 ///     the same compatibility standards as public APIs. It may be changed or removed without notice in
 ///     any release. You should only use it directly in your code with extreme caution and knowing that
 ///     doing so can result in application failures when updating to a new Entity Framework Core release.
-/// </summary>
-public class TableRebuildEventData : EventData
+/// </remarks>
+public sealed class LibSqlJsonByteArrayReaderWriter : JsonValueReaderWriter<byte[]>
 {
+    private static readonly PropertyInfo InstanceProperty = typeof(LibSqlJsonByteArrayReaderWriter).GetProperty(nameof(Instance))!;
+
     /// <summary>
     ///     This is an internal API that supports the Entity Framework Core infrastructure and not subject to
     ///     the same compatibility standards as public APIs. It may be changed or removed without notice in
     ///     any release. You should only use it directly in your code with extreme caution and knowing that
     ///     doing so can result in application failures when updating to a new Entity Framework Core release.
     /// </summary>
-    public TableRebuildEventData(
-        EventDefinitionBase eventDefinition,
-        Func<EventDefinitionBase, EventData, string> messageGenerator,
-        Type operationType,
-        string? tableName)
-        : base(eventDefinition, messageGenerator)
+    public static LibSqlJsonByteArrayReaderWriter Instance { get; } = new();
+
+    private LibSqlJsonByteArrayReaderWriter()
     {
-        OperationType = operationType;
-        TableName = tableName;
     }
 
     /// <summary>
@@ -34,7 +38,8 @@ public class TableRebuildEventData : EventData
     ///     any release. You should only use it directly in your code with extreme caution and knowing that
     ///     doing so can result in application failures when updating to a new Entity Framework Core release.
     /// </summary>
-    public virtual Type OperationType { get; }
+    public override byte[] FromJsonTyped(ref Utf8JsonReaderManager manager, object? existingObject = null)
+        => Convert.FromHexString(manager.CurrentReader.GetString()!);
 
     /// <summary>
     ///     This is an internal API that supports the Entity Framework Core infrastructure and not subject to
@@ -42,5 +47,10 @@ public class TableRebuildEventData : EventData
     ///     any release. You should only use it directly in your code with extreme caution and knowing that
     ///     doing so can result in application failures when updating to a new Entity Framework Core release.
     /// </summary>
-    public virtual string? TableName { get; }
+    public override void ToJsonTyped(Utf8JsonWriter writer, byte[] value)
+        => writer.WriteStringValue(Convert.ToHexString(value));
+
+    /// <inheritdoc />
+    public override Expression ConstructorExpression
+        => Expression.Property(null, InstanceProperty);
 }

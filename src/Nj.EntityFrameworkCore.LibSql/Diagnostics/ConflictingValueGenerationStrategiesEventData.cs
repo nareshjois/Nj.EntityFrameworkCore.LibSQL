@@ -25,12 +25,12 @@ public class ConflictingValueGenerationStrategiesEventData : EventData
     public ConflictingValueGenerationStrategiesEventData(
         EventDefinitionBase eventDefinition,
         Func<EventDefinitionBase, EventData, string> messageGenerator,
-        SqliteValueGenerationStrategy sqliteValueGenerationStrategy,
+        LibSqlValueGenerationStrategy sqliteValueGenerationStrategy,
         string otherValueGenerationStrategy,
         IReadOnlyProperty property)
         : base(eventDefinition, messageGenerator)
     {
-        SqliteValueGenerationStrategy = sqliteValueGenerationStrategy;
+        LibSqlValueGenerationStrategy = sqliteValueGenerationStrategy;
         OtherValueGenerationStrategy = otherValueGenerationStrategy;
         Property = property;
     }
@@ -38,7 +38,7 @@ public class ConflictingValueGenerationStrategiesEventData : EventData
     /// <summary>
     ///     The SQLite value generation strategy.
     /// </summary>
-    public virtual SqliteValueGenerationStrategy SqliteValueGenerationStrategy { get; }
+    public virtual LibSqlValueGenerationStrategy LibSqlValueGenerationStrategy { get; }
 
     /// <summary>
     ///     The other value generation strategy.

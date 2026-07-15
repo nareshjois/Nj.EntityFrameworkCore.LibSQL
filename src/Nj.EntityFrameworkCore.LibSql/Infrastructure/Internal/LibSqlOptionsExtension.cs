@@ -1,10 +1,9 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
+using System.Text;
 
-// ReSharper disable once CheckNamespace
-namespace Nj.EntityFrameworkCore.LibSql.Query.Internal;
+namespace Nj.EntityFrameworkCore.LibSql.Infrastructure.Internal;
 
 /// <summary>
 ///     This is an internal API that supports the Entity Framework Core infrastructure and not subject to
@@ -12,9 +11,10 @@ namespace Nj.EntityFrameworkCore.LibSql.Query.Internal;
 ///     any release. You should only use it directly in your code with extreme caution and knowing that
 ///     doing so can result in application failures when updating to a new Entity Framework Core release.
 /// </summary>
-public class RegexpExpression : SqlExpression
+public class LibSqlOptionsExtension : RelationalOptionsExtension
 {
-    private static ConstructorInfo? _quotingConstructor;
+    private DbContextOptionsExtensionInfo? _info;
+    private bool _loadSpatialite;
 
     /// <summary>
     ///     This is an internal API that supports the Entity Framework Core infrastructure and not subject to
@@ -22,11 +22,62 @@ public class RegexpExpression : SqlExpression
     ///     any release. You should only use it directly in your code with extreme caution and knowing that
     ///     doing so can result in application failures when updating to a new Entity Framework Core release.
     /// </summary>
-    public RegexpExpression(SqlExpression match, SqlExpression pattern, RelationalTypeMapping typeMapping)
-        : base(typeof(bool), typeMapping)
+    public LibSqlOptionsExtension()
     {
-        Match = match;
-        Pattern = pattern;
+    }
+
+    // NB: When adding new options, make sure to update the copy ctor below.
+
+    /// <summary>
+    ///     This is an internal API that supports the Entity Framework Core infrastructure and not subject to
+    ///     the same compatibility standards as public APIs. It may be changed or removed without notice in
+    ///     any release. You should only use it directly in your code with extreme caution and knowing that
+    ///     doing so can result in application failures when updating to a new Entity Framework Core release.
+    /// </summary>
+    protected LibSqlOptionsExtension(LibSqlOptionsExtension copyFrom)
+        : base(copyFrom)
+        => _loadSpatialite = copyFrom._loadSpatialite;
+
+    /// <summary>
+    ///     This is an internal API that supports the Entity Framework Core infrastructure and not subject to
+    ///     the same compatibility standards as public APIs. It may be changed or removed without notice in
+    ///     any release. You should only use it directly in your code with extreme caution and knowing that
+    ///     doing so can result in application failures when updating to a new Entity Framework Core release.
+    /// </summary>
+    public override DbContextOptionsExtensionInfo Info
+        => _info ??= new ExtensionInfo(this);
+
+    /// <summary>
+    ///     This is an internal API that supports the Entity Framework Core infrastructure and not subject to
+    ///     the same compatibility standards as public APIs. It may be changed or removed without notice in
+    ///     any release. You should only use it directly in your code with extreme caution and knowing that
+    ///     doing so can result in application failures when updating to a new Entity Framework Core release.
+    /// </summary>
+    protected override RelationalOptionsExtension Clone()
+        => new LibSqlOptionsExtension(this);
+
+    /// <summary>
+    ///     This is an internal API that supports the Entity Framework Core infrastructure and not subject to
+    ///     the same compatibility standards as public APIs. It may be changed or removed without notice in
+    ///     any release. You should only use it directly in your code with extreme caution and knowing that
+    ///     doing so can result in application failures when updating to a new Entity Framework Core release.
+    /// </summary>
+    public virtual bool LoadSpatialite
+        => _loadSpatialite;
+
+    /// <summary>
+    ///     This is an internal API that supports the Entity Framework Core infrastructure and not subject to
+    ///     the same compatibility standards as public APIs. It may be changed or removed without notice in
+    ///     any release. You should only use it directly in your code with extreme caution and knowing that
+    ///     doing so can result in application failures when updating to a new Entity Framework Core release.
+    /// </summary>
+    public virtual LibSqlOptionsExtension WithLoadSpatialite(bool loadSpatialite)
+    {
+        var clone = (LibSqlOptionsExtension)Clone();
+
+        clone._loadSpatialite = loadSpatialite;
+
+        return clone;
     }
 
     /// <summary>
@@ -35,95 +86,45 @@ public class RegexpExpression : SqlExpression
     ///     any release. You should only use it directly in your code with extreme caution and knowing that
     ///     doing so can result in application failures when updating to a new Entity Framework Core release.
     /// </summary>
-    public override RelationalTypeMapping TypeMapping
-        => base.TypeMapping!;
+    public override void ApplyServices(IServiceCollection services)
+        => services.AddEntityFrameworkLibSql();
 
-    /// <summary>
-    ///     This is an internal API that supports the Entity Framework Core infrastructure and not subject to
-    ///     the same compatibility standards as public APIs. It may be changed or removed without notice in
-    ///     any release. You should only use it directly in your code with extreme caution and knowing that
-    ///     doing so can result in application failures when updating to a new Entity Framework Core release.
-    /// </summary>
-    public virtual SqlExpression Match { get; }
-
-    /// <summary>
-    ///     This is an internal API that supports the Entity Framework Core infrastructure and not subject to
-    ///     the same compatibility standards as public APIs. It may be changed or removed without notice in
-    ///     any release. You should only use it directly in your code with extreme caution and knowing that
-    ///     doing so can result in application failures when updating to a new Entity Framework Core release.
-    /// </summary>
-    public virtual SqlExpression Pattern { get; }
-
-    /// <summary>
-    ///     This is an internal API that supports the Entity Framework Core infrastructure and not subject to
-    ///     the same compatibility standards as public APIs. It may be changed or removed without notice in
-    ///     any release. You should only use it directly in your code with extreme caution and knowing that
-    ///     doing so can result in application failures when updating to a new Entity Framework Core release.
-    /// </summary>
-    protected override Expression VisitChildren(ExpressionVisitor visitor)
+    private sealed class ExtensionInfo(IDbContextOptionsExtension extension) : RelationalExtensionInfo(extension)
     {
-        var match = (SqlExpression)visitor.Visit(Match);
-        var pattern = (SqlExpression)visitor.Visit(Pattern);
+        private string? _logFragment;
 
-        return Update(match, pattern);
+        private new LibSqlOptionsExtension Extension
+            => (LibSqlOptionsExtension)base.Extension;
+
+        public override bool IsDatabaseProvider
+            => true;
+
+        public override bool ShouldUseSameServiceProvider(DbContextOptionsExtensionInfo other)
+            => other is ExtensionInfo;
+
+        public override string LogFragment
+        {
+            get
+            {
+                if (_logFragment == null)
+                {
+                    var builder = new StringBuilder();
+
+                    builder.Append(base.LogFragment);
+
+                    if (Extension._loadSpatialite)
+                    {
+                        builder.Append("LoadSpatialite ");
+                    }
+
+                    _logFragment = builder.ToString();
+                }
+
+                return _logFragment;
+            }
+        }
+
+        public override void PopulateDebugInfo(IDictionary<string, string> debugInfo)
+            => debugInfo["LibSql"] = "1";
     }
-
-    /// <summary>
-    ///     This is an internal API that supports the Entity Framework Core infrastructure and not subject to
-    ///     the same compatibility standards as public APIs. It may be changed or removed without notice in
-    ///     any release. You should only use it directly in your code with extreme caution and knowing that
-    ///     doing so can result in application failures when updating to a new Entity Framework Core release.
-    /// </summary>
-    public virtual RegexpExpression Update(SqlExpression match, SqlExpression pattern)
-        => match != Match || pattern != Pattern
-            ? new RegexpExpression(match, pattern, TypeMapping)
-            : this;
-
-    /// <inheritdoc />
-    public override Expression Quote()
-        => New(
-            _quotingConstructor ??= typeof(RegexpExpression).GetConstructor(
-                [typeof(SqlExpression), typeof(SqlExpression), typeof(RelationalTypeMapping)])!,
-            Match.Quote(),
-            Pattern.Quote(),
-            RelationalExpressionQuotingUtilities.QuoteTypeMapping(TypeMapping));
-
-    /// <summary>
-    ///     This is an internal API that supports the Entity Framework Core infrastructure and not subject to
-    ///     the same compatibility standards as public APIs. It may be changed or removed without notice in
-    ///     any release. You should only use it directly in your code with extreme caution and knowing that
-    ///     doing so can result in application failures when updating to a new Entity Framework Core release.
-    /// </summary>
-    protected override void Print(ExpressionPrinter expressionPrinter)
-    {
-        expressionPrinter.Visit(Match);
-        expressionPrinter.Append(" REGEXP ");
-        expressionPrinter.Visit(Pattern);
-    }
-
-    /// <summary>
-    ///     This is an internal API that supports the Entity Framework Core infrastructure and not subject to
-    ///     the same compatibility standards as public APIs. It may be changed or removed without notice in
-    ///     any release. You should only use it directly in your code with extreme caution and knowing that
-    ///     doing so can result in application failures when updating to a new Entity Framework Core release.
-    /// </summary>
-    public override bool Equals(object? obj)
-        => obj != null
-            && (ReferenceEquals(this, obj)
-                || obj is RegexpExpression regexpExpression
-                && Equals(regexpExpression));
-
-    private bool Equals(RegexpExpression regexpExpression)
-        => base.Equals(regexpExpression)
-            && Match.Equals(regexpExpression.Match)
-            && Pattern.Equals(regexpExpression.Pattern);
-
-    /// <summary>
-    ///     This is an internal API that supports the Entity Framework Core infrastructure and not subject to
-    ///     the same compatibility standards as public APIs. It may be changed or removed without notice in
-    ///     any release. You should only use it directly in your code with extreme caution and knowing that
-    ///     doing so can result in application failures when updating to a new Entity Framework Core release.
-    /// </summary>
-    public override int GetHashCode()
-        => HashCode.Combine(base.GetHashCode(), Match, Pattern);
 }

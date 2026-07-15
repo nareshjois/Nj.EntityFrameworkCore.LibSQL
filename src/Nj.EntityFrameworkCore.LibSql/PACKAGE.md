@@ -1,12 +1,12 @@
-The `Microsoft.EntityFrameworkCore.Sqlite.Core` package contains the code for the SQLite EF Core database provider. However, it does not automatically bring in any SQLite native binary, instead requiring that the application install and initialize the binary to use.
+The `Nj.EntityFrameworkCore.LibSql.Core` package contains the code for the SQLite EF Core database provider. However, it does not automatically bring in any SQLite native binary, instead requiring that the application install and initialize the binary to use.
 
 ## Usage
 
-Only use this package if you need to change to a different SQLite native binary that the one supplied by [Microsoft.EntityFrameworkCore.Sqlite](https://www.nuget.org/packages/Microsoft.EntityFrameworkCore.Sqlite).
+Only use this package if you need to change to a different SQLite native binary that the one supplied by [Nj.EntityFrameworkCore.LibSql](https://www.nuget.org/packages/Nj.EntityFrameworkCore.LibSql).
 
 To use this "Core" package, also install a [SQLite binary package](https://www.nuget.org/profiles/SQLitePCLRaw) and initialize it with `SQLitePCL.Batteries_V2.Init();` or similar. See [github.com/ericsink/SQLitePCL.raw](https://github.com/ericsink/SQLitePCL.raw) for more information.
 
-Following this, call `UseSqlite` just as you when using [Microsoft.EntityFrameworkCore.Sqlite](https://www.nuget.org/packages/Microsoft.EntityFrameworkCore.Sqlite).
+Following this, call `UseLibSql` just as you when using [Nj.EntityFrameworkCore.LibSql](https://www.nuget.org/packages/Nj.EntityFrameworkCore.LibSql).
 
 ## Getting started with EF Core
 

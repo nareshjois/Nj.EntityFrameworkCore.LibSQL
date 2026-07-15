@@ -1,7 +1,10 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-namespace Nj.EntityFrameworkCore.LibSql.Diagnostics.Internal;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Nj.EntityFrameworkCore.LibSql.Storage.Internal;
+
+namespace Nj.EntityFrameworkCore.LibSql.Metadata.Internal;
 
 /// <summary>
 ///     This is an internal API that supports the Entity Framework Core infrastructure and not subject to
@@ -9,7 +12,7 @@ namespace Nj.EntityFrameworkCore.LibSql.Diagnostics.Internal;
 ///     any release. You should only use it directly in your code with extreme caution and knowing that
 ///     doing so can result in application failures when updating to a new Entity Framework Core release.
 /// </summary>
-public class TableRebuildEventData : EventData
+public class LibSqlAnnotationProvider : RelationalAnnotationProvider
 {
     /// <summary>
     ///     This is an internal API that supports the Entity Framework Core infrastructure and not subject to
@@ -17,15 +20,9 @@ public class TableRebuildEventData : EventData
     ///     any release. You should only use it directly in your code with extreme caution and knowing that
     ///     doing so can result in application failures when updating to a new Entity Framework Core release.
     /// </summary>
-    public TableRebuildEventData(
-        EventDefinitionBase eventDefinition,
-        Func<EventDefinitionBase, EventData, string> messageGenerator,
-        Type operationType,
-        string? tableName)
-        : base(eventDefinition, messageGenerator)
+    public LibSqlAnnotationProvider(RelationalAnnotationProviderDependencies dependencies)
+        : base(dependencies)
     {
-        OperationType = operationType;
-        TableName = tableName;
     }
 
     /// <summary>
@@ -34,7 +31,18 @@ public class TableRebuildEventData : EventData
     ///     any release. You should only use it directly in your code with extreme caution and knowing that
     ///     doing so can result in application failures when updating to a new Entity Framework Core release.
     /// </summary>
-    public virtual Type OperationType { get; }
+    public override IEnumerable<IAnnotation> For(IRelationalModel model, bool designTime)
+    {
+        if (!designTime)
+        {
+            yield break;
+        }
+
+        if (model.Tables.SelectMany(t => t.Columns).Any(c => LibSqlTypeMappingSource.IsSpatialiteType(c.StoreType)))
+        {
+            yield return new Annotation(LibSqlAnnotationNames.InitSpatialMetaData, true);
+        }
+    }
 
     /// <summary>
     ///     This is an internal API that supports the Entity Framework Core infrastructure and not subject to
@@ -42,5 +50,31 @@ public class TableRebuildEventData : EventData
     ///     any release. You should only use it directly in your code with extreme caution and knowing that
     ///     doing so can result in application failures when updating to a new Entity Framework Core release.
     /// </summary>
-    public virtual string? TableName { get; }
+    public override IEnumerable<IAnnotation> For(IColumn column, bool designTime)
+    {
+        if (!designTime)
+        {
+            yield break;
+        }
+
+        // JSON columns have no property mappings so all annotations that rely on property mappings should be skipped for them
+        if (column is JsonColumn)
+        {
+            yield break;
+        }
+
+        // Model validation ensures that these facets are the same on all mapped properties
+        var property = column.PropertyMappings.First().Property;
+        
+        if (property.GetValueGenerationStrategy() == LibSqlValueGenerationStrategy.Autoincrement)
+        {
+            yield return new Annotation(LibSqlAnnotationNames.Autoincrement, true);
+        }
+
+        var srid = property.GetSrid();
+        if (srid != null)
+        {
+            yield return new Annotation(LibSqlAnnotationNames.Srid, srid);
+        }
+    }
 }

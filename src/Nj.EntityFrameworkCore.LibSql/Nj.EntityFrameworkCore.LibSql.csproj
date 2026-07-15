@@ -1,8 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <RootNamespace>Microsoft.EntityFrameworkCore.Sqlite</RootNamespace>
+    <RootNamespace>Nj.EntityFrameworkCore.LibSql</RootNamespace>
     <AssemblyName>Nj.EntityFrameworkCore.LibSql</AssemblyName>
-    <Description>EF Core 10 provider for libSQL using Nelknet.LibSQL.Data. Attributed baseline import from Microsoft.EntityFrameworkCore.Sqlite.Core (WP-03).</Description>
+    <Description>EF Core 10 provider for libSQL using Nelknet.LibSQL.Data. Attributed baseline from Microsoft.EntityFrameworkCore.Sqlite.Core (WP-03).</Description>
     <PackageId>Nj.EntityFrameworkCore.LibSql</PackageId>
     <PackageTags>EntityFrameworkCore;EFCore;libSQL;LibSql;Turso;SQLite;Nelknet</PackageTags>
     <IsPackable>true</IsPackable>
@@ -47,15 +47,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Update="Properties\SqliteStrings.resx">
-      <LogicalName>Microsoft.EntityFrameworkCore.Sqlite.Properties.SqliteStrings</LogicalName>
+    <EmbeddedResource Update="Properties\LibSqlStrings.resx">
+      <LogicalName>Nj.EntityFrameworkCore.LibSql.Properties.LibSqlStrings</LogicalName>
       <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>SqliteStrings.Designer.cs</LastGenOutput>
+      <LastGenOutput>LibSqlStrings.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <Compile Update="Properties\SqliteStrings.Designer.cs">
+    <Compile Update="Properties\LibSqlStrings.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
-      <DependentUpon>SqliteStrings.resx</DependentUpon>
+      <DependentUpon>LibSqlStrings.resx</DependentUpon>
     </Compile>
   </ItemGroup>
 

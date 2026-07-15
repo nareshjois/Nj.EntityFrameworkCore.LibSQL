@@ -1,10 +1,9 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
+using System.Text;
 
-// ReSharper disable once CheckNamespace
-namespace Nj.EntityFrameworkCore.LibSql.Query.Internal;
+namespace Nj.EntityFrameworkCore.LibSql.Storage.Internal;
 
 /// <summary>
 ///     This is an internal API that supports the Entity Framework Core infrastructure and not subject to
@@ -12,9 +11,19 @@ namespace Nj.EntityFrameworkCore.LibSql.Query.Internal;
 ///     any release. You should only use it directly in your code with extreme caution and knowing that
 ///     doing so can result in application failures when updating to a new Entity Framework Core release.
 /// </summary>
-public class RegexpExpression : SqlExpression
+public class LibSqlJsonTypeMapping : JsonTypeMapping
 {
-    private static ConstructorInfo? _quotingConstructor;
+    private static readonly MethodInfo GetStringMethod
+        = typeof(DbDataReader).GetRuntimeMethod(nameof(DbDataReader.GetString), [typeof(int)])!;
+
+    private static readonly PropertyInfo UTF8Property
+        = typeof(Encoding).GetProperty(nameof(Encoding.UTF8))!;
+
+    private static readonly MethodInfo EncodingGetBytesMethod
+        = typeof(Encoding).GetMethod(nameof(Encoding.GetBytes), [typeof(string)])!;
+
+    private static readonly ConstructorInfo MemoryStreamConstructor
+        = typeof(MemoryStream).GetConstructor([typeof(byte[])])!;
 
     /// <summary>
     ///     This is an internal API that supports the Entity Framework Core infrastructure and not subject to
@@ -22,11 +31,15 @@ public class RegexpExpression : SqlExpression
     ///     any release. You should only use it directly in your code with extreme caution and knowing that
     ///     doing so can result in application failures when updating to a new Entity Framework Core release.
     /// </summary>
-    public RegexpExpression(SqlExpression match, SqlExpression pattern, RelationalTypeMapping typeMapping)
-        : base(typeof(bool), typeMapping)
+    public static LibSqlJsonTypeMapping Default { get; } = new(LibSqlTypeMappingSource.TextTypeName);
+
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="LibSqlJsonTypeMapping" /> class.
+    /// </summary>
+    /// <param name="storeType">The name of the database type.</param>
+    public LibSqlJsonTypeMapping(string storeType)
+        : base(storeType, typeof(JsonTypePlaceholder), System.Data.DbType.String)
     {
-        Match = match;
-        Pattern = pattern;
     }
 
     /// <summary>
@@ -35,37 +48,9 @@ public class RegexpExpression : SqlExpression
     ///     any release. You should only use it directly in your code with extreme caution and knowing that
     ///     doing so can result in application failures when updating to a new Entity Framework Core release.
     /// </summary>
-    public override RelationalTypeMapping TypeMapping
-        => base.TypeMapping!;
-
-    /// <summary>
-    ///     This is an internal API that supports the Entity Framework Core infrastructure and not subject to
-    ///     the same compatibility standards as public APIs. It may be changed or removed without notice in
-    ///     any release. You should only use it directly in your code with extreme caution and knowing that
-    ///     doing so can result in application failures when updating to a new Entity Framework Core release.
-    /// </summary>
-    public virtual SqlExpression Match { get; }
-
-    /// <summary>
-    ///     This is an internal API that supports the Entity Framework Core infrastructure and not subject to
-    ///     the same compatibility standards as public APIs. It may be changed or removed without notice in
-    ///     any release. You should only use it directly in your code with extreme caution and knowing that
-    ///     doing so can result in application failures when updating to a new Entity Framework Core release.
-    /// </summary>
-    public virtual SqlExpression Pattern { get; }
-
-    /// <summary>
-    ///     This is an internal API that supports the Entity Framework Core infrastructure and not subject to
-    ///     the same compatibility standards as public APIs. It may be changed or removed without notice in
-    ///     any release. You should only use it directly in your code with extreme caution and knowing that
-    ///     doing so can result in application failures when updating to a new Entity Framework Core release.
-    /// </summary>
-    protected override Expression VisitChildren(ExpressionVisitor visitor)
+    protected LibSqlJsonTypeMapping(RelationalTypeMappingParameters parameters)
+        : base(parameters)
     {
-        var match = (SqlExpression)visitor.Visit(Match);
-        var pattern = (SqlExpression)visitor.Visit(Pattern);
-
-        return Update(match, pattern);
     }
 
     /// <summary>
@@ -74,19 +59,8 @@ public class RegexpExpression : SqlExpression
     ///     any release. You should only use it directly in your code with extreme caution and knowing that
     ///     doing so can result in application failures when updating to a new Entity Framework Core release.
     /// </summary>
-    public virtual RegexpExpression Update(SqlExpression match, SqlExpression pattern)
-        => match != Match || pattern != Pattern
-            ? new RegexpExpression(match, pattern, TypeMapping)
-            : this;
-
-    /// <inheritdoc />
-    public override Expression Quote()
-        => New(
-            _quotingConstructor ??= typeof(RegexpExpression).GetConstructor(
-                [typeof(SqlExpression), typeof(SqlExpression), typeof(RelationalTypeMapping)])!,
-            Match.Quote(),
-            Pattern.Quote(),
-            RelationalExpressionQuotingUtilities.QuoteTypeMapping(TypeMapping));
+    public override MethodInfo GetDataReaderMethod()
+        => GetStringMethod;
 
     /// <summary>
     ///     This is an internal API that supports the Entity Framework Core infrastructure and not subject to
@@ -94,12 +68,13 @@ public class RegexpExpression : SqlExpression
     ///     any release. You should only use it directly in your code with extreme caution and knowing that
     ///     doing so can result in application failures when updating to a new Entity Framework Core release.
     /// </summary>
-    protected override void Print(ExpressionPrinter expressionPrinter)
-    {
-        expressionPrinter.Visit(Match);
-        expressionPrinter.Append(" REGEXP ");
-        expressionPrinter.Visit(Pattern);
-    }
+    public override Expression CustomizeDataReaderExpression(Expression expression)
+        => Expression.New(
+            MemoryStreamConstructor,
+            Expression.Call(
+                Expression.Property(null, UTF8Property),
+                EncodingGetBytesMethod,
+                expression));
 
     /// <summary>
     ///     This is an internal API that supports the Entity Framework Core infrastructure and not subject to
@@ -107,16 +82,8 @@ public class RegexpExpression : SqlExpression
     ///     any release. You should only use it directly in your code with extreme caution and knowing that
     ///     doing so can result in application failures when updating to a new Entity Framework Core release.
     /// </summary>
-    public override bool Equals(object? obj)
-        => obj != null
-            && (ReferenceEquals(this, obj)
-                || obj is RegexpExpression regexpExpression
-                && Equals(regexpExpression));
-
-    private bool Equals(RegexpExpression regexpExpression)
-        => base.Equals(regexpExpression)
-            && Match.Equals(regexpExpression.Match)
-            && Pattern.Equals(regexpExpression.Pattern);
+    protected override string GenerateNonNullSqlLiteral(object value)
+        => $"'{EscapeSqlLiteral((string)value)}'";
 
     /// <summary>
     ///     This is an internal API that supports the Entity Framework Core infrastructure and not subject to
@@ -124,6 +91,15 @@ public class RegexpExpression : SqlExpression
     ///     any release. You should only use it directly in your code with extreme caution and knowing that
     ///     doing so can result in application failures when updating to a new Entity Framework Core release.
     /// </summary>
-    public override int GetHashCode()
-        => HashCode.Combine(base.GetHashCode(), Match, Pattern);
+    protected virtual string EscapeSqlLiteral(string literal)
+        => literal.Replace("'", "''");
+
+    /// <summary>
+    ///     This is an internal API that supports the Entity Framework Core infrastructure and not subject to
+    ///     the same compatibility standards as public APIs. It may be changed or removed without notice in
+    ///     any release. You should only use it directly in your code with extreme caution and knowing that
+    ///     doing so can result in application failures when updating to a new Entity Framework Core release.
+    /// </summary>
+    protected override RelationalTypeMapping Clone(RelationalTypeMappingParameters parameters)
+        => new LibSqlJsonTypeMapping(parameters);
 }

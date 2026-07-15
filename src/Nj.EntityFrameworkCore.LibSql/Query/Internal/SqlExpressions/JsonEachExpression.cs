@@ -4,7 +4,7 @@
 using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 
 // ReSharper disable once CheckNamespace
-namespace Microsoft.EntityFrameworkCore.Sqlite.Query.Internal;
+namespace Nj.EntityFrameworkCore.LibSql.Query.Internal;
 
 /// <summary>
 ///     An expression that represents a SQLite json_each function call in a SQL tree.

@@ -1,11 +1,11 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-namespace Microsoft.EntityFrameworkCore.Sqlite.Diagnostics.Internal;
+namespace Nj.EntityFrameworkCore.LibSql.Diagnostics.Internal;
 
 /// <summary>
 ///     The <see cref="DiagnosticSource" /> event payload for
-///     <see cref="SqliteEventId.UnexpectedConnectionTypeWarning" />.
+///     <see cref="LibSqlEventId.UnexpectedConnectionTypeWarning" />.
 /// </summary>
 public class UnexpectedConnectionTypeEventData : EventData
 {
