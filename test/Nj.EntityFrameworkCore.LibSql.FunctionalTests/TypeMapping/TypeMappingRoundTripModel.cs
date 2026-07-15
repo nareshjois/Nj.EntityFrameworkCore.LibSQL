@@ -74,12 +74,8 @@ public sealed class TypeMappingDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        // Round-trips use client-assigned keys so type-mapping coverage stays independent of
-        // remote HTTP RETURNING. Database-generated keys are covered by GeneratedKeySaveChangesTests
-        // (local Nelknet soft-fork fix; see C-002 / ADR-0001).
-        modelBuilder.Entity<BuiltInRow>(e => e.Property(x => x.Id).ValueGeneratedNever());
-        modelBuilder.Entity<JsonRow>(e => e.Property(x => x.Id).ValueGeneratedNever());
-        modelBuilder.Entity<DefaultRow>(e => e.Property(x => x.Id).ValueGeneratedNever());
+        // Integer keys use store generation (INSERT…RETURNING) — covered by soft-fork Nelknet
+        // RETURNING drain + HTTP baton fixes (C-002 / ADR-0001).
 
         modelBuilder.Entity<ConverterKeyRow>(e =>
         {
@@ -105,10 +101,9 @@ public sealed class TypeMappingDbContext : DbContext
 
 public static class TypeMappingSampleData
 {
-    public static BuiltInRow CreateBuiltIn(int id = 1)
+    public static BuiltInRow CreateBuiltIn()
         => new()
         {
-            Id = id,
             Flag = true,
             ByteValue = 200,
             ShortValue = -1234,
@@ -131,6 +126,8 @@ public static class TypeMappingSampleData
 
     public static void AssertBuiltInEqual(BuiltInRow expected, BuiltInRow actual)
     {
+        Assert.True(expected.Id > 0, "SaveChanges should populate a store-generated key.");
+        Assert.Equal(expected.Id, actual.Id);
         Assert.Equal(expected.Flag, actual.Flag);
         Assert.Equal(expected.ByteValue, actual.ByteValue);
         Assert.Equal(expected.ShortValue, actual.ShortValue);

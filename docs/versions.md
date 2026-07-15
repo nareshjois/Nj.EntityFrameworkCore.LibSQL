@@ -9,7 +9,7 @@ Pinned at repository scaffold (2026-07-15). Update this file when bumps land.
 | EF Core SQLite source baseline (`v10.0.10`) | commit `db55508a7fbc1535bdb65b85159a8d0d36d6942a` — see [upstream-baseline.md](upstream-baseline.md) |
 | Test framework (our suites) | `xunit.v3` `3.2.2` |
 | Test framework (ComplianceTests / EF Spec packages) | `xunit` `2.9.3` |
-| `Nelknet.LibSQL.Data` (runtime) | Soft-fork submodule [`external/Nelknet.LibSQL`](../external/Nelknet.LibSQL) → [nareshjois/Nelknet.LibSQL](https://github.com/nareshjois/Nelknet.LibSQL) `@614f841` (upstream `0.2.10` + RETURNING drain; [nelknet#99](https://github.com/nelknet/Nelknet.LibSQL/pull/99)) |
+| `Nelknet.LibSQL.Data` (runtime) | Soft-fork submodule [`external/Nelknet.LibSQL`](../external/Nelknet.LibSQL) → [nareshjois/Nelknet.LibSQL](https://github.com/nareshjois/Nelknet.LibSQL) `@01a8f52` (upstream `0.2.10` + RETURNING drain + HTTP Hrana errors/baton) |
 | Bundled libSQL (bindings) | `libsql-server-v0.24.32` — see [driver-contract.md](driver-contract.md) |
 | Provider package | `10.0.0-preview.1` |
 | `dotnet-ef` tool | `10.0.10` |

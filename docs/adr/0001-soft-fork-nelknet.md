@@ -8,7 +8,9 @@ Accepted — 2026-07-15
 
 Stock `Nelknet.LibSQL.Data` 0.2.10 blocks EF `SaveChanges` with database-generated
 keys (`INSERT…RETURNING`): the driver can return an id while the write does not
-reliably commit (`C-002`). Waiting solely on upstream stalls Preview.
+reliably commit (`C-002`). Separately, remote HTTP connections did not round-trip
+Hrana stream batons and mis-reported pipeline-level SQL errors, so EF remote
+`SaveChanges` / `EnsureCreated` failed. Waiting solely on upstream stalls Preview.
 
 Extensions / `CreateFunction` / SpatiaLite remain **out of scope** for this
 initiative (`C-001` stays fail-fast translation).
@@ -23,8 +25,11 @@ initiative (`C-001` stays fail-fast translation).
    instead of the NuGet package pin.
 4. Keep public types (`LibSQLConnection`, etc.) so `UseLibSql` stays stable.
 5. Prefer upstreaming patches to Nelknet; rebase the submodule periodically.
+   Soft-fork `main` is the consumed tip (currently `@01a8f52`).
 
-## C-002 fix (fork branch `fix/returning-statement-lifetime`)
+## Patch set on soft-fork `main`
+
+### C-002 — RETURNING reader drain (local/native)
 
 Stock Nelknet closed `LibSQLDataReader` without stepping remaining rows to
 `SQLITE_DONE`, and disposed parameterized statements before the reader finished.
@@ -38,6 +43,15 @@ Fork changes in `LibSQLDataReader` / `LibSQLCommand`:
 3. Keep scalar-statement lifetime until after rows are drained; avoid double-free
    of row/rows handles in `ExecuteScalar`.
 
+### HTTP — Hrana errors + baton streams
+
+1. Surface pipeline-level `{ "type": "error", "error": { … } }` instead of
+   "Invalid response from server".
+2. Round-trip the Hrana `baton` (and honor `base_url`) so BEGIN/COMMIT share one
+   stream across HTTP pipeline requests.
+3. Treat COMMIT/ROLLBACK when no transaction is active as a no-op (sqld DDL
+   autocommit + EF CreateTables).
+
 ## Consequences
 
 - Clones and CI must initialize submodules.
@@ -46,3 +60,5 @@ Fork changes in `LibSQLDataReader` / `LibSQLCommand`:
 - Preview does not require a private NuGet feed for the fork.
 - Native extension APIs are **not** in scope; limitations.md unchanged for that
   list.
+- Open a separate upstream Nelknet PR(s) so stock NuGet can eventually replace the
+  soft-fork pin.

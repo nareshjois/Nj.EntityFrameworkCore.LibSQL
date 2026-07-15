@@ -4,9 +4,9 @@ Community [EF Core](https://learn.microsoft.com/ef/core/) 10 provider for
 [libSQL](https://docs.turso.tech/libsql), backed by
 [`Nelknet.LibSQL.Data`](https://www.nuget.org/packages/Nelknet.LibSQL.Data).
 
-> **Status:** early development. Repository scaffolding is in place
-> (`10.0.0-preview.1`). Public EF APIs such as `UseLibSql` are not published yet.
-> Do not use in production until a stable `10.0.x` is released.
+> **Status:** early development (`10.0.0-preview.1`). `UseLibSql` works in-repo
+> against the Nelknet soft-fork submodule (WP-04/05 on `main`). Not published to
+> NuGet.org yet — do not use in production until a stable `10.0.x` release.
 
 ## Package identity
 
@@ -17,7 +17,7 @@ Community [EF Core](https://learn.microsoft.com/ef/core/) 10 provider for
 | Current local version | `10.0.0-preview.1` |
 | License | MIT |
 | EF Core | `10.0.10` |
-| Nelknet.LibSQL.Data | `0.2.10` |
+| Nelknet.LibSQL.Data | Soft-fork submodule ([nareshjois/Nelknet.LibSQL](https://github.com/nareshjois/Nelknet.LibSQL) `@01a8f52`; see [docs/versions.md](docs/versions.md)) |
 
 Public API follows Microsoft’s Sqlite naming pattern (`UseLibSql`,
 `AddEntityFrameworkLibSql`, …). Connection modes (local file, remote `sqld` /

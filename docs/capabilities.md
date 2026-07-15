@@ -26,5 +26,5 @@ Do not assume identical compatibility. Document intentional differences in
 driver notes live in [driver-contract.md](driver-contract.md).
 
 Server-version gated EF SQLite features (e.g. `RETURNING`, certain JSON
-functions) must be re-expressed via an explicit capability service once Nelknet
-connection adaptation lands — not via `Microsoft.Data.Sqlite.SqliteConnection.ServerVersion`.
+functions) are gated via `LibSqlDatabaseCapabilities` — not via
+`Microsoft.Data.Sqlite.SqliteConnection.ServerVersion`.

@@ -76,7 +76,6 @@ public sealed class LocalTypeMappingRoundTripTests
         context.JsonRows.Add(
             new JsonRow
             {
-                Id = 1,
                 Payload = new JsonPayload { Label = "alpha", Count = 3 },
                 Numbers = [1, 2, 3]
             });
@@ -84,6 +83,7 @@ public sealed class LocalTypeMappingRoundTripTests
         context.ChangeTracker.Clear();
 
         var loaded = await context.JsonRows.SingleAsync(TestContext.Current.CancellationToken);
+        Assert.True(loaded.Id > 0);
         Assert.Equal("alpha", loaded.Payload.Label);
         Assert.Equal(3, loaded.Payload.Count);
         Assert.Equal([1, 2, 3], loaded.Numbers);

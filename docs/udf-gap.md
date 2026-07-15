@@ -6,7 +6,7 @@ expose `sqlite3_create_function` / aggregates / collation (see
 [limitations.md](limitations.md)).
 
 Until Nelknet adds those APIs **or** this provider rewrites translations to
-native SQL (WP-05), the provider **fails at query translation** with
+native SQL (post–WP-05; still open), the provider **fails at query translation** with
 `NotSupportedException` instead of generating SQL that would fail at execute.
 
 ## Matrix
@@ -24,7 +24,7 @@ native SQL (WP-05), the provider **fails at query translation** with
 ## Resolution paths
 
 1. **Upstream Nelknet** — restore registration in `LibSqlRelationalConnection.InitializeDbConnection` (preferred for Microsoft parity).
-2. **Rewrite translations** (WP-05) — map to `REAL`/`CAST` / `GLOB`/`LIKE` with documented precision differences; update this table to `rewritten`.
+2. **Rewrite translations** (later WP) — map to `REAL`/`CAST` / `GLOB`/`LIKE` with documented precision differences; update this table to `rewritten`.
 3. Do **not** use `load_extension` — not exposed by Nelknet.
 
 ## Waiver

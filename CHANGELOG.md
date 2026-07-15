@@ -11,8 +11,11 @@ with EF Core major/minor lines.
 ### Changed
 
 - Soft-fork [nareshjois/Nelknet.LibSQL](https://github.com/nareshjois/Nelknet.LibSQL)
-  as git submodule `external/Nelknet.LibSQL` (ProjectReference; ADR-0001). Fixes
-  `INSERT…RETURNING` / generated-key `SaveChanges` (`C-002` resolved).
+  as git submodule `external/Nelknet.LibSQL` (ProjectReference; ADR-0001) at
+  `@01a8f52`. Fixes `INSERT…RETURNING` / generated-key `SaveChanges` (`C-002`)
+  and remote HTTP Hrana error surfacing + baton-backed transactions.
+- Type-mapping round-trips use store-generated integer keys (no longer
+  `ValueGeneratedNever`).
 
 ### Added
 

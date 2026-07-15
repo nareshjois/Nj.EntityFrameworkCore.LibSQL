@@ -17,10 +17,10 @@ Branch: `wp-04-provider-core`
 ## Deferred
 
 - Design-time scaffolding native metadata (`sqlite3_table_column_metadata`).
-- Full CRUD / migrations suites (WP-05+ / WP-07).
+- Full query / compliance suites (WP-06 / WP-10); migrations (WP-08).
 - Embedded replica sync API (Preview 2+).
 - Restore or rewrite `ef_*` / `regexp` / `EF_DECIMAL` after Nelknet UDF APIs
-  or WP-05 translation changes ([udf-gap.md](udf-gap.md)).
+  or a documented translation rewrite ([udf-gap.md](udf-gap.md)).
 
 ## Verify
 
@@ -31,4 +31,5 @@ dotnet test test/Nj.EntityFrameworkCore.LibSql.FunctionalTests -c Release
 
 ## Next
 
-- WP-05 type mapping / SQL generation round-trips.
+- ~~WP-05 type mapping / SQL generation round-trips.~~ **Done** — see [wp-05-handoff.md](wp-05-handoff.md).
+- WP-06 query translation.
