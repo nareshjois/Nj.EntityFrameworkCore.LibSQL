@@ -1,4 +1,6 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Storage;
 using Xunit;
 
 namespace Nj.EntityFrameworkCore.LibSql.FunctionalTests.TypeMapping;
@@ -30,7 +32,11 @@ public sealed class RemoteTypeMappingRoundTripTests
         await context.Database.OpenConnectionAsync(TestContext.Current.CancellationToken);
         try
         {
-            await context.Database.EnsureCreatedAsync(TestContext.Current.CancellationToken);
+            // EnsureCreated only creates when the database has zero tables. A shared sqld
+            // endpoint often already has unrelated tables, so create our schema explicitly
+            // when BuiltIns is missing.
+            await EnsureTypeMappingSchemaAsync(context, TestContext.Current.CancellationToken);
+
             await context.Database.ExecuteSqlRawAsync(
                 """
                 DELETE FROM "BuiltIns";
@@ -51,6 +57,21 @@ public sealed class RemoteTypeMappingRoundTripTests
         finally
         {
             await context.Database.CloseConnectionAsync();
+        }
+    }
+
+    private static async Task EnsureTypeMappingSchemaAsync(DbContext context, CancellationToken cancellationToken)
+    {
+        var creator = context.GetService<IRelationalDatabaseCreator>();
+        await creator.EnsureCreatedAsync(cancellationToken);
+
+        await using var command = context.Database.GetDbConnection().CreateCommand();
+        command.CommandText =
+            """SELECT COUNT(*) FROM "sqlite_master" WHERE "type" = 'table' AND "name" = 'BuiltIns';""";
+        var count = Convert.ToInt64(await command.ExecuteScalarAsync(cancellationToken));
+        if (count == 0)
+        {
+            await creator.CreateTablesAsync(cancellationToken);
         }
     }
 }
