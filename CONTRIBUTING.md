@@ -39,7 +39,7 @@ See [`docs/adr/0001-soft-fork-nelknet.md`](docs/adr/0001-soft-fork-nelknet.md).
 
 ```bash
 dotnet restore Nj.EntityFrameworkCore.LibSql.slnx
-dotnet format Nj.EntityFrameworkCore.LibSql.slnx --verify-no-changes --exclude ./src/Nj.EntityFrameworkCore.LibSql/**
+dotnet format Nj.EntityFrameworkCore.LibSql.slnx --verify-no-changes --exclude ./src/Nj.EntityFrameworkCore.LibSql/** --exclude ./external/**
 dotnet build Nj.EntityFrameworkCore.LibSql.slnx -c Release
 dotnet test test/Nj.EntityFrameworkCore.LibSql.UnitTests -c Release
 dotnet test test/Nj.EntityFrameworkCore.LibSql.DriverContractTests -c Release
