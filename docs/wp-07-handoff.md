@@ -1,7 +1,7 @@
 # WP-07 handoff
 
-**Status:** first slice on `wp-07-updates-transactions` (FunctionalTests update /
-transaction matrix).
+**Status:** first slice **merged to `main`** (PR #15). Full G7 EF specification
+suites remain WP-10.
 
 ## Done
 
@@ -12,7 +12,7 @@ transaction matrix).
   committed row.
 - Store outcomes asserted after `ChangeTracker.Clear` / reopening contexts.
 - Soft-fork Nelknet `@b0a9c51` assumed for RETURNING + HTTP baton (no submodule
-  bump this slice unless a case forces it).
+  bump this slice).
 
 ## Deferred (not this slice)
 
@@ -29,4 +29,5 @@ dotnet test test/Nj.EntityFrameworkCore.LibSql.FunctionalTests -c Release --filt
 
 ## Next
 
-- WP-08 migrations / locking, and/or WP-10 compliance toward full G7.
+- **WP-08** migrations / EnsureCreated / EnsureDeleted (toward G8).
+- Deeper WP-07 coverage and/or WP-10 compliance toward full G7.

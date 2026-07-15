@@ -26,10 +26,17 @@ with EF Core major/minor lines.
 
 ### Added
 
+- WP-08 first-slice migrations FunctionalTests matrix (local + remote
+  EnsureCreated/Deleted + Migrate) and `docs/wp-08-handoff.md`.
 - WP-07 first-slice update / transaction FunctionalTests matrix (local + remote)
   and `docs/wp-07-handoff.md`.
 - WP-06 first-slice query translation FunctionalTests matrix (local + remote)
   with thin SQL capture, and `docs/wp-06-handoff.md`.
+
+### Fixed
+
+- Migration lock acquire under Nelknet: `LibSqlHistoryRepository` no longer
+  relies on multi-statement `SELECT changes()` via ExecuteScalar.
 - WP-05 type-mapping / SQL generation round-trips (local + remote), Nelknet
   temporal parameter formats, differential tests vs EF SQLite, `HasTables`
   connection open, and `docs/wp-05-handoff.md`.

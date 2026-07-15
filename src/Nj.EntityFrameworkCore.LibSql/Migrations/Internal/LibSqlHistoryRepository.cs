@@ -127,9 +127,13 @@ SELECT COUNT(*) FROM "sqlite_master" WHERE "name" = {stringTypeMapping.GenerateS
         while (true)
         {
             var dbLock = CreateMigrationDatabaseLock();
-            var insertCount = CreateInsertLockCommand(DateTimeOffset.UtcNow)
+            var timestamp = DateTimeOffset.UtcNow;
+            // Nelknet ExecuteScalar does not reliably return the last result of a
+            // multi-statement batch (INSERT …; SELECT changes()). Split the acquire.
+            CreateInsertLockCommand(timestamp).ExecuteNonQuery(CreateRelationalCommandParameters());
+            var insertCount = CreateLockOwnerCountCommand(timestamp)
                 .ExecuteScalar(CreateRelationalCommandParameters());
-            if ((long)insertCount! == 1)
+            if (Convert.ToInt64(insertCount) == 1L)
             {
                 return dbLock;
             }
@@ -165,15 +169,19 @@ SELECT COUNT(*) FROM "sqlite_master" WHERE "name" = {stringTypeMapping.GenerateS
         while (true)
         {
             var dbLock = CreateMigrationDatabaseLock();
-            var insertCount = await CreateInsertLockCommand(DateTimeOffset.UtcNow)
+            var timestamp = DateTimeOffset.UtcNow;
+            await CreateInsertLockCommand(timestamp)
+                .ExecuteNonQueryAsync(CreateRelationalCommandParameters(), cancellationToken)
+                .ConfigureAwait(false);
+            var insertCount = await CreateLockOwnerCountCommand(timestamp)
                 .ExecuteScalarAsync(CreateRelationalCommandParameters(), cancellationToken)
                 .ConfigureAwait(false);
-            if ((long)insertCount! == 1)
+            if (Convert.ToInt64(insertCount) == 1L)
             {
                 return dbLock;
             }
 
-            await Task.Delay(_retryDelay, cancellationToken).ConfigureAwait(true);
+            await Task.Delay(retryDelay, cancellationToken).ConfigureAwait(true);
             if (retryDelay < TimeSpan.FromMinutes(1))
             {
                 retryDelay = retryDelay.Add(retryDelay);
@@ -197,7 +205,16 @@ CREATE TABLE IF NOT EXISTS "{LockTableName}" (
         return Dependencies.RawSqlCommandBuilder.Build(
             $"""
 INSERT OR IGNORE INTO "{LockTableName}"("Id", "Timestamp") VALUES(1, {timestampLiteral});
-SELECT changes();
+""");
+    }
+
+    private IRelationalCommand CreateLockOwnerCountCommand(DateTimeOffset timestamp)
+    {
+        var timestampLiteral = Dependencies.TypeMappingSource.GetMapping(typeof(DateTimeOffset)).GenerateSqlLiteral(timestamp);
+
+        return Dependencies.RawSqlCommandBuilder.Build(
+            $"""
+SELECT COUNT(*) FROM "{LockTableName}" WHERE "Id" = 1 AND "Timestamp" = {timestampLiteral};
 """);
     }
 

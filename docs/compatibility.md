@@ -15,7 +15,7 @@ without adding a row below (rationale + tracked issue).
 | Nelknet.LibSQL.Data | Soft-fork submodule @ `b0a9c51` (upstream `0.2.10` + patches; see [versions.md](versions.md)) |
 | Provider version | `10.0.0-preview.1` (in-repo; `UseLibSql` available — not published to NuGet.org yet) |
 | Spec suite status | Host project present; fixtures land with compliance work (WP-10) |
-| Last completed gate | WP-07 first slice (FunctionalTests updates/transactions); full G6/G7 still WP-10 |
+| Last completed gate | WP-08 first slice (FunctionalTests EnsureCreated/Deleted + Migrate); full G6–G8 still WP-10 |
 
 ## Capability matrix (Preview 1)
 
@@ -26,7 +26,7 @@ without adding a row below (rationale + tracked issue).
 | Store-generated keys (`INSERT…RETURNING`) | Working (soft-fork) | Working (soft-fork) | Preview 2+ |
 | Full LINQ query surface | Matrix (WP-06 slice); full G6 = WP-10 | Matrix (WP-06 slice); full G6 = WP-10 | Preview 2+ |
 | Transactions / savepoints | Matrix (WP-07 slice); savepoints/stress deferred | Matrix (WP-07 slice); savepoints/stress deferred | Preview 2+ |
-| Migrations | WP-08 | WP-08 | Preview 2+ |
+| Migrations | Matrix (WP-08 slice); locking stress / full G8 deferred | Matrix (WP-08 slice); locking stress / full G8 deferred | Preview 2+ |
 | `EnsureCreated` (schema in addressable DB) | Working | Working (schema only; no remote admin) | Preview 2+ |
 | `EnsureDeleted` | Working (may delete file) | **Not supported** (throws) | **Not supported** (throws) |
 | DatabaseFacade sync API | N/A | N/A | Preview 2+ |
