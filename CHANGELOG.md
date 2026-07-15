@@ -26,6 +26,8 @@ with EF Core major/minor lines.
 
 ### Added
 
+- WP-07 first-slice update / transaction FunctionalTests matrix (local + remote)
+  and `docs/wp-07-handoff.md`.
 - WP-06 first-slice query translation FunctionalTests matrix (local + remote)
   with thin SQL capture, and `docs/wp-06-handoff.md`.
 - WP-05 type-mapping / SQL generation round-trips (local + remote), Nelknet
