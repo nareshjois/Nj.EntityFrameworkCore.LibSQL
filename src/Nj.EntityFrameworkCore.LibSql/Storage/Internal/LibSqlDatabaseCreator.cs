@@ -145,33 +145,59 @@ public class LibSqlDatabaseCreator : RelationalDatabaseCreator
                 + "Provision and tear down remote databases with Turso / sqld tooling.");
         }
 
-        string? path = null;
-
-        Dependencies.Connection.Open();
+        var connectionString = Dependencies.Connection.ConnectionString;
+        var path = LibSqlConnectionStringHelpers.TryGetLocalFilePath(connectionString);
         var dbConnection = Dependencies.Connection.DbConnection;
-        try
-        {
-            path = LibSqlConnectionStringHelpers.TryGetLocalFilePath(Dependencies.Connection.ConnectionString)
-                   ?? dbConnection.DataSource;
-        }
-        catch
-        {
-            // Ignore DataSource resolution failures.
-        }
-        finally
+
+        // Release the EF-owned connection before deleting the file (Windows locks).
+        if (dbConnection.State != ConnectionState.Closed)
         {
             Dependencies.Connection.Close();
+        }
+
+        if (string.IsNullOrEmpty(path))
+        {
+            try
+            {
+                path = dbConnection.DataSource;
+            }
+            catch
+            {
+                // Ignore DataSource resolution failures.
+            }
         }
 
         if (!string.IsNullOrEmpty(path)
             && !path.Equals(":memory:", StringComparison.OrdinalIgnoreCase)
             && File.Exists(path))
         {
-            // Mirror EF SQLite: ensure the ADO connection is closed before deleting.
-            // On Windows, native handles can briefly keep the file locked after Close.
-            if (dbConnection.State != ConnectionState.Closed)
+            // Use a dedicated Nelknet connection we fully dispose so native
+            // SafeHandles release the Windows file lock (EF Close alone is not enough).
+            using (var ownership = new LibSQLConnection(connectionString))
             {
-                dbConnection.Close();
+                ownership.Open();
+                try
+                {
+                    using (var journal = ownership.CreateCommand())
+                    {
+                        journal.CommandText = "PRAGMA journal_mode = 'delete';";
+                        journal.ExecuteNonQuery();
+                    }
+
+                    using (var checkpoint = ownership.CreateCommand())
+                    {
+                        checkpoint.CommandText = "PRAGMA wal_checkpoint(TRUNCATE);";
+                        checkpoint.ExecuteNonQuery();
+                    }
+                }
+                catch
+                {
+                    // Best-effort; retries below still apply.
+                }
+                finally
+                {
+                    ownership.Close();
+                }
             }
 
             DeleteLocalDatabaseFiles(path);
@@ -185,15 +211,15 @@ public class LibSqlDatabaseCreator : RelationalDatabaseCreator
 
     private static void DeleteLocalDatabaseFiles(string path)
     {
-        // WAL sidecars may remain after close; delete them too.
-        foreach (var candidate in new[] { path, path + "-wal", path + "-shm" })
+        // Delete WAL/SHM first so the main db is less likely to stay locked on Windows.
+        foreach (var candidate in new[] { path + "-shm", path + "-wal", path })
         {
             if (!File.Exists(candidate))
             {
                 continue;
             }
 
-            const int maxAttempts = 10;
+            const int maxAttempts = 20;
             for (var attempt = 0; attempt < maxAttempts; attempt++)
             {
                 try
@@ -203,7 +229,7 @@ public class LibSqlDatabaseCreator : RelationalDatabaseCreator
                 }
                 catch (IOException) when (attempt < maxAttempts - 1)
                 {
-                    Thread.Sleep(20 * (attempt + 1));
+                    Thread.Sleep(50 * (attempt + 1));
                 }
             }
         }
