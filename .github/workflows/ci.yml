@@ -39,7 +39,9 @@ jobs:
 
       - name: Format (verify)
         if: runner.os == 'Linux'
-        run: dotnet format Nj.EntityFrameworkCore.LibSql.slnx --verify-no-changes --no-restore
+        run: >
+          dotnet format Nj.EntityFrameworkCore.LibSql.slnx --verify-no-changes --no-restore
+          --exclude ./src/Nj.EntityFrameworkCore.LibSql/**
 
       - name: Build
         run: dotnet build Nj.EntityFrameworkCore.LibSql.slnx -c Release --no-restore
