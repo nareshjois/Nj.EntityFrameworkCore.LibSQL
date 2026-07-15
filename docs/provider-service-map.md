@@ -25,10 +25,10 @@ factory / pooled factory smoke. CRUD + migrations deepen in later WPs.
 | DI registration | `AddEntityFrameworkLibSql`, `DatabaseProvider<LibSqlOptionsExtension>` | `SQLite-compatible` | Verified DI/factory/pooled smoke in FunctionalTests |
 | Options / `UseLibSql` | `LibSqlDbContextOptionsBuilderExtensions`, `LibSqlOptionsExtension`, `LibSqlDbContextOptionsBuilder` | `Nelknet connection adapt` | Requires `LibSQLConnection`; SpatiaLite throws |
 | Conventions | `LibSqlConventionSetBuilder` and related | `SQLite-compatible` | |
-| Type mapping | `LibSqlTypeMappingSource`, JSON readers | `SQLite-compatible` | Round-trip validate vs Nelknet in WP-05 |
+| Type mapping | `LibSqlTypeMappingSource`, JSON readers | `SQLite-compatible` / `libSQL semantic` | Round-trips validated (WP-05); temporals bind as Nelknet ISO strings |
 | SQL generation helper | `LibSqlSqlGenerationHelper` | `SQLite-compatible` | |
-| Query translation | `LibSqlQuerySqlGenerator`, translators, nullability | `SQLite-compatible` / `libSQL semantic` | Version gates via `LibSqlDatabaseCapabilities` |
-| Updates | `LibSqlUpdateSqlGenerator`, modification command factories | `SQLite-compatible` / `libSQL semantic` | RETURNING via capabilities |
+| Query translation | `LibSqlQuerySqlGenerator`, translators, nullability | `SQLite-compatible` / `libSQL semantic` | Version gates via `LibSqlDatabaseCapabilities`; UDF fail-fast |
+| Updates | `LibSqlUpdateSqlGenerator`, modification command factories | `SQLite-compatible` / `libSQL semantic` | RETURNING broken with Nelknet under EF — `C-002` / WP-07 |
 | Transactions | inherits Relational | `Nelknet connection adapt` | Enforce affinity per WP-02 findings |
 | Migrations | `LibSqlMigrationsSqlGenerator`, history repository | `SQLite-compatible` | |
 | Database creation | `LibSqlDatabaseCreator` | `Nelknet connection adapt` / `libSQL semantic` | Remote delete unsupported |

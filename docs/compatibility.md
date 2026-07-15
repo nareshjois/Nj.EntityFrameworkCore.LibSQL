@@ -35,6 +35,7 @@ No permanent exclusions yet.
 | ID | Area | Test / feature | Reason | Issue | Owner |
 |----|------|----------------|--------|-------|-------|
 | C-001 | Query / UDFs | `ef_*` decimal helpers, `EF_DECIMAL`, `regexp` | Nelknet lacks CreateFunction/CreateAggregate/CreateCollation; fail at translation per [udf-gap.md](udf-gap.md) | TBD | — |
+| C-002 | Updates / keys | `INSERT…RETURNING` / store-generated ints under `SaveChanges` | Nelknet leaves SQL statements in progress; generated values appear assigned but do not persist. WP-05 round-trips use `ValueGeneratedNever`. Fix in WP-07. | TBD | — |
 
 ## How to add a waiver
 

@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+    <RootNamespace>Nj.EntityFrameworkCore.LibSql.TypeMappingDifferentialTests</RootNamespace>
+    <!-- Transitive Microsoft.Data.Sqlite native bundle advisory; differential-only surface. -->
+    <NoWarn>$(NoWarn);NU1903</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="xunit.v3" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+    <PackageReference Include="coverlet.collector" />
+    <!-- Differential-only reference; the provider package must never depend on this. -->
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Nj.EntityFrameworkCore.LibSql\Nj.EntityFrameworkCore.LibSql.csproj" />
+  </ItemGroup>
+</Project>

@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System.Data;
+using System.Globalization;
 using Microsoft.EntityFrameworkCore.Storage.Json;
 
 namespace Nj.EntityFrameworkCore.LibSql.Storage.Internal;
@@ -66,5 +67,17 @@ public class LibSqlTimeOnlyTypeMapping : TimeOnlyTypeMapping
         return timeOnly.Ticks % TimeSpan.TicksPerSecond == 0
             ? FormattableString.Invariant($@"'{value:HH\:mm\:ss}'")
             : FormattableString.Invariant($@"'{value:HH\:mm\:ss\.fffffff}'");
+    }
+
+    /// <inheritdoc />
+    protected override void ConfigureParameter(DbParameter parameter)
+    {
+        if (parameter.Value is TimeOnly timeOnly)
+        {
+            parameter.Value = timeOnly.ToString("HH:mm:ss.fff", CultureInfo.InvariantCulture);
+            parameter.DbType = System.Data.DbType.String;
+        }
+
+        base.ConfigureParameter(parameter);
     }
 }
