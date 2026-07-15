@@ -28,7 +28,7 @@ round-trips. Full LINQ / migrations deepen in WP-06–WP-08.
 | Conventions | `LibSqlConventionSetBuilder` and related | `SQLite-compatible` | |
 | Type mapping | `LibSqlTypeMappingSource`, JSON readers | `SQLite-compatible` / `libSQL semantic` | Round-trips validated (WP-05); temporals bind as Nelknet ISO strings |
 | SQL generation helper | `LibSqlSqlGenerationHelper` | `SQLite-compatible` | |
-| Query translation | `LibSqlQuerySqlGenerator`, translators, nullability | `SQLite-compatible` / `libSQL semantic` | Version gates via `LibSqlDatabaseCapabilities`; UDF fail-fast |
+| Query translation | `LibSqlQuerySqlGenerator`, translators, nullability | `SQLite-compatible` / `libSQL semantic` | Version gates via `LibSqlDatabaseCapabilities`; UDF fail-fast; WP-06 FunctionalTests matrix |
 | Updates | `LibSqlUpdateSqlGenerator`, modification command factories | `SQLite-compatible` / `libSQL semantic` | RETURNING + HTTP streams via soft-fork Nelknet (`C-002` resolved; ADR-0001) |
 | Transactions | inherits Relational | `Nelknet connection adapt` | Soft-fork HTTP baton; deepen in WP-07 |
 | Migrations | `LibSqlMigrationsSqlGenerator`, history repository | `SQLite-compatible` | |

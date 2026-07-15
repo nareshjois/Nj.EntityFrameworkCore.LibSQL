@@ -151,7 +151,12 @@ public class LibSqlQueryableMethodTranslatingExpressionVisitor : RelationalQuery
 
         if (orderingExpressionType == typeof(decimal))
         {
-            LibSqlUdfGaps.Throw("EF_DECIMAL");
+            // Microsoft SQLite uses COLLATE EF_DECIMAL; rewrite to REAL so TEXT-stored
+            // decimals order numerically (e.g. 9 before 10), with IEEE precision limits.
+            translation = _sqlExpressionFactory.Convert(
+                translation,
+                typeof(double),
+                _typeMappingSource.FindMapping(typeof(double)));
         }
 
         ((SelectExpression)source.QueryExpression).ApplyOrdering(new OrderingExpression(translation, ascending));
@@ -187,7 +192,10 @@ public class LibSqlQueryableMethodTranslatingExpressionVisitor : RelationalQuery
 
         if (orderingExpressionType == typeof(decimal))
         {
-            LibSqlUdfGaps.Throw("EF_DECIMAL");
+            translation = _sqlExpressionFactory.Convert(
+                translation,
+                typeof(double),
+                _typeMappingSource.FindMapping(typeof(double)));
         }
 
         ((SelectExpression)source.QueryExpression).AppendOrdering(new OrderingExpression(translation, ascending));

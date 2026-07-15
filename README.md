@@ -17,7 +17,7 @@ Community [EF Core](https://learn.microsoft.com/ef/core/) 10 provider for
 | Current local version | `10.0.0-preview.1` |
 | License | MIT |
 | EF Core | `10.0.10` |
-| Nelknet.LibSQL.Data | Soft-fork submodule ([nareshjois/Nelknet.LibSQL](https://github.com/nareshjois/Nelknet.LibSQL) `@01a8f52`; see [docs/versions.md](docs/versions.md)) |
+| Nelknet.LibSQL.Data | Soft-fork submodule ([nareshjois/Nelknet.LibSQL](https://github.com/nareshjois/Nelknet.LibSQL) `@b0a9c51`; see [docs/versions.md](docs/versions.md)) |
 
 Public API follows Microsoft’s Sqlite naming pattern (`UseLibSql`,
 `AddEntityFrameworkLibSql`, …). Connection modes (local file, remote `sqld` /

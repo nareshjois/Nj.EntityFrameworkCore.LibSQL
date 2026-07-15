@@ -93,7 +93,6 @@ public class LibSqlRelationalConnection : RelationalConnection, ILibSqlRelationa
         }
 
         // Nelknet does not support sqlite3_create_function / aggregates.
-        // Microsoft EF SQLite registers regexp + ef_* decimal helpers here;
-        // translators fail fast instead (docs/udf-gap.md).
+        // Decimal LINQ → REAL/CAST; Regex.IsMatch → native REGEXP (docs/udf-gap.md).
     }
 }

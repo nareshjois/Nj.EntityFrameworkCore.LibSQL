@@ -4,7 +4,6 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
-using Nj.EntityFrameworkCore.LibSql.Infrastructure.Internal;
 using ExpressionExtensions = Microsoft.EntityFrameworkCore.Query.ExpressionExtensions;
 
 namespace Nj.EntityFrameworkCore.LibSql.Query.Internal;
@@ -98,7 +97,6 @@ public class LibSqlSqlTranslatingExpressionVisitor : RelationalSqlTranslatingExp
 
     private static readonly IReadOnlyDictionary<Type, string> ModuloFunctions = new Dictionary<Type, string>
     {
-        { typeof(decimal), "ef_mod" },
         { typeof(double), "mod" },
         { typeof(float), "mod" }
     };
@@ -151,7 +149,10 @@ public class LibSqlSqlTranslatingExpressionVisitor : RelationalSqlTranslatingExp
             var operandType = GetProviderType(sqlUnary.Operand);
             if (operandType == typeof(decimal))
             {
-                LibSqlUdfGaps.Throw("ef_negate");
+                // Nelknet has no ef_negate UDF; use REAL arithmetic (IEEE precision, not decimal).
+                return AsDecimal(
+                    _sqlExpressionFactory.Negate(AsReal(sqlUnary.Operand)),
+                    sqlUnary.TypeMapping);
             }
 
             if (operandType == typeof(TimeOnly)
@@ -219,14 +220,18 @@ public class LibSqlSqlTranslatingExpressionVisitor : RelationalSqlTranslatingExp
             }
 
             if (sqlBinary.OperatorType == ExpressionType.Modulo
+                && (GetProviderType(sqlBinary.Left) == typeof(decimal)
+                    || GetProviderType(sqlBinary.Right) == typeof(decimal)))
+            {
+                return AsDecimal(
+                    _sqlExpressionFactory.Modulo(AsReal(sqlBinary.Left), AsReal(sqlBinary.Right)),
+                    visitedExpression.TypeMapping);
+            }
+
+            if (sqlBinary.OperatorType == ExpressionType.Modulo
                 && (ModuloFunctions.TryGetValue(GetProviderType(sqlBinary.Left), out var function)
                     || ModuloFunctions.TryGetValue(GetProviderType(sqlBinary.Right), out function)))
             {
-                if (function.StartsWith("ef_", StringComparison.Ordinal))
-                {
-                    LibSqlUdfGaps.Throw(function);
-                }
-
                 return Dependencies.SqlExpressionFactory.Function(
                     function,
                     [sqlBinary.Left, sqlBinary.Right],
@@ -539,8 +544,18 @@ public class LibSqlSqlTranslatingExpressionVisitor : RelationalSqlTranslatingExp
 
     private Expression DoDecimalCompare(SqlExpression visitedExpression, ExpressionType op, SqlExpression left, SqlExpression right)
     {
-        LibSqlUdfGaps.Throw("ef_compare");
-        return visitedExpression;
+        // Microsoft SQLite uses ef_compare + EF_DECIMAL; rewrite to REAL comparisons.
+        var leftReal = AsReal(left);
+        var rightReal = AsReal(right);
+
+        return op switch
+        {
+            ExpressionType.GreaterThan => _sqlExpressionFactory.GreaterThan(leftReal, rightReal),
+            ExpressionType.GreaterThanOrEqual => _sqlExpressionFactory.GreaterThanOrEqual(leftReal, rightReal),
+            ExpressionType.LessThan => _sqlExpressionFactory.LessThan(leftReal, rightReal),
+            ExpressionType.LessThanOrEqual => _sqlExpressionFactory.LessThanOrEqual(leftReal, rightReal),
+            _ => visitedExpression
+        };
     }
 
     private static bool AttemptDecimalArithmetic(SqlBinaryExpression sqlBinary)
@@ -550,15 +565,28 @@ public class LibSqlSqlTranslatingExpressionVisitor : RelationalSqlTranslatingExp
 
     private Expression DoDecimalArithmetics(SqlExpression visitedExpression, ExpressionType op, SqlExpression left, SqlExpression right)
     {
-        LibSqlUdfGaps.Throw(
-            op switch
-            {
-                ExpressionType.Add => "ef_add",
-                ExpressionType.Divide => "ef_divide",
-                ExpressionType.Multiply => "ef_multiply",
-                ExpressionType.Subtract => "ef_add",
-                _ => "ef_*"
-            });
-        return visitedExpression;
+        // Microsoft SQLite uses ef_add/ef_multiply/ef_divide; rewrite to REAL ops + CAST back.
+        var leftReal = AsReal(left);
+        var rightReal = AsReal(right);
+
+        SqlExpression realResult = op switch
+        {
+            ExpressionType.Add => _sqlExpressionFactory.Add(leftReal, rightReal),
+            ExpressionType.Subtract => _sqlExpressionFactory.Subtract(leftReal, rightReal),
+            ExpressionType.Multiply => _sqlExpressionFactory.Multiply(leftReal, rightReal),
+            ExpressionType.Divide => _sqlExpressionFactory.Divide(leftReal, rightReal),
+            _ => visitedExpression
+        };
+
+        return AsDecimal(realResult, visitedExpression.TypeMapping);
     }
+
+    private SqlExpression AsReal(SqlExpression expression)
+        => _sqlExpressionFactory.Convert(
+            expression,
+            typeof(double),
+            Dependencies.TypeMappingSource.FindMapping(typeof(double)));
+
+    private SqlExpression AsDecimal(SqlExpression expression, RelationalTypeMapping? typeMapping)
+        => _sqlExpressionFactory.Convert(expression, typeof(decimal), typeMapping);
 }

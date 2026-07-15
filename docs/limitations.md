@@ -24,10 +24,10 @@ Do not claim support for SQLite C APIs that Nelknet intentionally does not
 expose, including:
 
 - Custom native SQL functions (`sqlite3_create_function` / aggregates) — Nelknet
-  does not expose them; EF SQLite's `regexp` / `ef_*` decimal helpers and
-  `EF_DECIMAL` collation therefore fail at **query translation** (see
-  [udf-gap.md](udf-gap.md)) until Nelknet support or a documented translation
-  rewrite lands
+  does not expose ADO.NET CreateFunction. Decimal LINQ is rewritten to
+  REAL/`CAST` (not exact `decimal` precision). `Regex.IsMatch` uses libSQL’s
+  native `REGEXP` (PCRE2), not a managed EF SQLite UDF — see
+  [udf-gap.md](udf-gap.md).
 - Backup API
 - Incremental blob I/O
 - Loadable extensions (including SpatiaLite loading)
