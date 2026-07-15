@@ -48,8 +48,7 @@ public class LibSqlDatabaseCreator : RelationalDatabaseCreator
         {
             if (!LibSqlConnectionStringHelpers.IsRemote(Dependencies.Connection.ConnectionString))
             {
-                // WAL leaves sidecar files that keep the main db locked on Windows after Close.
-                // Use DELETE journal mode there so EnsureDeleted can remove the file reliably.
+                // Prefer DELETE journal on Windows so EnsureDeleted is less likely to fight WAL sidecars.
                 var journalMode = OperatingSystem.IsWindows() ? "delete" : "wal";
                 _rawSqlCommandBuilder.Build($"PRAGMA journal_mode = '{journalMode}';")
                     .ExecuteNonQuery(
@@ -153,7 +152,6 @@ public class LibSqlDatabaseCreator : RelationalDatabaseCreator
         var path = LibSqlConnectionStringHelpers.TryGetLocalFilePath(connectionString);
         var dbConnection = Dependencies.Connection.DbConnection;
 
-        // Release the EF-owned connection before deleting the file (Windows locks).
         if (dbConnection.State != ConnectionState.Closed)
         {
             Dependencies.Connection.Close();
@@ -171,41 +169,20 @@ public class LibSqlDatabaseCreator : RelationalDatabaseCreator
             }
         }
 
+        // MDS-shaped: close process-wide natives before File.Delete (C-005).
+        if (dbConnection is LibSQLConnection libSqlConnection)
+        {
+            LibSQLConnection.ClearPool(libSqlConnection);
+        }
+        else
+        {
+            LibSQLConnection.ClearAllPools();
+        }
+
         if (!string.IsNullOrEmpty(path)
             && !path.Equals(":memory:", StringComparison.OrdinalIgnoreCase)
             && File.Exists(path))
         {
-            // Prefer not reopening the EF-owned connection. A short-lived owned
-            // connection + full Dispose + GC releases native locks on Windows.
-            using (var ownership = new LibSQLConnection(connectionString))
-            {
-                ownership.Open();
-                try
-                {
-                    using (var journal = ownership.CreateCommand())
-                    {
-                        journal.CommandText = "PRAGMA journal_mode = 'delete';";
-                        journal.ExecuteNonQuery();
-                    }
-
-                    using (var checkpoint = ownership.CreateCommand())
-                    {
-                        checkpoint.CommandText = "PRAGMA wal_checkpoint(TRUNCATE);";
-                        checkpoint.ExecuteNonQuery();
-                    }
-                }
-                catch
-                {
-                    // Best-effort; retries below still apply.
-                }
-                finally
-                {
-                    ownership.Close();
-                }
-            }
-
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
             DeleteLocalDatabaseFiles(path);
         }
         else if (dbConnection.State == ConnectionState.Open)
@@ -217,7 +194,6 @@ public class LibSqlDatabaseCreator : RelationalDatabaseCreator
 
     private static void DeleteLocalDatabaseFiles(string path)
     {
-        // Delete WAL/SHM first so the main db is less likely to stay locked on Windows.
         foreach (var candidate in new[] { path + "-shm", path + "-wal", path })
         {
             if (!File.Exists(candidate))
@@ -225,7 +201,7 @@ public class LibSqlDatabaseCreator : RelationalDatabaseCreator
                 continue;
             }
 
-            const int maxAttempts = 20;
+            const int maxAttempts = 10;
             for (var attempt = 0; attempt < maxAttempts; attempt++)
             {
                 try
@@ -235,6 +211,7 @@ public class LibSqlDatabaseCreator : RelationalDatabaseCreator
                 }
                 catch (IOException) when (attempt < maxAttempts - 1)
                 {
+                    LibSQLConnection.ClearAllPools();
                     Thread.Sleep(50 * (attempt + 1));
                 }
             }

@@ -12,9 +12,11 @@ with EF Core major/minor lines.
 
 - Soft-fork [nareshjois/Nelknet.LibSQL](https://github.com/nareshjois/Nelknet.LibSQL)
   as git submodule `external/Nelknet.LibSQL` (ProjectReference; ADR-0001) at
-  `@b0a9c51`. Fixes `INSERT…RETURNING` / generated-key `SaveChanges` (`C-002`),
-  remote HTTP Hrana error surfacing + baton-backed transactions, and unprefixed
-  parameter names for EF `FromSqlInterpolated`.
+  `@c73baf3`. Fixes `INSERT…RETURNING` / generated-key `SaveChanges` (`C-002`),
+  remote HTTP Hrana error surfacing + baton-backed transactions, unprefixed
+  parameter names for EF `FromSqlInterpolated`, and Windows local
+  `EnsureDeleted` file locks (`C-005`: dispose tracked commands on Close +
+  `ClearAllPools`).
 - Type-mapping round-trips use store-generated integer keys (no longer
   `ValueGeneratedNever`).
 - Scaffolding reads COLLATE / AUTOINCREMENT from `sqlite_master` CREATE SQL
@@ -41,6 +43,8 @@ with EF Core major/minor lines.
 
 ### Fixed
 
+- **C-005:** `EnsureDeleted` local file delete on Windows — soft-fork Close
+  finalizes commands + `ClearAllPools` from `LibSqlDatabaseCreator.Delete`.
 - Scaffolding skips `CREATE VIRTUAL TABLE` (C-004); CLR type inference tolerates
   remote/sqld `typeof(max(...))` sampling failures (warn and continue; C-003).
 - Migration lock acquire under Nelknet: `LibSqlHistoryRepository` no longer

@@ -12,14 +12,6 @@ public sealed class LocalMigrationTests
     [Fact]
     public async Task EnsureDeleted_local_removes_file()
     {
-        // C-005: Nelknet/libSQL keeps the local file locked after Close on Windows,
-        // so File.Delete inside EnsureDeleted fails on GitHub windows-latest.
-        if (OperatingSystem.IsWindows())
-        {
-            Assert.Skip(
-                "C-005: local EnsureDeleted file delete is locked by Nelknet after Close on Windows.");
-        }
-
         var connectionString = MigrationTestHelpers.LocalConnectionString();
         try
         {

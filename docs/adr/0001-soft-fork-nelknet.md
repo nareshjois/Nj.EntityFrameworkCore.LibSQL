@@ -25,7 +25,7 @@ initiative (`C-001` stays fail-fast translation).
    instead of the NuGet package pin.
 4. Keep public types (`LibSQLConnection`, etc.) so `UseLibSql` stays stable.
 5. Prefer upstreaming patches to Nelknet; rebase the submodule periodically.
-   Soft-fork `main` is the consumed tip (currently `@b0a9c51`).
+   Soft-fork `main` is the consumed tip (currently `@c73baf3`).
 
 ## Patch set on soft-fork `main`
 
@@ -57,6 +57,14 @@ Fork changes in `LibSQLDataReader` / `LibSQLCommand`:
 Normalize names lacking `@`/`:`/`$`/`?` by prefixing `@` in `Validate()`, so EF
 `FromSqlInterpolated` (`p0` in the collection, `@p0` in SQL) binds like
 Microsoft.Data.Sqlite.
+
+### C-005 — Close releases local file locks (Windows EnsureDeleted)
+
+1. Track `LibSQLCommand` instances on the connection; dispose them (finalize
+   prepared statements) before `libsql_disconnect` / `libsql_close`.
+2. Expose `LibSQLConnection.ClearAllPools` / `ClearPool` so
+   `LibSqlDatabaseCreator.Delete` can mirror Microsoft.Data.Sqlite before
+   `File.Delete`.
 
 ## Consequences
 
