@@ -30,7 +30,7 @@ without adding a row below (rationale + tracked issue).
 | Reverse engineering / design-time DI | Working (WP-09 G9: factory + CLI + goldens) | Working (CLR inference may warn+skip on sqld; C-003) | Preview 2+ |
 | Virtual tables / vector types (scaffold) | **Skipped** (C-004) | **Skipped** (C-004) | Preview 2+ |
 | `EnsureCreated` (schema in addressable DB) | Working | Working (schema only; no remote admin) | Preview 2+ |
-| `EnsureDeleted` | Working (may delete file) | **Not supported** (throws) | **Not supported** (throws) |
+| `EnsureDeleted` | Working (may delete file; Windows file-lock caveat C-005) | **Not supported** (throws) | **Not supported** (throws) |
 | DatabaseFacade sync API | N/A | N/A | Preview 2+ |
 
 ## Waiver / exclusion log
@@ -43,6 +43,7 @@ No permanent exclusions yet.
 | C-002 | Updates / keys | `INSERT…RETURNING` / store-generated ints under `SaveChanges` | **Resolved (soft-fork `main` @ `b0a9c51`)** — reader drain; HTTP Hrana errors/baton; unprefixed param normalize for `FromSqlInterpolated` (ADR-0001). Stock NuGet still needs a separate upstream PR. | — | — |
 | C-003 | Scaffolding | CLR type inference via `typeof(max(...))` sampling | Remote/sqld may fail sampling with “database disk image is malformed”; factory logs warning and continues without inferred CLR types. Catalog + CREATE SQL facets still work. | — | — |
 | C-004 | Scaffolding | Virtual tables / libSQL vector types | Preview 1 does not reverse-engineer `CREATE VIRTUAL TABLE` (FTS, rtree, vector indexes, etc.) and does not ship first-class FLOAT32/vector CLR mappings. Named SpatiaLite/vector catalog tables remain denylisted. | — | — |
+| C-005 | Migrations | Local `EnsureDeleted` / `File.Delete` on Windows | Nelknet keeps the local `.db` locked after `Close` on Windows (reproduced on GitHub `windows-latest`); Linux/macOS pass. Product still checkpoints/retries delete; test skipped on Windows until soft-fork releases the handle. | — | — |
 
 ## How to add a waiver
 
