@@ -1,8 +1,7 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-using System.Text.RegularExpressions;
-using Microsoft.Data.Sqlite;
+using Nelknet.LibSQL.Data;
 using Nj.EntityFrameworkCore.LibSql.Infrastructure.Internal;
 using Nj.EntityFrameworkCore.LibSql.Internal;
 
@@ -19,7 +18,6 @@ public class LibSqlRelationalConnection : RelationalConnection, ILibSqlRelationa
     private readonly IRawSqlCommandBuilder _rawSqlCommandBuilder;
     private readonly IDiagnosticsLogger<DbLoggerCategory.Infrastructure> _logger;
     private readonly bool _loadSpatialite;
-    private readonly int? _commandTimeout;
 
     /// <summary>
     ///     This is an internal API that supports the Entity Framework Core infrastructure and not subject to
@@ -42,7 +40,6 @@ public class LibSqlRelationalConnection : RelationalConnection, ILibSqlRelationa
             _loadSpatialite = optionsExtension.LoadSpatialite;
 
             var relationalOptions = RelationalOptionsExtension.Extract(dependencies.ContextOptions);
-            _commandTimeout = relationalOptions.CommandTimeout;
 
             if (relationalOptions.Connection != null)
             {
@@ -59,7 +56,7 @@ public class LibSqlRelationalConnection : RelationalConnection, ILibSqlRelationa
     /// </summary>
     protected override DbConnection CreateDbConnection()
     {
-        var connection = new SqliteConnection(GetValidatedConnectionString());
+        var connection = new LibSQLConnection(GetValidatedConnectionString());
         InitializeDbConnection(connection);
 
         return connection;
@@ -73,12 +70,10 @@ public class LibSqlRelationalConnection : RelationalConnection, ILibSqlRelationa
     /// </summary>
     public virtual ILibSqlRelationalConnection CreateReadOnlyConnection()
     {
-        var connectionStringBuilder = new SqliteConnectionStringBuilder(GetValidatedConnectionString())
-        {
-            Mode = SqliteOpenMode.ReadOnly, Pooling = false
-        };
-
-        var contextOptions = new DbContextOptionsBuilder().UseLibSql(connectionStringBuilder.ToString()).Options;
+        // Nelknet has no dedicated read-only open mode; reuse the same connection string
+        // for Exists probes (open may fail if the local file is missing).
+        var connectionString = GetValidatedConnectionString();
+        var contextOptions = new DbContextOptionsBuilder().UseLibSql(connectionString).Options;
 
         return new LibSqlRelationalConnection(Dependencies with { ContextOptions = contextOptions }, _rawSqlCommandBuilder, _logger);
     }
@@ -90,107 +85,15 @@ public class LibSqlRelationalConnection : RelationalConnection, ILibSqlRelationa
             SpatialiteLoader.Load(connection);
         }
 
-        if (connection is SqliteConnection sqliteConnection)
+        if (connection is not LibSQLConnection)
         {
-            if (_commandTimeout.HasValue)
-            {
-                sqliteConnection.DefaultTimeout = _commandTimeout.Value;
-            }
-
-            sqliteConnection.CreateFunction<string, string, bool?>(
-                "regexp",
-                (pattern, input) =>
-                {
-                    if (input == null
-                        || pattern == null)
-                    {
-                        return null;
-                    }
-
-                    return Regex.IsMatch(input, pattern);
-                },
-                isDeterministic: true);
-
-            sqliteConnection.CreateFunction(
-                "ef_mod",
-                (decimal? dividend, decimal? divisor) => divisor == 0m ? null : dividend % divisor,
-                isDeterministic: true);
-
-            sqliteConnection.CreateFunction(
-                name: "ef_add",
-                (decimal? left, decimal? right) => left + right,
-                isDeterministic: true);
-
-            sqliteConnection.CreateFunction(
-                name: "ef_divide",
-                (decimal? dividend, decimal? divisor) => divisor == 0m ? null : dividend / divisor,
-                isDeterministic: true);
-
-            sqliteConnection.CreateFunction(
-                name: "ef_compare",
-                (decimal? left, decimal? right) => left.HasValue && right.HasValue
-                    ? decimal.Compare(left.Value, right.Value)
-                    : default(int?),
-                isDeterministic: true);
-
-            sqliteConnection.CreateFunction(
-                name: "ef_multiply",
-                (decimal? left, decimal? right) => left * right,
-                isDeterministic: true);
-
-            sqliteConnection.CreateFunction(
-                name: "ef_negate",
-                (decimal? m) => -m,
-                isDeterministic: true);
-
-            sqliteConnection.CreateAggregate(
-                "ef_avg",
-                seed: (0m, 0ul),
-                ((decimal sum, ulong count) acc, decimal? value) => value is null
-                    ? acc
-                    : (acc.sum + value.Value, acc.count + 1),
-                ((decimal sum, ulong count) acc) => acc.count == 0
-                    ? default(decimal?)
-                    : acc.sum / acc.count,
-                isDeterministic: true);
-
-            sqliteConnection.CreateAggregate(
-                "ef_max",
-                seed: null,
-                (decimal? max, decimal? value) => max is null
-                    ? value
-                    : value is null
-                        ? max
-                        : decimal.Max(max.Value, value.Value),
-                isDeterministic: true);
-
-            sqliteConnection.CreateAggregate(
-                "ef_min",
-                seed: null,
-                (decimal? min, decimal? value) => min is null
-                    ? value
-                    : value is null
-                        ? min
-                        : decimal.Min(min.Value, value.Value),
-                isDeterministic: true);
-
-            sqliteConnection.CreateAggregate(
-                "ef_sum",
-                seed: null,
-                (decimal? sum, decimal? value) => value is null
-                    ? sum
-                    : sum is null
-                        ? value
-                        : sum.Value + value.Value,
-                isDeterministic: true);
-
-            sqliteConnection.CreateCollation(
-                "EF_DECIMAL",
-                (x, y) => decimal.Compare(decimal.Parse(x), decimal.Parse(y)));
+            throw new InvalidOperationException(
+                $"The connection of type '{connection.GetType().FullName}' is not supported. "
+                + $"Expected '{typeof(LibSQLConnection).FullName}'.");
         }
-        else
-        {
-            _logger.UnexpectedConnectionTypeWarning(connection.GetType());
-        }
+
+        // Nelknet does not support sqlite3_create_function / aggregates.
+        // Microsoft EF SQLite registers regexp + ef_* decimal helpers here;
+        // translators fail fast instead (docs/udf-gap.md).
     }
 }

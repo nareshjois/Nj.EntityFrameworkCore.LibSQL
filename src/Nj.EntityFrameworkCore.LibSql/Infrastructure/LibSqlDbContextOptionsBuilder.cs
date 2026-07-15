@@ -6,7 +6,7 @@ using Nj.EntityFrameworkCore.LibSql.Infrastructure.Internal;
 namespace Microsoft.EntityFrameworkCore.Infrastructure;
 
 /// <summary>
-///     Allows SQLite specific configuration to be performed on <see cref="DbContextOptions" />.
+///     Allows LibSql-specific configuration to be performed on <see cref="DbContextOptions" />.
 /// </summary>
 /// <remarks>
 ///     <para>
@@ -16,8 +16,7 @@ namespace Microsoft.EntityFrameworkCore.Infrastructure;
 ///         and it is not designed to be directly constructed in your application code.
 ///     </para>
 ///     <para>
-///         See <see href="https://aka.ms/efcore-docs-dbcontext-options">Using DbContextOptions</see>, and
-///         <see href="https://aka.ms/efcore-docs-sqlite">Accessing SQLite databases with EF Core</see> for more information and examples.
+///         See <see href="https://aka.ms/efcore-docs-dbcontext-options">Using DbContextOptions</see> for more information and examples.
 ///     </para>
 /// </remarks>
 public class LibSqlDbContextOptionsBuilder : RelationalDbContextOptionsBuilder<LibSqlDbContextOptionsBuilder, LibSqlOptionsExtension>
@@ -30,4 +29,16 @@ public class LibSqlDbContextOptionsBuilder : RelationalDbContextOptionsBuilder<L
         : base(optionsBuilder)
     {
     }
+
+    /// <summary>
+    ///     SpatiaLite is not supported. Always throws <see cref="NotSupportedException" />.
+    /// </summary>
+    /// <remarks>
+    ///     Nelknet.LibSQL.Data does not expose loadable extensions. See docs/limitations.md.
+    /// </remarks>
+    /// <returns>Never returns.</returns>
+    public virtual LibSqlDbContextOptionsBuilder UseSpatialite()
+        => throw new NotSupportedException(
+            "SpatiaLite / loadable SQLite extensions are not supported by Nj.EntityFrameworkCore.LibSql. "
+            + "Nelknet.LibSQL.Data does not expose sqlite3_load_extension; see docs/limitations.md.");
 }

@@ -15,6 +15,6 @@ public sealed class LibSqlProviderInfoTests
     {
         var status = LibSqlProviderInfo.GetScaffoldStatus();
         Assert.Contains(LibSqlProviderInfo.PackageId, status, StringComparison.Ordinal);
-        Assert.Contains("WP-01", status, StringComparison.Ordinal);
+        Assert.Contains("UseLibSql", status, StringComparison.Ordinal);
     }
 }

@@ -62,8 +62,6 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" PrivateAssets="all" />
-    <!-- Temporary through WP-04; prefer Core (no native e_sqlite3 bundle). -->
-    <PackageReference Include="Microsoft.Data.Sqlite.Core" />
     <PackageReference Include="Microsoft.Extensions.DependencyModel" />
     <PackageReference Include="Nelknet.LibSQL.Data" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="All" />

@@ -3,6 +3,7 @@
 
 using System.Text.RegularExpressions;
 using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
+using Nj.EntityFrameworkCore.LibSql.Infrastructure.Internal;
 
 // ReSharper disable once CheckNamespace
 namespace Nj.EntityFrameworkCore.LibSql.Query.Internal;
@@ -18,8 +19,6 @@ public class LibSqlRegexMethodTranslator : IMethodCallTranslator
     private static readonly MethodInfo RegexIsMatchMethodInfo
         = typeof(Regex).GetRuntimeMethod(nameof(Regex.IsMatch), [typeof(string), typeof(string)])!;
 
-    private readonly LibSqlSqlExpressionFactory _sqlExpressionFactory;
-
     /// <summary>
     ///     This is an internal API that supports the Entity Framework Core infrastructure and not subject to
     ///     the same compatibility standards as public APIs. It may be changed or removed without notice in
@@ -27,7 +26,7 @@ public class LibSqlRegexMethodTranslator : IMethodCallTranslator
     ///     doing so can result in application failures when updating to a new Entity Framework Core release.
     /// </summary>
     public LibSqlRegexMethodTranslator(LibSqlSqlExpressionFactory sqlExpressionFactory)
-        => _sqlExpressionFactory = sqlExpressionFactory;
+        => _ = sqlExpressionFactory;
 
     /// <summary>
     ///     This is an internal API that supports the Entity Framework Core infrastructure and not subject to
@@ -43,10 +42,7 @@ public class LibSqlRegexMethodTranslator : IMethodCallTranslator
     {
         if (method.Equals(RegexIsMatchMethodInfo))
         {
-            var input = arguments[0];
-            var pattern = arguments[1];
-
-            return _sqlExpressionFactory.Regexp(input, pattern);
+            LibSqlUdfGaps.Throw("regexp");
         }
 
         return null;

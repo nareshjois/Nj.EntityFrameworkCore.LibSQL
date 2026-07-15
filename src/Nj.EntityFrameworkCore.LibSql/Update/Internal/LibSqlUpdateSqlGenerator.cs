@@ -2,7 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System.Text;
-using Microsoft.Data.Sqlite;
+using Nj.EntityFrameworkCore.LibSql.Infrastructure.Internal;
 using Nj.EntityFrameworkCore.LibSql.Internal;
 
 namespace Nj.EntityFrameworkCore.LibSql.Update.Internal;
@@ -27,7 +27,7 @@ public class LibSqlUpdateSqlGenerator : UpdateAndSelectSqlGenerator
         : base(dependencies)
     // Support for the RETURNING clause on INSERT/UPDATE/DELETE was added in LibSql 3.35.
     // Detect which version we're using, and fall back to the older INSERT/UPDATE+SELECT behavior on legacy versions.
-        => _isReturningClauseSupported = new Version(new SqliteConnection().ServerVersion) >= new Version(3, 35);
+        => _isReturningClauseSupported = LibSqlDatabaseCapabilities.SupportsReturningClause;
 
     /// <summary>
     ///     This is an internal API that supports the Entity Framework Core infrastructure and not subject to

@@ -122,6 +122,13 @@ public static class LibSqlDbContextOptionsBuilderExtensions
     {
         Check.NotNull(connection);
 
+        if (connection is not Nelknet.LibSQL.Data.LibSQLConnection)
+        {
+            throw new InvalidOperationException(
+                $"The connection of type '{connection.GetType().FullName}' is not supported by UseLibSql. "
+                + $"Expected '{typeof(Nelknet.LibSQL.Data.LibSQLConnection).FullName}'.");
+        }
+
         var extension = (LibSqlOptionsExtension)GetOrCreateExtension(optionsBuilder).WithConnection(connection, contextOwnsConnection);
         ((IDbContextOptionsBuilderInfrastructure)optionsBuilder).AddOrUpdateExtension(extension);
 

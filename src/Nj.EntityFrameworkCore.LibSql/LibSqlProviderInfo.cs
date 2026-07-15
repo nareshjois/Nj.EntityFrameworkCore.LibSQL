@@ -16,5 +16,5 @@ public static class LibSqlProviderInfo
     /// Returns a short status message for pack/install smoke tests.
     /// </summary>
     public static string GetScaffoldStatus()
-        => $"{PackageId} {typeof(LibSqlProviderInfo).Assembly.GetName().Version} — scaffold placeholder (WP-01).";
+        => $"{PackageId} {typeof(LibSqlProviderInfo).Assembly.GetName().Version} — UseLibSql provider (WP-04).";
 }

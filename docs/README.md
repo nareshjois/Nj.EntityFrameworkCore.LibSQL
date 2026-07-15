@@ -14,9 +14,11 @@
 | [testing.md](testing.md) | How to run tests and `sqld` locally |
 | [versions.md](versions.md) | Pinned EF / Nelknet / SDK / image versions |
 | [driver-contract.md](driver-contract.md) | Nelknet ADO.NET contract findings (WP-02) |
+| [udf-gap.md](udf-gap.md) | Microsoft EF SQLite UDF/collation helpers that fail at translation |
 | [wp-01-handoff.md](wp-01-handoff.md) | Scaffold handoff checklist |
 | [wp-02-handoff.md](wp-02-handoff.md) | Driver contract handoff checklist |
 | [wp-03-handoff.md](wp-03-handoff.md) | SQLite baseline import handoff checklist |
+| [wp-04-handoff.md](wp-04-handoff.md) | Provider core / UseLibSql handoff checklist |
 
 Governance at the repository root: [README](../README.md),
 [CONTRIBUTING](../CONTRIBUTING.md), [SECURITY](../SECURITY.md),

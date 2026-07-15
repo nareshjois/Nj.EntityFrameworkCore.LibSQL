@@ -13,30 +13,31 @@ Legend:
 | `deferred` | Preview 2+ or later work |
 | `unsupported` | Explicit non-goal; do not emulate |
 
-## Vertical slice (Preview 1 target)
+## Vertical slice (Preview 1 / G4)
 
-Minimum path for WP-04 exit: `UseLibSql` → model creation → `SELECT 1` → CRUD →
-migrations on **local** and **remote** modes.
+`UseLibSql` → model creation → `SELECT 1` on **local** and **remote**, plus DI /
+factory / pooled factory smoke. CRUD + migrations deepen in later WPs.
 
 ## Subsystems
 
 | Subsystem | Key types (post-rename) | Mark | Notes |
 |-----------|-------------------------|------|-------|
-| DI registration | `AddEntityFrameworkLibSql`, `DatabaseProvider<LibSqlOptionsExtension>` | `SQLite-compatible` | WP-04 verifies hashing / pooling |
-| Options / `UseLibSql` | `LibSqlDbContextOptionsBuilderExtensions`, `LibSqlOptionsExtension`, `LibSqlDbContextOptionsBuilder` | `Nelknet connection adapt` | Accept connection string or `LibSQLConnection`; reject incompatible types |
+| DI registration | `AddEntityFrameworkLibSql`, `DatabaseProvider<LibSqlOptionsExtension>` | `SQLite-compatible` | Verified DI/factory/pooled smoke in FunctionalTests |
+| Options / `UseLibSql` | `LibSqlDbContextOptionsBuilderExtensions`, `LibSqlOptionsExtension`, `LibSqlDbContextOptionsBuilder` | `Nelknet connection adapt` | Requires `LibSQLConnection`; SpatiaLite throws |
 | Conventions | `LibSqlConventionSetBuilder` and related | `SQLite-compatible` | |
 | Type mapping | `LibSqlTypeMappingSource`, JSON readers | `SQLite-compatible` | Round-trip validate vs Nelknet in WP-05 |
 | SQL generation helper | `LibSqlSqlGenerationHelper` | `SQLite-compatible` | |
-| Query translation | `LibSqlQuerySqlGenerator`, translators, nullability | `SQLite-compatible` / server-version → `libSQL semantic` | Replace `new SqliteConnection().ServerVersion` checks with capability service |
-| Updates | `LibSqlUpdateSqlGenerator`, modification command factories | `SQLite-compatible` / RETURNING version check → `libSQL semantic` | Same as query version gates |
+| Query translation | `LibSqlQuerySqlGenerator`, translators, nullability | `SQLite-compatible` / `libSQL semantic` | Version gates via `LibSqlDatabaseCapabilities` |
+| Updates | `LibSqlUpdateSqlGenerator`, modification command factories | `SQLite-compatible` / `libSQL semantic` | RETURNING via capabilities |
 | Transactions | inherits Relational | `Nelknet connection adapt` | Enforce affinity per WP-02 findings |
 | Migrations | `LibSqlMigrationsSqlGenerator`, history repository | `SQLite-compatible` | |
-| Database creation | `LibSqlDatabaseCreator` | `Nelknet connection adapt` / `libSQL semantic` | Remote `EnsureDeleted` unsupported — see [capabilities.md](capabilities.md) |
-| Relational connection | `LibSqlRelationalConnection`, `ILibSqlRelationalConnection` | `Nelknet connection adapt` | First-touch |
-| Scaffolding / model factory | `LibSqlDatabaseModelFactory`, `LibSqlCodeGenerator` | `Nelknet connection adapt` | Uses `SqliteConnection` / P/Invoke today |
+| Database creation | `LibSqlDatabaseCreator` | `Nelknet connection adapt` / `libSQL semantic` | Remote delete unsupported |
+| Relational connection | `LibSqlRelationalConnection`, `ILibSqlRelationalConnection` | `Nelknet connection adapt` | Done (WP-04) |
+| Scaffolding / model factory | `LibSqlDatabaseModelFactory`, `LibSqlCodeGenerator` | `Nelknet connection adapt` | Compiles on LibSQLConnection; native metadata deferred |
 | Design-time | `LibSqlDesignTimeServices` | `Nelknet connection adapt` | |
 | Diagnostics | `LibSqlEventId`, logging definitions | `SQLite-compatible` | |
-| SpatiaLite | `SpatialiteLoader` | `unsupported` | Loadable extensions out of scope ([limitations.md](limitations.md)) |
+| SpatiaLite | `SpatialiteLoader`, `UseSpatialite` | `unsupported` | Hard-fail; Nelknet has no load_extension |
+| Query / updates version gates | `LibSqlDatabaseCapabilities` | `libSQL semantic` | Static 3.45.1 capability stub (WP-04) |
 | Embedded replica | — | `deferred` | Preview 2+ |
 | Shared utilities | `src/.../Shared/*` | `SQLite-compatible` | Copied from `dotnet/efcore` Shared (internal helpers) |
 

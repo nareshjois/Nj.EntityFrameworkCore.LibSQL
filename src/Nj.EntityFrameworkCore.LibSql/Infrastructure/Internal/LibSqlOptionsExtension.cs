@@ -73,6 +73,13 @@ public class LibSqlOptionsExtension : RelationalOptionsExtension
     /// </summary>
     public virtual LibSqlOptionsExtension WithLoadSpatialite(bool loadSpatialite)
     {
+        if (loadSpatialite)
+        {
+            throw new NotSupportedException(
+                "SpatiaLite / loadable SQLite extensions are not supported by Nj.EntityFrameworkCore.LibSql. "
+                + "Nelknet.LibSQL.Data does not expose sqlite3_load_extension; see docs/limitations.md.");
+        }
+
         var clone = (LibSqlOptionsExtension)Clone();
 
         clone._loadSpatialite = loadSpatialite;

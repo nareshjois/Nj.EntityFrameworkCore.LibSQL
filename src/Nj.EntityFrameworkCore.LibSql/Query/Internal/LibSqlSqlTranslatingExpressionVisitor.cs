@@ -4,6 +4,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
+using Nj.EntityFrameworkCore.LibSql.Infrastructure.Internal;
 using ExpressionExtensions = Microsoft.EntityFrameworkCore.Query.ExpressionExtensions;
 
 namespace Nj.EntityFrameworkCore.LibSql.Query.Internal;
@@ -150,12 +151,7 @@ public class LibSqlSqlTranslatingExpressionVisitor : RelationalSqlTranslatingExp
             var operandType = GetProviderType(sqlUnary.Operand);
             if (operandType == typeof(decimal))
             {
-                return Dependencies.SqlExpressionFactory.Function(
-                    name: "ef_negate",
-                    [sqlUnary.Operand],
-                    nullable: true,
-                    [true],
-                    visitedExpression.Type);
+                LibSqlUdfGaps.Throw("ef_negate");
             }
 
             if (operandType == typeof(TimeOnly)
@@ -226,6 +222,11 @@ public class LibSqlSqlTranslatingExpressionVisitor : RelationalSqlTranslatingExp
                 && (ModuloFunctions.TryGetValue(GetProviderType(sqlBinary.Left), out var function)
                     || ModuloFunctions.TryGetValue(GetProviderType(sqlBinary.Right), out function)))
             {
+                if (function.StartsWith("ef_", StringComparison.Ordinal))
+                {
+                    LibSqlUdfGaps.Throw(function);
+                }
+
                 return Dependencies.SqlExpressionFactory.Function(
                     function,
                     [sqlBinary.Left, sqlBinary.Right],
@@ -538,22 +539,8 @@ public class LibSqlSqlTranslatingExpressionVisitor : RelationalSqlTranslatingExp
 
     private Expression DoDecimalCompare(SqlExpression visitedExpression, ExpressionType op, SqlExpression left, SqlExpression right)
     {
-        var actual = Dependencies.SqlExpressionFactory.Function(
-            name: "ef_compare",
-            [left, right],
-            nullable: true,
-            [true, true],
-            typeof(int));
-        var oracle = Dependencies.SqlExpressionFactory.Constant(value: 0);
-
-        return op switch
-        {
-            ExpressionType.GreaterThan => Dependencies.SqlExpressionFactory.GreaterThan(left: actual, right: oracle),
-            ExpressionType.GreaterThanOrEqual => Dependencies.SqlExpressionFactory.GreaterThanOrEqual(left: actual, right: oracle),
-            ExpressionType.LessThan => Dependencies.SqlExpressionFactory.LessThan(left: actual, right: oracle),
-            ExpressionType.LessThanOrEqual => Dependencies.SqlExpressionFactory.LessThanOrEqual(left: actual, right: oracle),
-            _ => visitedExpression
-        };
+        LibSqlUdfGaps.Throw("ef_compare");
+        return visitedExpression;
     }
 
     private static bool AttemptDecimalArithmetic(SqlBinaryExpression sqlBinary)
@@ -563,51 +550,15 @@ public class LibSqlSqlTranslatingExpressionVisitor : RelationalSqlTranslatingExp
 
     private Expression DoDecimalArithmetics(SqlExpression visitedExpression, ExpressionType op, SqlExpression left, SqlExpression right)
     {
-        return op switch
-        {
-            ExpressionType.Add => DecimalArithmeticExpressionFactoryMethod(ResolveFunctionNameFromExpressionType(op), left, right),
-            ExpressionType.Divide => DecimalDivisionExpressionFactoryMethod(ResolveFunctionNameFromExpressionType(op), left, right),
-            ExpressionType.Multiply => DecimalArithmeticExpressionFactoryMethod(ResolveFunctionNameFromExpressionType(op), left, right),
-            ExpressionType.Subtract => DecimalSubtractExpressionFactoryMethod(left, right),
-            _ => visitedExpression
-        };
-
-        static string ResolveFunctionNameFromExpressionType(ExpressionType expressionType)
-            => expressionType switch
+        LibSqlUdfGaps.Throw(
+            op switch
             {
                 ExpressionType.Add => "ef_add",
                 ExpressionType.Divide => "ef_divide",
                 ExpressionType.Multiply => "ef_multiply",
                 ExpressionType.Subtract => "ef_add",
-                _ => throw new InvalidOperationException()
-            };
-
-        Expression DecimalArithmeticExpressionFactoryMethod(string name, SqlExpression left, SqlExpression right)
-            => Dependencies.SqlExpressionFactory.Function(
-                name,
-                [left, right],
-                nullable: true,
-                [true, true],
-                visitedExpression.Type);
-
-        Expression DecimalDivisionExpressionFactoryMethod(string name, SqlExpression left, SqlExpression right)
-            => Dependencies.SqlExpressionFactory.Function(
-                name,
-                [left, right],
-                nullable: true,
-                [false, false],
-                visitedExpression.Type);
-
-        Expression DecimalSubtractExpressionFactoryMethod(SqlExpression left, SqlExpression right)
-        {
-            var subtrahend = Dependencies.SqlExpressionFactory.Function(
-                "ef_negate",
-                [right],
-                nullable: true,
-                [true],
-                visitedExpression.Type);
-
-            return DecimalArithmeticExpressionFactoryMethod(ResolveFunctionNameFromExpressionType(op), left, subtrahend);
-        }
+                _ => "ef_*"
+            });
+        return visitedExpression;
     }
 }

@@ -30,9 +30,5 @@ to `Sqlite` for comparison, and writes a report under `artifacts/upstream-diff/`
 Weekly CI: `.github/workflows/upstream-sqlite-watch.yml` looks for newer `v10.0.*`
 tags than the pin above.
 
-## Temporary dependency
-
-Compile currently references `Microsoft.Data.Sqlite.Core` (not
-`Microsoft.EntityFrameworkCore.Sqlite`) so the imported connection/scaffold code
-builds. Removing that package and wiring Nelknet is the first WP-04 item — see
-[provider-service-map.md](provider-service-map.md).
+Temporary `Microsoft.Data.Sqlite.Core` dependency was removed in WP-04
+(`UseLibSql` / Nelknet connection adaptation).
