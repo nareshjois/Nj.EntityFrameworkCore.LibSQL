@@ -15,8 +15,9 @@ Legend:
 
 ## Vertical slice (Preview 1 / G4)
 
-`UseLibSql` → model creation → `SELECT 1` on **local** and **remote**, plus DI /
-factory / pooled factory smoke. CRUD + migrations deepen in later WPs.
+`UseLibSql` → model creation → `SELECT 1` on **local** and **remote**, DI /
+factory / pooled factory smoke, plus WP-05 type-mapping and store-generated-key
+round-trips. Full LINQ / migrations deepen in WP-06–WP-08.
 
 ## Subsystems
 
@@ -28,12 +29,12 @@ factory / pooled factory smoke. CRUD + migrations deepen in later WPs.
 | Type mapping | `LibSqlTypeMappingSource`, JSON readers | `SQLite-compatible` / `libSQL semantic` | Round-trips validated (WP-05); temporals bind as Nelknet ISO strings |
 | SQL generation helper | `LibSqlSqlGenerationHelper` | `SQLite-compatible` | |
 | Query translation | `LibSqlQuerySqlGenerator`, translators, nullability | `SQLite-compatible` / `libSQL semantic` | Version gates via `LibSqlDatabaseCapabilities`; UDF fail-fast |
-| Updates | `LibSqlUpdateSqlGenerator`, modification command factories | `SQLite-compatible` / `libSQL semantic` | RETURNING fixed via soft-fork Nelknet (was `C-002`; ADR-0001) |
-| Transactions | inherits Relational | `Nelknet connection adapt` | Enforce affinity per WP-02 findings |
+| Updates | `LibSqlUpdateSqlGenerator`, modification command factories | `SQLite-compatible` / `libSQL semantic` | RETURNING + HTTP streams via soft-fork Nelknet (`C-002` resolved; ADR-0001) |
+| Transactions | inherits Relational | `Nelknet connection adapt` | Soft-fork HTTP baton; deepen in WP-07 |
 | Migrations | `LibSqlMigrationsSqlGenerator`, history repository | `SQLite-compatible` | |
 | Database creation | `LibSqlDatabaseCreator` | `Nelknet connection adapt` / `libSQL semantic` | Remote delete unsupported |
 | Relational connection | `LibSqlRelationalConnection`, `ILibSqlRelationalConnection` | `Nelknet connection adapt` | Done (WP-04) |
-| Scaffolding / model factory | `LibSqlDatabaseModelFactory`, `LibSqlCodeGenerator` | `Nelknet connection adapt` | Compiles on LibSQLConnection; native metadata deferred |
+| Scaffolding / model factory | `LibSqlDatabaseModelFactory`, `LibSqlCodeGenerator` | `Nelknet connection adapt` | COLLATE / AUTOINCREMENT from `sqlite_master` SQL (no `sqlite3_table_column_metadata`) |
 | Design-time | `LibSqlDesignTimeServices` | `Nelknet connection adapt` | |
 | Diagnostics | `LibSqlEventId`, logging definitions | `SQLite-compatible` | |
 | SpatiaLite | `SpatialiteLoader`, `UseSpatialite` | `unsupported` | Hard-fail; Nelknet has no load_extension |

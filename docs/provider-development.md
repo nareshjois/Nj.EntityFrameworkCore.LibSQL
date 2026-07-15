@@ -30,10 +30,11 @@ native features, exception mapping, connection-mode options).
 | Phase | Focus |
 |-------|--------|
 | WP-01 | Repository / build scaffold (complete) |
-| WP-02 | Nelknet ADO.NET contract tests (no EF) |
-| WP-03 | Import EF Core 10 SQLite baseline; mechanical rename; customization map |
-| WP-04 | `UseLibSql` / DI / options / relational connection |
-| WP-05+ | Type mapping, queries, updates, transactions, migrations, design-time |
+| WP-02 | Nelknet ADO.NET contract tests (no EF) (complete) |
+| WP-03 | Import EF Core 10 SQLite baseline; mechanical rename; customization map (complete) |
+| WP-04 | `UseLibSql` / DI / options / relational connection (complete — G4) |
+| WP-05 | Type mapping / SQL generation (complete — G5) |
+| WP-06+ | Queries, updates, transactions, migrations, design-time, compliance |
 
 ## Source-commit rules
 
