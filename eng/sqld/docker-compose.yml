@@ -1,9 +1,9 @@
 # Pinned self-hosted sqld for integration / remote driver contract tests.
-# Image digest recorded 2026-07-15 from ghcr.io/tursodatabase/libsql-server:ef758d9
+# Image digest is the multi-arch index for tag ef758d9 (amd64 + arm64).
+# Prefer Testcontainers (RemoteDriverFixture) for automated tests.
 services:
   sqld:
     image: ghcr.io/tursodatabase/libsql-server:ef758d9@sha256:817fb6c6865d048a509f5c120905629fb9b5af20ad0c526cdc68a6d8793898ad
-    platform: linux/amd64
     ports:
       - "8080:8080"
       - "5001:5001"
