@@ -32,7 +32,11 @@ internal static class MigrationCases
             {
                 await context.Database.CloseConnectionAsync();
             }
+        }
 
+        // Fresh context so any prior ADO handles are released before file delete (Windows).
+        await using (var context = new MigrationDbContext(MigrationTestHelpers.Configure(connectionString).Options))
+        {
             await context.Database.EnsureDeletedAsync(ct);
         }
 

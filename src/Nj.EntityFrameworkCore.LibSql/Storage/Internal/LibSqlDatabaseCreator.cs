@@ -167,12 +167,45 @@ public class LibSqlDatabaseCreator : RelationalDatabaseCreator
             && !path.Equals(":memory:", StringComparison.OrdinalIgnoreCase)
             && File.Exists(path))
         {
-            File.Delete(path);
+            // Mirror EF SQLite: ensure the ADO connection is closed before deleting.
+            // On Windows, native handles can briefly keep the file locked after Close.
+            if (dbConnection.State != ConnectionState.Closed)
+            {
+                dbConnection.Close();
+            }
+
+            DeleteLocalDatabaseFiles(path);
         }
         else if (dbConnection.State == ConnectionState.Open)
         {
             dbConnection.Close();
             dbConnection.Open();
+        }
+    }
+
+    private static void DeleteLocalDatabaseFiles(string path)
+    {
+        // WAL sidecars may remain after close; delete them too.
+        foreach (var candidate in new[] { path, path + "-wal", path + "-shm" })
+        {
+            if (!File.Exists(candidate))
+            {
+                continue;
+            }
+
+            const int maxAttempts = 10;
+            for (var attempt = 0; attempt < maxAttempts; attempt++)
+            {
+                try
+                {
+                    File.Delete(candidate);
+                    break;
+                }
+                catch (IOException) when (attempt < maxAttempts - 1)
+                {
+                    Thread.Sleep(20 * (attempt + 1));
+                }
+            }
         }
     }
 }
