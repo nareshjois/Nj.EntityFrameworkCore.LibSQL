@@ -17,10 +17,8 @@ Branch: `wp-05-type-mapping`
 
 ## Deferred
 
-- Database-generated keys / `INSERT…RETURNING` under EF SaveChanges
-  (Nelknet: reader leaves statements in progress / values do not persist).
-  Documented as `C-002`; fix in WP-07.
-- Store-default values read back via `RETURNING` (same gap).
+- Database-generated keys / `INSERT…RETURNING` under EF SaveChanges —
+  documented as `C-002`. Soft-fork follow-up: PR #9 (`soft-fork-nelknet`).
 - UDF / `ef_*` / `regexp` / `EF_DECIMAL` rewrite (keep fail-fast; `C-001`).
 - Full EF BuiltInDataTypes specification host (WP-10).
 
@@ -33,4 +31,5 @@ dotnet test test/Nj.EntityFrameworkCore.LibSql.TypeMappingDifferentialTests -c R
 
 ## Next
 
-- WP-06 query translation (or WP-07 updates if RETURNING unblocks SaveChanges for generated keys).
+- Merge this PR (#8), then soft-fork (#9).
+- WP-06 query translation.
