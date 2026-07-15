@@ -4,7 +4,6 @@
     <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
     <!-- Keep all EF packages on the identical patch. -->
     <EfCoreVersion>10.0.10</EfCoreVersion>
-    <NelknetLibSqlVersion>0.2.10</NelknetLibSqlVersion>
   </PropertyGroup>
   <ItemGroup>
     <!-- EF Core -->
@@ -14,9 +13,8 @@
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Relational.Specification.Tests" Version="$(EfCoreVersion)" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Specification.Tests" Version="$(EfCoreVersion)" />
     <PackageVersion Include="Microsoft.Extensions.DependencyModel" Version="$(EfCoreVersion)" />
-    <!-- libSQL ADO.NET -->
+    <!-- Differential tests only; provider uses soft-fork submodule. -->
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Sqlite" Version="$(EfCoreVersion)" />
-    <PackageVersion Include="Nelknet.LibSQL.Data" Version="$(NelknetLibSqlVersion)" />
     <!-- Build / packaging -->
     <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="10.0.301" />
     <!-- Public API analyzers activate with the real UseLibSql surface (WP-04). -->

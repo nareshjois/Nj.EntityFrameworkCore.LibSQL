@@ -35,7 +35,7 @@ No permanent exclusions yet.
 | ID | Area | Test / feature | Reason | Issue | Owner |
 |----|------|----------------|--------|-------|-------|
 | C-001 | Query / UDFs | `ef_*` decimal helpers, `EF_DECIMAL`, `regexp` | Nelknet lacks CreateFunction/CreateAggregate/CreateCollation; fail at translation per [udf-gap.md](udf-gap.md) | TBD | — |
-| C-002 | Updates / keys | `INSERT…RETURNING` / store-generated ints under `SaveChanges` | Nelknet leaves SQL statements in progress; generated values appear assigned but do not persist. WP-05 round-trips use `ValueGeneratedNever`. Fix in WP-07. | TBD | — |
+| C-002 | Updates / keys | `INSERT…RETURNING` / store-generated ints under `SaveChanges` | **Resolved (local/native)** via soft-fork Nelknet: drain reader to `SQLITE_DONE` on `Close` ([nelknet#99](https://github.com/nelknet/Nelknet.LibSQL/pull/99), ADR-0001). Type-mapping round-trips still use `ValueGeneratedNever` to keep remote HTTP saves independent of RETURNING. | — | — |
 
 ## How to add a waiver
 
