@@ -3,6 +3,9 @@
     <OutputType>Exe</OutputType>
     <IsPackable>false</IsPackable>
     <RootNamespace>MigrationsSample</RootNamespace>
+    <!-- EF-generated migrations use block-scoped namespaces. -->
+    <NoWarn>$(NoWarn);IDE0161</NoWarn>
+    <DefaultItemExcludes>$(DefaultItemExcludes);_g9_scaffold\**</DefaultItemExcludes>
   </PropertyGroup>
 
   <ItemGroup>

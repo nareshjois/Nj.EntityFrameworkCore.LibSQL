@@ -63,4 +63,11 @@ expose, including:
 - **Preview 2+:** embedded replicas and an EF `DatabaseFacade` sync API that
   delegates to Nelknet without inventing stronger consistency guarantees.
 
+## Scaffolding / reverse engineering
+
+- Virtual tables (`CREATE VIRTUAL TABLE` … FTS, rtree, vector indexes) are
+  **not** reverse-engineered (compatibility `C-004`).
+- libSQL vector / `FLOAT32` store types have **no** first-class CLR mapping in
+  Preview 1; treat as out of scope for scaffolding.
+
 Feature-level capability tracking lives in [compatibility.md](compatibility.md).

@@ -88,6 +88,10 @@ artifacts/
 # Cursor / local agent scratch
 .cursor/
 
+# G9 scaffold output from eng/verify-migrations-sample.sh
+samples/MigrationsSample/_g9_scaffold/
+samples/MigrationsSample/migrations-sample.db
+
 # Worktrees
 .worktrees/
 worktrees/
