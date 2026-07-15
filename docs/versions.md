@@ -6,6 +6,7 @@ Pinned at repository scaffold (2026-07-15). Update this file when bumps land.
 |-----------|---------|
 | .NET SDK (`global.json`) | `10.0.100` (`rollForward: latestFeature`) |
 | EF Core (runtime, relational, design, specification tests) | `10.0.10` |
+| EF Core SQLite source baseline (`v10.0.10`) | commit `db55508a7fbc1535bdb65b85159a8d0d36d6942a` — see [upstream-baseline.md](upstream-baseline.md) |
 | Test framework (our suites) | `xunit.v3` `3.2.2` |
 | Test framework (ComplianceTests / EF Spec packages) | `xunit` `2.9.3` |
 | `Nelknet.LibSQL.Data` | `0.2.10` (exact pin) |
