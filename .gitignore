@@ -82,6 +82,9 @@ coverage*/
 lcov.info
 *.DotSettings.user
 
+# Build outputs
+artifacts/
+
 # Cursor / local agent scratch (plans may be committed under .cursor/plans if desired)
 .cursor/*
 !.cursor/plans/

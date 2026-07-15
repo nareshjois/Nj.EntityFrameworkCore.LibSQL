@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+    <RootNamespace>Nj.EntityFrameworkCore.LibSql.PackageTests</RootNamespace>
+    <!--
+      Restores against the packed nupkg in artifacts/packages (see eng/verify-package).
+      Disable by default in solution build; enable with /p:VerifyPackedPackage=true.
+    -->
+    <VerifyPackedPackage Condition="'$(VerifyPackedPackage)' == ''">false</VerifyPackedPackage>
+    <ManagePackageVersionsCentrally Condition="'$(VerifyPackedPackage)' == 'true'">false</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(VerifyPackedPackage)' != 'true'">
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+    <ProjectReference Include="..\..\src\Nj.EntityFrameworkCore.LibSql\Nj.EntityFrameworkCore.LibSql.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(VerifyPackedPackage)' == 'true'">
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.8.1" />
+    <PackageReference Include="xunit" Version="2.9.3" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="3.1.5" />
+    <PackageReference Include="Nj.EntityFrameworkCore.LibSql" Version="10.0.0-preview.1" />
+  </ItemGroup>
+</Project>

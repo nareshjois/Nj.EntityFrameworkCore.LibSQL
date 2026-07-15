@@ -1,0 +1,7 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+    <RootNamespace>Nj.EntityFrameworkCore.LibSql.TestUtilities</RootNamespace>
+    <AssemblyName>Nj.EntityFrameworkCore.LibSql.TestUtilities</AssemblyName>
+  </PropertyGroup>
+</Project>

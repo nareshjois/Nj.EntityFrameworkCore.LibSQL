@@ -1,0 +1,31 @@
+name: package
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  pack:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-dotnet@v5
+        with:
+          global-json-file: global.json
+
+      - name: Pack
+        run: |
+          chmod +x eng/*.sh
+          ./eng/pack.sh
+
+      - name: Verify
+        run: ./eng/verify-package.sh
+
+      - uses: actions/upload-artifact@v5
+        with:
+          name: nupkgs
+          path: artifacts/packages/*
+      # Publishing to nuget.org is manual / sole-maintainer approved until automation secrets exist.

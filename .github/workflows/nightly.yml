@@ -1,0 +1,46 @@
+name: nightly
+
+on:
+  schedule:
+    - cron: "17 6 * * *"
+  workflow_dispatch:
+
+jobs:
+  nightly-matrix:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-dotnet@v5
+        with:
+          global-json-file: global.json
+
+      - uses: actions/cache@v5
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('**/Directory.Packages.props', '**/NuGet.config', '**/global.json') }}
+          restore-keys: nuget-${{ runner.os }}-
+
+      - name: Build and test
+        run: |
+          dotnet restore Nj.EntityFrameworkCore.LibSql.slnx
+          dotnet build Nj.EntityFrameworkCore.LibSql.slnx -c Release --no-restore
+          dotnet test Nj.EntityFrameworkCore.LibSql.slnx -c Release --no-build \
+            --logger "trx;LogFileName=nightly-${{ matrix.os }}.trx" \
+            --results-directory artifacts/test-results
+
+      - name: Pack + verify (Ubuntu)
+        if: runner.os == 'Linux'
+        run: |
+          chmod +x eng/*.sh
+          ./eng/verify-package.sh
+
+      - if: failure()
+        uses: actions/upload-artifact@v5
+        with:
+          name: nightly-failure-${{ matrix.os }}
+          path: artifacts/test-results

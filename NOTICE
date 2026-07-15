@@ -4,38 +4,43 @@ Copyright (c) 2026 Naresh Jois and contributors
 This community package is licensed under the MIT License (see LICENSE).
 
 ================================================================================
-Upstream attribution (placeholder — filled when EF Core SQLite source is imported)
+Upstream EF Core SQLite attribution
 ================================================================================
 
 Substantial portions of this provider will be derived from the Microsoft
-Entity Framework Core SQLite provider (`Microsoft.EntityFrameworkCore.Sqlite`),
-which is licensed under the MIT License:
+Entity Framework Core SQLite provider (`Microsoft.EntityFrameworkCore.Sqlite`
+/ `src/EFCore.Sqlite.Core` in the EF Core repository), which is licensed under
+the MIT License:
 
   Copyright (c) .NET Foundation and Contributors
   https://github.com/dotnet/efcore
 
-Before the first source-import commit (WP-03), this section will record:
+When the upstream import commit lands, this section will record:
 
-  - upstream repository URL
-  - exact tag / commit SHA
-  - published EF Core package patch
-  - imported source paths
-  - import date
+  - Upstream repository: https://github.com/dotnet/efcore
+  - Exact tag and commit SHA
+  - Published EF Core package patch (currently targeting 10.0.10 — see docs/versions.md)
+  - Imported source paths under this repository
+  - Import date
 
 Microsoft-authored baseline files retain their original copyright headers.
-Community modifications for libSQL / Nelknet.LibSQL.Data are separate commits
-and remain clearly distinguishable from the attributed baseline.
+Community modifications for libSQL / Nelknet.LibSQL.Data remain in separate
+commits so the customization delta stays reviewable.
 
 ================================================================================
 Third-party dependencies (runtime)
 ================================================================================
 
-This provider depends on public NuGet packages including (non-exhaustive):
+Pinned versions live in Directory.Packages.props (see docs/versions.md).
 
-  - Microsoft.EntityFrameworkCore / Microsoft.EntityFrameworkCore.Relational
-    Copyright (c) .NET Foundation and Contributors — MIT
-  - Nelknet.LibSQL.Data
-    Copyright (c) Nelknet contributors — see package license on NuGet
+  - Microsoft.EntityFrameworkCore
+  - Microsoft.EntityFrameworkCore.Relational
+      Copyright (c) .NET Foundation and Contributors — MIT
+      https://github.com/dotnet/efcore
 
-Exact pinned versions are recorded in Directory.Packages.props once scaffolding
-(WP-01) lands.
+  - Nelknet.LibSQL.Data (and its binding package)
+      Copyright (c) Nelknet contributors — see the package license on NuGet
+      https://www.nuget.org/packages/Nelknet.LibSQL.Data
+      https://github.com/nelknet/Nelknet.LibSQL
+
+Additional transitive packages appear in the generated nupkg dependency graph.

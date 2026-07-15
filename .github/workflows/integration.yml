@@ -1,0 +1,62 @@
+name: integration
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: integration-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  remote-sqld:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          global-json-file: global.json
+
+      - name: Cache NuGet
+        uses: actions/cache@v5
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('**/Directory.Packages.props', '**/NuGet.config', '**/global.json') }}
+          restore-keys: |
+            nuget-${{ runner.os }}-
+
+      - name: Start sqld
+        run: |
+          chmod +x eng/*.sh
+          ./eng/start-sqld.sh
+          ./eng/wait-for-sqld.sh 90
+
+      - name: Restore + test driver contract (remote env ready)
+        env:
+          LIBSQL_TEST_URL: http://127.0.0.1:8080
+        run: |
+          dotnet restore Nj.EntityFrameworkCore.LibSql.slnx
+          dotnet test test/Nj.EntityFrameworkCore.LibSql.DriverContractTests/Nj.EntityFrameworkCore.LibSql.DriverContractTests.csproj \
+            -c Release \
+            --logger "trx;LogFileName=driver-remote.trx" \
+            --results-directory artifacts/test-results
+
+      - name: Collect sqld logs
+        if: failure()
+        run: |
+          mkdir -p artifacts/sqld-logs
+          docker compose -f eng/sqld/docker-compose.yml logs > artifacts/sqld-logs/sqld.log || true
+
+      - name: Upload failure artifacts
+        if: failure()
+        uses: actions/upload-artifact@v5
+        with:
+          name: integration-failure
+          path: |
+            artifacts/test-results
+            artifacts/sqld-logs

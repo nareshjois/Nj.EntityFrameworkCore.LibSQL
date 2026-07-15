@@ -1,8 +1,12 @@
 # Nj.EntityFrameworkCore.LibSql
 
-Community [EF Core](https://learn.microsoft.com/ef/core/) 10 provider for [libSQL](https://docs.turso.tech/libsql), backed by [`Nelknet.LibSQL.Data`](https://www.nuget.org/packages/Nelknet.LibSQL.Data).
+Community [EF Core](https://learn.microsoft.com/ef/core/) 10 provider for
+[libSQL](https://docs.turso.tech/libsql), backed by
+[`Nelknet.LibSQL.Data`](https://www.nuget.org/packages/Nelknet.LibSQL.Data).
 
-> **Status:** early scaffolding. Preview packages are not published yet.
+> **Status:** early development. Repository scaffolding is in place
+> (`10.0.0-preview.1`). Public EF APIs such as `UseLibSql` are not published yet.
+> Do not use in production until a stable `10.0.x` is released.
 
 ## Package identity
 
@@ -10,28 +14,57 @@ Community [EF Core](https://learn.microsoft.com/ef/core/) 10 provider for [libSQ
 |------|--------|
 | NuGet package | `Nj.EntityFrameworkCore.LibSql` |
 | Namespace / assembly | `Nj.EntityFrameworkCore.LibSql` |
+| Current local version | `10.0.0-preview.1` |
 | License | MIT |
-| Versioning | Aligned to EF Core (`10.0.0-preview.N`, then `10.0.x`) |
+| EF Core | `10.0.10` |
+| Nelknet.LibSQL.Data | `0.2.10` |
 
-Public API follows Microsoft’s Sqlite naming pattern (`UseLibSql`, `AddEntityFrameworkLibSql`, and so on). Connection modes (local file, remote `sqld` / Turso, embedded replica) are selected via the Nelknet connection string — there are no mode-specific `Use*` helpers.
+Public API follows Microsoft’s Sqlite naming pattern (`UseLibSql`,
+`AddEntityFrameworkLibSql`, …). Connection modes (local file, remote `sqld` /
+Turso, embedded replica) are selected via the Nelknet connection string — there
+are no mode-specific `Use*` helpers.
 
-## Preview 1 modes
+## Preview modes
 
-- Local libSQL database files
-- Remote self-hosted `sqld` (and Turso when you supply a connection string)
+| Mode | Preview 1 | Notes |
+|------|-----------|--------|
+| Local libSQL file | Yes | File create/delete like EF SQLite |
+| Remote self-hosted `sqld` / Turso | Yes | Database must already exist |
+| Embedded replica | Preview 2+ | Sync API deferred |
 
-Embedded replicas are planned for Preview 2+.
+## Quick start (development)
+
+```bash
+dotnet restore Nj.EntityFrameworkCore.LibSql.slnx
+dotnet build Nj.EntityFrameworkCore.LibSql.slnx -c Release
+dotnet test test/Nj.EntityFrameworkCore.LibSql.UnitTests -c Release
+./eng/verify-package.sh
+```
+
+Remote `sqld` for integration tests:
+
+```bash
+./eng/start-sqld.sh && ./eng/wait-for-sqld.sh
+```
+
+## Documentation
+
+- [Docs index](docs/README.md)
+- [Connection modes](docs/connection-modes.md)
+- [Limitations](docs/limitations.md)
+- [Testing](docs/testing.md)
+- [Contributing](CONTRIBUTING.md)
+- [Security](SECURITY.md)
+- [Code of conduct](CODE_OF_CONDUCT.md)
 
 ## Repository
 
 - **GitHub:** [nareshjois/Nj.EntityFrameworkCore.LibSQL](https://github.com/nareshjois/Nj.EntityFrameworkCore.LibSQL)
-- **Attribution:** see [`NOTICE`](NOTICE)
-- **Security:** see [`SECURITY.md`](SECURITY.md)
-
-## Development
-
-Scaffolding and build layout land in WP-01 of the project plan. Until then this repository holds governance stubs only.
+- **Attribution:** [NOTICE](NOTICE)
+- **Changelog:** [CHANGELOG.md](CHANGELOG.md)
 
 ## License
 
-MIT — see [`LICENSE`](LICENSE). Imported EF Core SQLite provider source retains Microsoft’s MIT copyright headers; community modifications are attributed in [`NOTICE`](NOTICE).
+MIT — see [LICENSE](LICENSE). Imported EF Core SQLite provider source retains
+Microsoft’s MIT copyright headers; community modifications are attributed in
+[NOTICE](NOTICE).

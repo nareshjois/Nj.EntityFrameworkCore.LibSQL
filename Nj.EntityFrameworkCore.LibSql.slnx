@@ -1,0 +1,19 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Nj.EntityFrameworkCore.LibSql/Nj.EntityFrameworkCore.LibSql.csproj" />
+  </Folder>
+  <Folder Name="/test/">
+    <Project Path="test/TestUtilities/TestUtilities.csproj" />
+    <Project Path="test/Nj.EntityFrameworkCore.LibSql.UnitTests/Nj.EntityFrameworkCore.LibSql.UnitTests.csproj" />
+    <Project Path="test/Nj.EntityFrameworkCore.LibSql.FunctionalTests/Nj.EntityFrameworkCore.LibSql.FunctionalTests.csproj" />
+    <Project Path="test/Nj.EntityFrameworkCore.LibSql.ComplianceTests/Nj.EntityFrameworkCore.LibSql.ComplianceTests.csproj" />
+    <Project Path="test/Nj.EntityFrameworkCore.LibSql.DriverContractTests/Nj.EntityFrameworkCore.LibSql.DriverContractTests.csproj" />
+    <Project Path="test/Nj.EntityFrameworkCore.LibSql.PackageTests/Nj.EntityFrameworkCore.LibSql.PackageTests.csproj" />
+  </Folder>
+  <Folder Name="/samples/">
+    <Project Path="samples/LocalSample/LocalSample.csproj" />
+    <Project Path="samples/RemoteSample/RemoteSample.csproj" />
+    <Project Path="samples/EmbeddedReplicaSample/EmbeddedReplicaSample.csproj" />
+    <Project Path="samples/MigrationsSample/MigrationsSample.csproj" />
+  </Folder>
+</Solution>
