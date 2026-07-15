@@ -63,7 +63,7 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" PrivateAssets="all" />
     <PackageReference Include="Microsoft.Extensions.DependencyModel" />
-    <PackageReference Include="Nelknet.LibSQL.Data" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="All" />
+    <ProjectReference Include="..\..\external\Nelknet.LibSQL\src\Nelknet.LibSQL.Data\Nelknet.LibSQL.Data.csproj" />
   </ItemGroup>
 </Project>

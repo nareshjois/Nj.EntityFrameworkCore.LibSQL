@@ -8,12 +8,17 @@ with EF Core major/minor lines.
 
 ## [Unreleased]
 
+### Changed
+
+- Soft-fork [nareshjois/Nelknet.LibSQL](https://github.com/nareshjois/Nelknet.LibSQL)
+  as git submodule `external/Nelknet.LibSQL` (ProjectReference; ADR-0001). Fixes
+  `INSERT…RETURNING` / generated-key `SaveChanges` (`C-002` resolved).
+
 ### Added
 
 - WP-05 type-mapping / SQL generation round-trips (local + remote), Nelknet
   temporal parameter formats, differential tests vs EF SQLite, `HasTables`
-  connection open, and `docs/wp-05-handoff.md`. Documented `C-002` (RETURNING /
-  generated keys) for WP-07.
+  connection open, and `docs/wp-05-handoff.md`.
 - WP-04 Nelknet-backed `UseLibSql` / relational connection (local + remote
   `SELECT 1`, DI/factory/pooled factory smoke tests). Dropped temporary
   `Microsoft.Data.Sqlite.Core`. Fail-fast translation for Microsoft EF SQLite

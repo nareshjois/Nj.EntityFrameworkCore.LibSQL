@@ -1,8 +1,13 @@
 # Limitations
 
 `Nj.EntityFrameworkCore.LibSql` aims for SQLite-compatible EF Core behavior where
-libSQL and Nelknet support it. The following are **explicit non-goals** for this
-provider.
+libSQL and the soft-forked Nelknet driver support it. The following are
+**explicit non-goals** for this provider.
+
+ADO.NET comes from the git submodule `external/Nelknet.LibSQL`
+([nareshjois/Nelknet.LibSQL](https://github.com/nareshjois/Nelknet.LibSQL) soft-fork of
+upstream Nelknet). See [adr/0001-soft-fork-nelknet.md](adr/0001-soft-fork-nelknet.md).
+Extension / create_function APIs remain unsupported.
 
 ## Administration and platform
 
