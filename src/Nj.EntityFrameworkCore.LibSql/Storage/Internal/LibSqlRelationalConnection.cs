@@ -93,7 +93,7 @@ public class LibSqlRelationalConnection : RelationalConnection, ILibSqlRelationa
         }
 
         // Nelknet does not support sqlite3_create_function / aggregates.
-        // Microsoft EF SQLite registers regexp + ef_* decimal helpers here; those
-        // remain unavailable until the driver exposes an extension API.
+        // Microsoft EF SQLite registers regexp + ef_* decimal helpers here;
+        // translators fail fast instead (docs/udf-gap.md).
     }
 }

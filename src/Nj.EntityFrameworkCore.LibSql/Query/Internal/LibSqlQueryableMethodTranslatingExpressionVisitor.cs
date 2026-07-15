@@ -151,7 +151,7 @@ public class LibSqlQueryableMethodTranslatingExpressionVisitor : RelationalQuery
 
         if (orderingExpressionType == typeof(decimal))
         {
-            translation = new CollateExpression(translation, "EF_DECIMAL");
+            LibSqlUdfGaps.Throw("EF_DECIMAL");
         }
 
         ((SelectExpression)source.QueryExpression).ApplyOrdering(new OrderingExpression(translation, ascending));
@@ -187,7 +187,7 @@ public class LibSqlQueryableMethodTranslatingExpressionVisitor : RelationalQuery
 
         if (orderingExpressionType == typeof(decimal))
         {
-            translation = new CollateExpression(translation, "EF_DECIMAL");
+            LibSqlUdfGaps.Throw("EF_DECIMAL");
         }
 
         ((SelectExpression)source.QueryExpression).AppendOrdering(new OrderingExpression(translation, ascending));

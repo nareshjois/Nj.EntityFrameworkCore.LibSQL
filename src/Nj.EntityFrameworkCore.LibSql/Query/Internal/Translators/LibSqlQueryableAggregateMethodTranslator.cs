@@ -1,7 +1,5 @@
-// Licensed to the .NET Foundation under one or more agreements.
-// The .NET Foundation licenses this file to you under the MIT license.
-
 using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
+using Nj.EntityFrameworkCore.LibSql.Infrastructure.Internal;
 using Nj.EntityFrameworkCore.LibSql.Internal;
 
 // ReSharper disable once CheckNamespace
@@ -15,8 +13,6 @@ namespace Nj.EntityFrameworkCore.LibSql.Query.Internal;
 /// </summary>
 public class LibSqlQueryableAggregateMethodTranslator : IAggregateMethodCallTranslator
 {
-    private readonly ISqlExpressionFactory _sqlExpressionFactory;
-
     /// <summary>
     ///     This is an internal API that supports the Entity Framework Core infrastructure and not subject to
     ///     the same compatibility standards as public APIs. It may be changed or removed without notice in
@@ -24,7 +20,7 @@ public class LibSqlQueryableAggregateMethodTranslator : IAggregateMethodCallTran
     ///     doing so can result in application failures when updating to a new Entity Framework Core release.
     /// </summary>
     public LibSqlQueryableAggregateMethodTranslator(ISqlExpressionFactory sqlExpressionFactory)
-        => _sqlExpressionFactory = sqlExpressionFactory;
+        => _ = sqlExpressionFactory;
 
     /// <summary>
     ///     This is an internal API that supports the Entity Framework Core infrastructure and not subject to
@@ -52,14 +48,7 @@ public class LibSqlQueryableAggregateMethodTranslator : IAggregateMethodCallTran
                     var averageArgumentType = GetProviderType(averageSqlExpression);
                     if (averageArgumentType == typeof(decimal))
                     {
-                        averageSqlExpression = CombineTerms(source, averageSqlExpression);
-                        return _sqlExpressionFactory.Function(
-                            "ef_avg",
-                            [averageSqlExpression],
-                            nullable: true,
-                            argumentsPropagateNullability: Statics.FalseArrays[1],
-                            averageSqlExpression.Type,
-                            averageSqlExpression.TypeMapping);
+                        LibSqlUdfGaps.Throw("ef_avg");
                     }
 
                     break;
@@ -79,14 +68,7 @@ public class LibSqlQueryableAggregateMethodTranslator : IAggregateMethodCallTran
 
                     if (maxArgumentType == typeof(decimal))
                     {
-                        maxSqlExpression = CombineTerms(source, maxSqlExpression);
-                        return _sqlExpressionFactory.Function(
-                            "ef_max",
-                            [maxSqlExpression],
-                            nullable: true,
-                            argumentsPropagateNullability: [false],
-                            maxSqlExpression.Type,
-                            maxSqlExpression.TypeMapping);
+                        LibSqlUdfGaps.Throw("ef_max");
                     }
 
                     break;
@@ -106,14 +88,7 @@ public class LibSqlQueryableAggregateMethodTranslator : IAggregateMethodCallTran
 
                     if (minArgumentType == typeof(decimal))
                     {
-                        minSqlExpression = CombineTerms(source, minSqlExpression);
-                        return _sqlExpressionFactory.Function(
-                            "ef_min",
-                            [minSqlExpression],
-                            nullable: true,
-                            argumentsPropagateNullability: [false],
-                            minSqlExpression.Type,
-                            minSqlExpression.TypeMapping);
+                        LibSqlUdfGaps.Throw("ef_min");
                     }
 
                     break;
@@ -125,14 +100,7 @@ public class LibSqlQueryableAggregateMethodTranslator : IAggregateMethodCallTran
                     var sumArgumentType = GetProviderType(sumSqlExpression);
                     if (sumArgumentType == typeof(decimal))
                     {
-                        sumSqlExpression = CombineTerms(source, sumSqlExpression);
-                        return _sqlExpressionFactory.Function(
-                            "ef_sum",
-                            [sumSqlExpression],
-                            nullable: true,
-                            argumentsPropagateNullability: Statics.FalseArrays[1],
-                            sumSqlExpression.Type,
-                            sumSqlExpression.TypeMapping);
+                        LibSqlUdfGaps.Throw("ef_sum");
                     }
 
                     break;
@@ -146,21 +114,4 @@ public class LibSqlQueryableAggregateMethodTranslator : IAggregateMethodCallTran
         => expression.TypeMapping?.Converter?.ProviderClrType
             ?? expression.TypeMapping?.ClrType
             ?? expression.Type;
-
-    private SqlExpression CombineTerms(EnumerableExpression enumerableExpression, SqlExpression sqlExpression)
-    {
-        if (enumerableExpression.Predicate != null)
-        {
-            sqlExpression = _sqlExpressionFactory.Case(
-                new List<CaseWhenClause> { new(enumerableExpression.Predicate, sqlExpression) },
-                elseResult: null);
-        }
-
-        if (enumerableExpression.IsDistinct)
-        {
-            sqlExpression = new DistinctExpression(sqlExpression);
-        }
-
-        return sqlExpression;
-    }
 }

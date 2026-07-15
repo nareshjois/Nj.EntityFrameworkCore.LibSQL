@@ -11,13 +11,16 @@ Branch: `wp-04-provider-core`
 - Server-version gates use `LibSqlDatabaseCapabilities` (SQLite 3.45.1 baseline).
 - Functional smoke: local + remote `SELECT 1`; `AddDbContext` /
   `AddDbContextFactory` / `AddPooledDbContextFactory`.
+- UDF gap catalog (`docs/udf-gap.md`) + fail-fast translation for `ef_*` /
+  `regexp` / `EF_DECIMAL` (Nelknet has no CreateFunction).
 
 ## Deferred
 
-- Custom SQL functions / EF decimal UDF registration (Nelknet gap).
 - Design-time scaffolding native metadata (`sqlite3_table_column_metadata`).
 - Full CRUD / migrations suites (WP-05+ / WP-07).
 - Embedded replica sync API (Preview 2+).
+- Restore or rewrite `ef_*` / `regexp` / `EF_DECIMAL` after Nelknet UDF APIs
+  or WP-05 translation changes ([udf-gap.md](udf-gap.md)).
 
 ## Verify
 

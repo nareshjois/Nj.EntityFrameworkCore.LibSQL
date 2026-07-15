@@ -34,7 +34,7 @@ No permanent exclusions yet.
 
 | ID | Area | Test / feature | Reason | Issue | Owner |
 |----|------|----------------|--------|-------|-------|
-| — | — | — | — | — | — |
+| C-001 | Query / UDFs | `ef_*` decimal helpers, `EF_DECIMAL`, `regexp` | Nelknet lacks CreateFunction/CreateAggregate/CreateCollation; fail at translation per [udf-gap.md](udf-gap.md) | TBD | — |
 
 ## How to add a waiver
 
