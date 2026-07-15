@@ -26,6 +26,9 @@ with EF Core major/minor lines.
 
 ### Added
 
+- WP-09 first-slice scaffolding FunctionalTests matrix (local + remote
+  `IDatabaseModelFactory` catalog cases + design DI / `UseLibSql` codegen)
+  and `docs/wp-09-handoff.md`.
 - WP-08 first-slice migrations FunctionalTests matrix (local + remote
   EnsureCreated/Deleted + Migrate) and `docs/wp-08-handoff.md`.
 - WP-07 first-slice update / transaction FunctionalTests matrix (local + remote)
@@ -35,6 +38,8 @@ with EF Core major/minor lines.
 
 ### Fixed
 
+- Scaffolding CLR type inference: tolerate remote/sqld failures of the
+  `typeof(max(...))` sampling query (warn and continue; catalog facets intact).
 - Migration lock acquire under Nelknet: `LibSqlHistoryRepository` no longer
   relies on multi-statement `SELECT changes()` via ExecuteScalar.
 - WP-05 type-mapping / SQL generation round-trips (local + remote), Nelknet

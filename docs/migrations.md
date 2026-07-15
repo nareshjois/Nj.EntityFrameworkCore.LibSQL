@@ -2,9 +2,9 @@
 
 This provider supports the EF Core migrations **runtime** workflow
 (`Database.Migrate`, history table, migration locking) as validated by the
-WP-08 FunctionalTests matrix. Design-time (`dotnet ef migrations add` /
-`database update`) lands with WP-09; samples under `samples/MigrationsSample`
-remain stubs until then.
+WP-08 FunctionalTests matrix. Design-time services and reverse-engineering
+via `IDatabaseModelFactory` are validated by the WP-09 scaffolding matrix;
+full `dotnet ef` CLI / MigrationsSample G9 walkthrough remains deferred.
 
 ## Preview status
 
@@ -16,9 +16,11 @@ remain stubs until then.
 | `Database.Migrate` up / down | Working (FunctionalTests matrix) |
 | Migration lock table acquire/release | Working (Nelknet-safe split commands) |
 | Idempotent SQL script generation | Not supported (SQLite/libSQL limitation; throws) |
-| `dotnet ef` design-time | WP-09 |
+| Design-time DI + `IDatabaseModelFactory` | Working (WP-09 FunctionalTests matrix) |
+| `UseLibSql` scaffolding codegen | Working (`LibSqlCodeGenerator`) |
+| `dotnet ef` CLI goldens / MigrationsSample | Deferred (full G9 later) |
 
-See [wp-08-handoff.md](wp-08-handoff.md).
+See [wp-08-handoff.md](wp-08-handoff.md) and [wp-09-handoff.md](wp-09-handoff.md).
 
 ## Locked create / delete policy
 
@@ -40,5 +42,11 @@ incompatibility forces a documented delta. Any divergence must be recorded in
 ## Design-time tooling
 
 Design-time services ship in the same NuGet package
-(`Nj.EntityFrameworkCore.LibSql`). Install `dotnet-ef` matching the EF Core
-patch in [versions.md](versions.md).
+(`Nj.EntityFrameworkCore.LibSql`) via `LibSqlDesignTimeServices` (no separate
+`.Design` package). Reverse engineering is proven through the factory API
+(local + remote); install `dotnet-ef` matching the EF Core patch in
+[versions.md](versions.md) when exercising CLI flows.
+
+On remote/sqld, CLR type inference from row sampling may warn and skip
+(see `C-003` in [compatibility.md](compatibility.md)); column store types,
+AUTOINCREMENT, and collation from CREATE SQL still scaffold.
