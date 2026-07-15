@@ -145,7 +145,8 @@ public class LibSqlDatabaseCreator : RelationalDatabaseCreator
                 + "Provision and tear down remote databases with Turso / sqld tooling.");
         }
 
-        var connectionString = Dependencies.Connection.ConnectionString;
+        var connectionString = Dependencies.Connection.ConnectionString
+            ?? throw new InvalidOperationException("A connection string is required to delete a local libSQL database.");
         var path = LibSqlConnectionStringHelpers.TryGetLocalFilePath(connectionString);
         var dbConnection = Dependencies.Connection.DbConnection;
 
