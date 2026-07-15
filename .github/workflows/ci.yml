@@ -44,6 +44,7 @@ jobs:
         run: >
           dotnet format Nj.EntityFrameworkCore.LibSql.slnx --verify-no-changes --no-restore
           --exclude ./src/Nj.EntityFrameworkCore.LibSql/**
+          --exclude ./external/**
 
       - name: Build
         run: dotnet build Nj.EntityFrameworkCore.LibSql.slnx -c Release --no-restore

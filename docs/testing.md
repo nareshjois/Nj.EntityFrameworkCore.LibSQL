@@ -20,8 +20,8 @@ stays on xUnit v2 while EF `Specification.Tests` packages depend on `xunit.core`
 ```bash
 # Format (SDK built-in)
 dotnet format Nj.EntityFrameworkCore.LibSql.slnx --verify-no-changes
-# Imported EF SQLite baseline is excluded from format so upstream fidelity stays reviewable:
-#   --exclude ./src/Nj.EntityFrameworkCore.LibSql/**
+# Imported EF SQLite baseline and soft-forked Nelknet are excluded from format:
+#   --exclude ./src/Nj.EntityFrameworkCore.LibSql/** --exclude ./external/**
 
 # Build
 dotnet build Nj.EntityFrameworkCore.LibSql.slnx -c Release
