@@ -8,20 +8,31 @@ Attributed source baseline for this provider.
 | Tag | `v10.0.10` |
 | Commit | `db55508a7fbc1535bdb65b85159a8d0d36d6942a` |
 | Published EF packages | `10.0.10` |
-| Upstream path | `src/EFCore.Sqlite.Core` |
+| Upstream path | `src/EFCore.Sqlite.Core` (+ `src/Shared/*.cs` helpers compiled into the provider) |
 | Local path | `src/Nj.EntityFrameworkCore.LibSql` |
 | Import date | 2026-07-15 |
 
-## Reproduce
+## Commit hygiene
+
+1. **Import** — Microsoft namespaces/type names preserved.
+2. **Mechanical rename** — `Sqlite` → `LibSql`, namespaces → `Nj.EntityFrameworkCore.LibSql*`.
+3. **Functional LibSQL / Nelknet edits** — separate commits after G3 approval (WP-04+).
+
+## Reproduce / compare
 
 ```bash
-# Fetch the recorded tree
-git clone --depth 1 --branch v10.0.10 https://github.com/dotnet/efcore.git /tmp/efcore-v10.0.10
-# Or: git -C /tmp/efcore fetch --depth 1 origin db55508a7fbc1535bdb65b85159a8d0d36d6942a
-
-# Compare against this repo after mechanical rename
 ./eng/compare-upstream-sqlite.sh
 ```
 
-Functional LibSQL / Nelknet edits must land in separate commits after the
-mechanical rename. See [provider-service-map.md](provider-service-map.md).
+The script sparse-checkouts the recorded tag, reverse-maps local `LibSql` identifiers
+to `Sqlite` for comparison, and writes a report under `artifacts/upstream-diff/`.
+
+Weekly CI: `.github/workflows/upstream-sqlite-watch.yml` looks for newer `v10.0.*`
+tags than the pin above.
+
+## Temporary dependency
+
+Compile currently references `Microsoft.Data.Sqlite.Core` (not
+`Microsoft.EntityFrameworkCore.Sqlite`) so the imported connection/scaffold code
+builds. Removing that package and wiring Nelknet is the first WP-04 item — see
+[provider-service-map.md](provider-service-map.md).

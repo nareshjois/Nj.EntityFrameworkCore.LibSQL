@@ -48,12 +48,11 @@ native features, exception mapping, connection-mode options).
 
 ## Documents produced in WP-03
 
-- `docs/upstream-baseline.md` — EF tag/commit and imported paths
-- `docs/provider-service-map.md` — subsystem customization inventory
-- `docs/capabilities.md` — local / remote / replica capability model
+- [`upstream-baseline.md`](upstream-baseline.md) — EF tag/commit and imported paths
+- [`provider-service-map.md`](provider-service-map.md) — subsystem customization inventory
+- [`capabilities.md`](capabilities.md) — local / remote / replica capability model
 
-Until those exist, use [compatibility.md](compatibility.md) and
-[limitations.md](limitations.md).
+Compare the renamed tree to upstream with `./eng/compare-upstream-sqlite.sh`.
 
 ## Review checklist for LibSQL deltas
 
