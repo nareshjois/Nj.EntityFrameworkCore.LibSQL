@@ -1,7 +1,7 @@
 # WP-08 handoff
 
-**Status:** first slice on `wp-08-migrations` (FunctionalTests create/delete /
-Migrate matrix).
+**Status:** first slice **merged to `main`** (PR #16). Full G8 EF specification
+suites remain WP-10.
 
 ## Done
 
@@ -19,7 +19,7 @@ Migrate matrix).
 - Concurrent migrators / lock recovery after crash.
 - Full SQLite migration op matrix + unsupported ops.
 - Idempotent script generation / MigrationsSample polish.
-- Preview package N→N+1 chain; design-time `dotnet ef` (WP-09).
+- Preview package N→N+1 chain.
 - Full G8 EF specification suites (WP-10).
 
 ## Verify
@@ -30,4 +30,5 @@ dotnet test test/Nj.EntityFrameworkCore.LibSql.FunctionalTests -c Release --filt
 
 ## Next
 
-- WP-09 design-time / scaffolding, and/or WP-10 compliance toward full G8.
+- **WP-09** design-time / scaffolding (toward G9).
+- Deeper WP-08 coverage and/or WP-10 compliance toward full G8.

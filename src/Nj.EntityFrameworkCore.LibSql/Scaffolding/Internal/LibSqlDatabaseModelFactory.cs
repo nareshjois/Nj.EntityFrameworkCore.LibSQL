@@ -377,7 +377,20 @@ ORDER BY "cid"
                 });
         }
 
-        InferClrTypes(connection, table);
+        try
+        {
+            InferClrTypes(connection, table);
+        }
+        catch (Exception e)
+        {
+            // Remote libSQL/sqld may reject the typeof(max(...)) sampling query
+            // ("database disk image is malformed"). Catalog columns and CREATE SQL
+            // facets remain usable without CLR inference.
+            _logger.Logger.LogWarning(
+                e,
+                "CLR type inference failed for table '{TableName}'; continuing without inferred types.",
+                table.Name);
+        }
 
         ParseClrDefaults(table);
     }
