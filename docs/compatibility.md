@@ -12,7 +12,7 @@ without adding a row below (rationale + tracked issue).
 | Item | Value |
 |------|--------|
 | EF Core target | 10.0.10 |
-| Nelknet.LibSQL.Data | Soft-fork submodule @ `8b5a289` (upstream `0.2.11` + patches; see [versions.md](versions.md)) |
+| Nelknet.LibSQL.Data | Soft-fork submodule @ `8b5a289` (`main`; upstream `0.2.11` + patches; see [versions.md](versions.md)) |
 | Provider version | `10.0.0-preview.1` (in-repo; `UseLibSql` available — not published to NuGet.org yet) |
 | Spec suite status | **Active** — `ComplianceTests` hosts G6–G8 suites; see [wp-10-handoff](wp-10-handoff.md) |
 | Last completed gate | **WP-10** G6–G8 compliance harness + functional deferred closure |
@@ -51,7 +51,7 @@ No permanent exclusions yet.
 | C-010 | Updates | `UseSqlReturningClause(false)` + AFTER INSERT triggers | Legacy insert path may raise `DbUpdateConcurrencyException`; functional test documents edge case. | — | provider |
 | C-011 | Compliance | `GraphUpdates` 1:1 / discriminator / composite-FK edge cases | **Resolved (soft-fork)** — (1) `Read()`/`ExecuteReader` prefetch surfaces UNIQUE on inserts EF never reads; (2) constraint text → `LibSQLConstraintException`; (3) `ExecuteNonQuery` runs full SQL batches so `HasData` seeds all rows (Sqlite parity). | — | provider |
 | C-012 | Compliance | Unhosted EF relational `*TestBase` suites | Waived via `C-AUTO` rows in `docs/provider-capabilities.json` until hosted. | — | provider |
-| C-014 | Compliance | `OptimisticConcurrencyLibSqlTest` offline-lock / concurrency exception paths | Sqlite-parity skip (EF Sqlite `#2195`): ulong concurrency tokens are not enforced like Microsoft.Data.Sqlite offline-lock scenarios; `ConditionalFact` skips on resolve/delete/association concurrency tests. | — | provider |
+| C-014 | Compliance | `OptimisticConcurrencyLibSqlTest` offline-lock resolve/delete paths | Sqlite-parity skip (EF Sqlite / EF Core `#2195`): no DB `rowversion` or auto token bump, so second writers do not raise `DbUpdateConcurrencyException`. Duplicate-insert / M2M association cases run (UNIQUE via soft-fork). | — | provider |
 | C-015 | Compliance | Inheritance `Setting_foreign_key_to_a_different_type_throws` | **Resolved** — FK type-mismatch cases now raise `DbUpdateException` after soft-fork constraint surfacing (prefetch + `LibSQLConstraintException` mapping). | — | provider |
 | C-016 | Compliance | `BuiltInDataTypesRemoteLibSqlTest` (remote / sqld) | Remote-only compliance slice; excluded from local CI gate. Shared temporal/BLOB fixes apply; remaining remote deltas (HTTP 400 max-length, type coercion over Hrana) tracked in `integration.yml` with `continue-on-error`. | — | provider |
 

@@ -212,8 +212,9 @@ public abstract class OptimisticConcurrencyLibSqlTestBase<TFixture, TRowVersion>
     : OptimisticConcurrencyRelationalTestBase<TFixture, TRowVersion>(fixture)
     where TFixture : F1RelationalFixture<TRowVersion>, new()
 {
-    // C-014 / Sqlite-parity: optimistic offline lock #2195 — concurrency tokens are not enforced
-    // the same way as Microsoft.Data.Sqlite offline-lock scenarios.
+    // C-014 / Sqlite-parity: EF #2195 optimistic offline lock — no DB rowversion / auto token bump,
+    // so these paths never raise DbUpdateConcurrencyException (same skips as EF Sqlite).
+    // Duplicate-insert / M2M association cases are not skipped; soft-fork UNIQUE surfacing covers them.
     [ConditionalFact(Skip = "C-014: Optimistic Offline Lock (Sqlite #2195 parity).")]
     public override Task Simple_concurrency_exception_can_be_resolved_with_store_values()
         => Task.CompletedTask;
@@ -258,14 +259,6 @@ public abstract class OptimisticConcurrencyLibSqlTestBase<TFixture, TRowVersion>
 
     [ConditionalFact(Skip = "C-014: Optimistic Offline Lock (Sqlite #2195 parity).")]
     public override Task Two_concurrency_issues_in_one_to_one_related_entities_can_be_handled_by_dealing_with_dependent_first()
-        => Task.CompletedTask;
-
-    [ConditionalFact(Skip = "C-014: Duplicate insert / association concurrency not enforced like SQLite.")]
-    public override Task Adding_the_same_entity_twice_results_in_DbUpdateException()
-        => Task.CompletedTask;
-
-    [ConditionalFact(Skip = "C-014: Duplicate insert / association concurrency not enforced like SQLite.")]
-    public override Task Attempting_to_add_same_relationship_twice_for_many_to_many_results_in_independent_association_exception()
         => Task.CompletedTask;
 
     protected override void UseTransaction(DatabaseFacade facade, IDbContextTransaction transaction)

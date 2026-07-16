@@ -2,7 +2,7 @@
 
 **Status:** **closed on `main`** — EF specification/compliance harness,
 hosted G6–G8 suites (local + remote slice), functional deferred-gap closure,
-CI/reporting. Soft-fork pin `@8b5a289` (upstream `0.2.11` + HTTP ISO DateTime
+CI/reporting. Soft-fork pin `main` `@8b5a289` (upstream `0.2.11` + HTTP ISO DateTime
 binds). Merged via PR [#19](https://github.com/nareshjois/Nj.EntityFrameworkCore.LibSQL/pull/19);
 CI follow-up PR [#20](https://github.com/nareshjois/Nj.EntityFrameworkCore.LibSQL/pull/20).
 

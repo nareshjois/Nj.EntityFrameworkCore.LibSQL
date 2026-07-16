@@ -7,7 +7,7 @@ Source: `test/Nj.EntityFrameworkCore.LibSql.DriverContractTests`.
 
 | Item | Value |
 |------|--------|
-| Nelknet.LibSQL.Data | Soft-fork `@8b5a289` (upstream `0.2.11` + patches) |
+| Nelknet.LibSQL.Data | Soft-fork `main` `@8b5a289` (upstream `0.2.11` + patches) |
 | Bundled libSQL (bindings `LIBSQL_VERSION`) | `libsql-server-v0.24.32` (`40c272de…`) |
 | Runtime `LibSQLVersion` report | `libSQL Version: 0.2.3` / `SQLite Version: 3.45.1` |
 
