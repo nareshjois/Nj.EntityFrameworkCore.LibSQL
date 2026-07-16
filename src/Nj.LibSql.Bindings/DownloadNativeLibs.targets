@@ -1,0 +1,41 @@
+<!-- DuckDB.NET-style native download for Nj.LibSql.Bindings.
+     Invoked when BuildType=Full. Committed runtimes/** remain the default for ManagedOnly. -->
+<Project>
+  <Target Name="DownloadNativeLibs"
+          BeforeTargets="BeforeBuild"
+          Condition="'$(BuildType)' == 'Full'">
+    <PropertyGroup>
+      <_NativeObjRoot>$(MSBuildProjectDirectory)/obj/runtimes</_NativeObjRoot>
+      <_ArtifactRoot>$(LibSqlNativeArtifactRoot)</_ArtifactRoot>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <_NativeZip Include="linux-x64" Url="$(_ArtifactRoot)/libsql-linux-x64.zip" Ext="so" />
+      <_NativeZip Include="osx-arm64" Url="$(_ArtifactRoot)/libsql-osx-arm64.zip" Ext="dylib" />
+      <_NativeZip Include="win-x64" Url="$(_ArtifactRoot)/libsql-win-x64.zip" Ext="dll" />
+    </ItemGroup>
+
+    <MakeDir Directories="$(_NativeObjRoot)" />
+
+    <DownloadFile
+      SourceUrl="%(_NativeZip.Url)"
+      DestinationFolder="$(_NativeObjRoot)"
+      DestinationFileName="libsql-%(_NativeZip.Identity).zip"
+      Condition="!Exists('$(_NativeObjRoot)/libsql-%(_NativeZip.Identity).zip')"
+      ContinueOnError="WarnAndContinue" />
+
+    <Exec
+      Command="unzip -o -q &quot;$(_NativeObjRoot)/libsql-%(_NativeZip.Identity).zip&quot; -d &quot;$(_NativeObjRoot)/%(_NativeZip.Identity)&quot;"
+      Condition="Exists('$(_NativeObjRoot)/libsql-%(_NativeZip.Identity).zip') And !$([MSBuild]::IsOSPlatform('Windows'))"
+      IgnoreExitCode="true" />
+
+    <Exec
+      Command="powershell -NoProfile -Command &quot;Expand-Archive -Force -Path '$(_NativeObjRoot)/libsql-%(_NativeZip.Identity).zip' -DestinationPath '$(_NativeObjRoot)/%(_NativeZip.Identity)'&quot;"
+      Condition="Exists('$(_NativeObjRoot)/libsql-%(_NativeZip.Identity).zip') And $([MSBuild]::IsOSPlatform('Windows'))"
+      IgnoreExitCode="true" />
+
+    <Warning
+      Text="DownloadNativeLibs: if release assets are missing at $(_ArtifactRoot), committed runtimes/** are used. Publish via .github/workflows/libsql-native.yml."
+      Condition="!Exists('$(_NativeObjRoot)/linux-x64/native/libsql.so')" />
+  </Target>
+</Project>

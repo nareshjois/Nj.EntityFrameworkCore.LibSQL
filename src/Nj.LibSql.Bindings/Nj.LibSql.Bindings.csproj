@@ -1,0 +1,50 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>Nj.LibSql.Bindings</RootNamespace>
+    <AssemblyName>Nj.LibSql.Bindings</AssemblyName>
+    <Description>Native libSQL bindings for Nj.LibSql.Data (P/Invoke + RID assets).</Description>
+    <PackageId>Nj.LibSql.Bindings</PackageId>
+    <PackageTags>libSQL;LibSql;native;bindings</PackageTags>
+    <IsPackable>true</IsPackable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <!-- Committed runtimes/** (linux-x64, osx-arm64, win-x64) are always copied to output so
+         local Phase 1 builds and tests work without a native release download. Set
+         BuildType=Full to additionally run DownloadNativeLibs against a published
+         native-libsql-v* release (refreshes/overwrites obj/runtimes). -->
+    <BuildType Condition="'$(BuildType)' == ''">ManagedOnly</BuildType>
+    <LibSqlNativeVersion Condition="'$(LibSqlNativeVersion)' == ''">0.24.32</LibSqlNativeVersion>
+    <LibSqlNativeArtifactRoot Condition="'$(LibSqlNativeArtifactRoot)' == ''">https://github.com/nareshjois/Nj.EntityFrameworkCore.LibSQL/releases/download/native-libsql-v$(LibSqlNativeVersion)</LibSqlNativeArtifactRoot>
+    <RuntimeIdentifiers>linux-x64;osx-arm64;win-x64</RuntimeIdentifiers>
+    <PackageOutputPath>$(ArtifactsDir)packages/</PackageOutputPath>
+  </PropertyGroup>
+
+  <Import Project="DownloadNativeLibs.targets" />
+
+  <ItemGroup>
+    <None Include="$(RepoRoot)README.md" Pack="true" PackagePath="\" Condition="Exists('$(RepoRoot)README.md')" />
+    <InternalsVisibleTo Include="Nj.LibSql.Data" />
+    <InternalsVisibleTo Include="Nj.LibSql.DriverContractTests" />
+  </ItemGroup>
+
+  <!-- Committed native assets: always copied to output / packed, regardless of BuildType. -->
+  <ItemGroup>
+    <None Include="runtimes/**/*">
+      <Visible>false</Visible>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Pack>true</Pack>
+      <PackagePath>%(Identity)</PackagePath>
+      <Link>%(Identity)</Link>
+    </None>
+  </ItemGroup>
+
+  <!-- Full build may overlay downloaded assets under obj/runtimes. -->
+  <ItemGroup Condition="'$(BuildType)' == 'Full'">
+    <None Include="obj/runtimes/**/*" Condition="Exists('obj/runtimes')">
+      <Visible>false</Visible>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Pack>true</Pack>
+      <PackagePath>runtimes/%(RecursiveDir)%(Filename)%(Extension)</PackagePath>
+      <Link>runtimes/%(RecursiveDir)%(Filename)%(Extension)</Link>
+    </None>
+  </ItemGroup>
+</Project>

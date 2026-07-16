@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>Nj.LibSql.Data</RootNamespace>
+    <AssemblyName>Nj.LibSql.Data</AssemblyName>
+    <Description>ADO.NET provider for libSQL (local + remote Hrana). Microsoft-style LibSql* public API.</Description>
+    <PackageId>Nj.LibSql.Data</PackageId>
+    <PackageTags>libSQL;LibSql;ADO.NET;Turso;SQLite</PackageTags>
+    <IsPackable>true</IsPackable>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <PackageOutputPath>$(ArtifactsDir)packages/</PackageOutputPath>
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="$(RepoRoot)README.md" Pack="true" PackagePath="\" Condition="Exists('$(RepoRoot)README.md')" />
+    <ProjectReference Include="..\Nj.LibSql.Bindings\Nj.LibSql.Bindings.csproj" />
+    <InternalsVisibleTo Include="Nj.LibSql.DriverContractTests" />
+  </ItemGroup>
+</Project>

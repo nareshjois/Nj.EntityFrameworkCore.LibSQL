@@ -1,0 +1,259 @@
+#nullable disable warnings
+
+using System;
+using System.Net.Http;
+using System.Text;
+using System.Text.Json;
+using System.Threading;
+using System.Threading.Tasks;
+using Nj.LibSql.Data.Exceptions;
+
+namespace Nj.LibSql.Data.Http;
+
+/// <summary>
+/// HTTP client for libSQL remote connections using the Hrana protocol.
+/// </summary>
+internal sealed class LibSqlHttpClient : ILibSqlHranaSession
+{
+    private readonly HttpClient _httpClient;
+    private readonly SemaphoreSlim _pipelineLock = new(1, 1);
+    private Uri _streamBaseUri;
+    private string? _baton;
+    private bool _disposed;
+
+    public LibSqlHttpClient(string url, string? authToken)
+    {
+        if (string.IsNullOrWhiteSpace(url))
+            throw new ArgumentException("URL cannot be null or empty", nameof(url));
+
+        _streamBaseUri = ParseStreamBaseUri(NormalizeHttpUrl(url), currentBaseUri: null);
+        
+        _httpClient = new HttpClient
+        {
+            Timeout = TimeSpan.FromSeconds(30)
+        };
+        
+        // Only add authorization header if token is provided
+        if (!string.IsNullOrWhiteSpace(authToken))
+        {
+            _httpClient.DefaultRequestHeaders.Authorization = 
+                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authToken);
+        }
+        
+        _httpClient.DefaultRequestHeaders.Add("User-Agent", "Nj.LibSql.Data/1.0");
+    }
+
+    /// <summary>
+    /// Executes a batch of Hrana requests.
+    /// </summary>
+    public async Task<HranaBatchResponse> ExecuteBatchAsync(HranaBatchRequest batch, CancellationToken cancellationToken = default)
+    {
+        ObjectDisposedException.ThrowIf(_disposed, this);
+        ArgumentNullException.ThrowIfNull(batch);
+
+        await _pipelineLock.WaitAsync(cancellationToken).ConfigureAwait(false);
+        try
+        {
+            ObjectDisposedException.ThrowIf(_disposed, this);
+            batch.Baton = _baton;
+
+            var json = JsonSerializer.Serialize(batch, HranaJsonSerializerContext.Default.HranaBatchRequest);
+            using var content = new StringContent(json, Encoding.UTF8, "application/json");
+            var pipelineUri = new Uri(_streamBaseUri, "v2/pipeline");
+
+            using var response = await _httpClient.PostAsync(pipelineUri, content, cancellationToken).ConfigureAwait(false);
+            
+            if (!response.IsSuccessStatusCode)
+            {
+                var errorContent = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+                throw new LibSqlHttpException(
+                    $"HTTP {(int)response.StatusCode} {response.StatusCode}: {response.ReasonPhrase}",
+                    (int)response.StatusCode,
+                    errorContent,
+                    json);
+            }
+
+            var responseJson = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+            var result = JsonSerializer.Deserialize(responseJson, HranaJsonSerializerContext.Default.HranaBatchResponse);
+            
+            if (result == null)
+                throw new LibSqlException("Failed to deserialize response from server");
+
+            if (result.Results == null)
+                throw new LibSqlException("Server returned an invalid Hrana response");
+
+            _baton = result.Baton;
+
+            if (!string.IsNullOrWhiteSpace(result.BaseUrl))
+            {
+                _streamBaseUri = ParseStreamBaseUri(result.BaseUrl, _streamBaseUri);
+            }
+
+            // Check for errors in the batch results
+            foreach (var batchResult in result.Results)
+            {
+                if (batchResult.Type == HranaTypes.Error)
+                {
+                    throw CreateHranaException(batchResult.Error);
+                }
+
+                if (batchResult.Response?.Type == HranaTypes.Error)
+                {
+                    throw CreateHranaException(batchResult.Response.Error);
+                }
+            }
+
+            return result;
+        }
+        catch (HttpRequestException ex)
+        {
+            throw new LibSqlConnectionException("Failed to connect to remote libSQL server", ex);
+        }
+        catch (TaskCanceledException ex) when (ex.InnerException is TimeoutException)
+        {
+            throw new LibSqlException("Request timed out", ex);
+        }
+        catch (JsonException ex)
+        {
+            throw new LibSqlException("Failed to parse response from server", ex);
+        }
+        finally
+        {
+            _pipelineLock.Release();
+        }
+    }
+
+    /// <summary>
+    /// Tests the connection to the remote server.
+    /// </summary>
+    public async Task<bool> TestConnectionAsync(CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var batch = new HranaBatchRequest();
+            batch.Requests.Add(new HranaRequest
+            {
+                Type = HranaTypes.Execute,
+                Statement = new HranaStatement
+                {
+                    Sql = "SELECT 1",
+                    Args = null
+                }
+            });
+
+            var response = await ExecuteBatchAsync(batch, cancellationToken).ConfigureAwait(false);
+            return response.Results.Count > 0 && response.Results[0].Type == HranaTypes.Ok;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    /// <summary>
+    /// Normalizes HTTP(S) / <c>libsql://</c> URLs. Explicit <c>ws(s)://</c> must use WebSocket.
+    /// </summary>
+    private static string NormalizeHttpUrl(string url)
+    {
+        if (url.StartsWith("wss://", StringComparison.OrdinalIgnoreCase)
+            || url.StartsWith("ws://", StringComparison.OrdinalIgnoreCase))
+        {
+            throw new ArgumentException(
+                "ws:// and wss:// URLs must use the WebSocket Hrana transport, not HTTP.",
+                nameof(url));
+        }
+
+        return LibSqlRemoteTransport.NormalizeLibSqlToHttpUrl(url);
+    }
+
+    private static Uri ParseStreamBaseUri(string baseUrl, Uri? currentBaseUri)
+    {
+        if (!Uri.TryCreate(baseUrl, UriKind.Absolute, out var baseUri)
+            || (baseUri.Scheme != Uri.UriSchemeHttp && baseUri.Scheme != Uri.UriSchemeHttps)
+            || !string.IsNullOrEmpty(baseUri.UserInfo)
+            || (currentBaseUri?.Scheme == Uri.UriSchemeHttps && baseUri.Scheme != Uri.UriSchemeHttps))
+        {
+            throw new LibSqlException("Server returned an invalid Hrana base URL");
+        }
+
+        var builder = new UriBuilder(baseUri)
+        {
+            Fragment = string.Empty,
+            Query = string.Empty,
+            Path = baseUri.AbsolutePath.EndsWith('/')
+                ? baseUri.AbsolutePath
+                : baseUri.AbsolutePath + "/",
+        };
+        return builder.Uri;
+    }
+
+    private static LibSqlException CreateHranaException(HranaError? error)
+    {
+        var message = string.IsNullOrWhiteSpace(error?.Message)
+            ? "Unknown server error"
+            : error.Message;
+        return new LibSqlException($"SQL Error: {message}");
+    }
+
+    public void Dispose()
+    {
+        if (_disposed)
+            return;
+
+        _disposed = true;
+        _baton = null;
+        _httpClient.Dispose();
+    }
+}
+
+/// <summary>
+/// HTTP-specific exception for libSQL connections.
+/// </summary>
+public sealed class LibSqlHttpException : LibSqlException
+{
+    /// <summary>
+    /// Gets the HTTP status code associated with this exception.
+    /// </summary>
+    public int StatusCode { get; }
+    
+    /// <summary>
+    /// Gets the response content from the server, if available.
+    /// </summary>
+    public string? ResponseContent { get; }
+    
+    /// <summary>
+    /// Gets the request content that was sent to the server, if available.
+    /// </summary>
+    public string? RequestContent { get; }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="LibSqlHttpException"/> class.
+    /// </summary>
+    /// <param name="message">The error message.</param>
+    /// <param name="statusCode">The HTTP status code.</param>
+    /// <param name="responseContent">The response content from the server.</param>
+    /// <param name="requestContent">The request content sent to the server.</param>
+    public LibSqlHttpException(string message, int statusCode, string? responseContent = null, string? requestContent = null)
+        : base(message)
+    {
+        StatusCode = statusCode;
+        ResponseContent = responseContent;
+        RequestContent = requestContent;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="LibSqlHttpException"/> class.
+    /// </summary>
+    /// <param name="message">The error message.</param>
+    /// <param name="statusCode">The HTTP status code.</param>
+    /// <param name="innerException">The inner exception.</param>
+    /// <param name="responseContent">The response content from the server.</param>
+    /// <param name="requestContent">The request content sent to the server.</param>
+    public LibSqlHttpException(string message, int statusCode, Exception innerException, string? responseContent = null, string? requestContent = null)
+        : base(message, innerException)
+    {
+        StatusCode = statusCode;
+        ResponseContent = responseContent;
+        RequestContent = requestContent;
+    }
+}

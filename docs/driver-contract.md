@@ -3,6 +3,10 @@
 Direct ADO.NET contract suite against `Nelknet.LibSQL.Data` **without** EF.
 Source: `test/Nj.EntityFrameworkCore.LibSql.DriverContractTests`.
 
+Parallel clean-driver suite: `test/Nj.LibSql.DriverContractTests` against
+`Nj.LibSql.Data` (ADR-0002). Local + Testcontainers HTTP + Turso WSS (large-result
+gate); path-filtered CI in `.github/workflows/libsql-driver.yml`.
+
 ## Native baseline
 
 | Item | Value |

@@ -7,7 +7,8 @@
 | `Nj.EntityFrameworkCore.LibSql.UnitTests` | Fast provider unit tests |
 | `Nj.EntityFrameworkCore.LibSql.FunctionalTests` | EF + local/remote integration |
 | `Nj.EntityFrameworkCore.LibSql.ComplianceTests` | Published EF relational specification suites |
-| `Nj.EntityFrameworkCore.LibSql.DriverContractTests` | Nelknet-only ADO.NET contract (no EF) |
+| `Nj.EntityFrameworkCore.LibSql.DriverContractTests` | Soft-fork (Nelknet) ADO.NET contract — EF default until cutover |
+| `Nj.LibSql.DriverContractTests` | Clean-driver (`Nj.LibSql.Data`) contract mirror ([ADR-0002](adr/0002-nj-libsql-data.md)); path-filtered CI via `.github/workflows/libsql-driver.yml` |
 | `Nj.EntityFrameworkCore.LibSql.PackageTests` | Pack + clean NuGet install verification |
 | `TestUtilities` | Shared helpers (connection strings, env) |
 
@@ -65,8 +66,27 @@ export LIBSQL_DISABLE_REMOTE_TESTS=1            # skip remote suite
 # or
 export LIBSQL_DISABLE_TESTCONTAINERS=1          # require LIBSQL_TEST_URL
 
+# Soft-fork driver contract (EF default until cutover)
 dotnet test test/Nj.EntityFrameworkCore.LibSql.DriverContractTests -c Release
+
+# Clean driver (Nj.LibSql.Data) — Phase 2: local + Testcontainers sqld; Turso when secrets set
+dotnet test test/Nj.LibSql.DriverContractTests -c Release
+
+# Force remote failure instead of skip (CI remote-sqld job)
+export LIBSQL_REQUIRE_REMOTE=1
+
+# Turso remote (HTTP; CI turso job; secrets required)
+# WSS large-result gate: Testcontainers sqld via ws:// (remote-sqld job)
+export LIBSQL_TEST_URL=libsql://eftest-….turso.io
+export LIBSQL_TEST_AUTH_TOKEN=…
+export LIBSQL_REQUIRE_TURSO=1
+export LIBSQL_DISABLE_TESTCONTAINERS=1
+dotnet test test/Nj.LibSql.DriverContractTests -c Release --filter "FullyQualifiedName~Turso"
 ```
+
+Path-filtered CI: `.github/workflows/libsql-driver.yml` (jobs: `local`, `remote-sqld`, `turso`).
+Native rebuild/publish: `.github/workflows/libsql-native.yml` + [eng/native/README.md](../eng/native/README.md).
+Turso secrets: `LIBSQL_TEST_URL`, `LIBSQL_TEST_AUTH_TOKEN` (missing secrets fail the `turso` job — no silent skip).
 
 Optional manual compose (same digest as Testcontainers): [`eng/sqld/docker-compose.yml`](../eng/sqld/docker-compose.yml)
 (image pinned by digest; see [versions.md](versions.md)).
