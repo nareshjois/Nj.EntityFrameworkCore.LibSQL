@@ -12,7 +12,7 @@ without adding a row below (rationale + tracked issue).
 | Item | Value |
 |------|--------|
 | EF Core target | 10.0.10 |
-| Nelknet.LibSQL.Data | Soft-fork submodule @ `a312c97` (upstream `0.2.11` + patches; see [versions.md](versions.md)) |
+| Nelknet.LibSQL.Data | Soft-fork submodule @ `8b5a289` (upstream `0.2.11` + patches; see [versions.md](versions.md)) |
 | Provider version | `10.0.0-preview.1` (in-repo; `UseLibSql` available — not published to NuGet.org yet) |
 | Spec suite status | **Active** — `ComplianceTests` hosts G6–G8 suites; see [wp-10-handoff](wp-10-handoff.md) |
 | Last completed gate | **WP-10** G6–G8 compliance harness + functional deferred closure |
@@ -40,7 +40,7 @@ No permanent exclusions yet.
 | ID | Area | Test / feature | Reason | Issue | Owner |
 |----|------|----------------|--------|-------|-------|
 | C-001 | Query / UDFs | decimal REAL rewrite; `Regex.IsMatch` → libSQL `REGEXP` (PCRE2) | Not a hard skip: intentional dialect differences vs Microsoft EF SQLite (`ef_*` exact decimal / .NET Regex UDF). See [udf-gap.md](udf-gap.md). | — | — |
-| C-002 | Updates / keys | `INSERT…RETURNING` / store-generated ints under `SaveChanges` | **Resolved (soft-fork @ `a312c97`, upstream `0.2.11`)** — reader drain / statement ownership; HTTP Hrana errors/baton; unprefixed param normalize for `FromSqlInterpolated` (ADR-0001). Stock NuGet may still lag soft-fork-only patches. | — | — |
+| C-002 | Updates / keys | `INSERT…RETURNING` / store-generated ints under `SaveChanges` | **Resolved (soft-fork @ `8b5a289`, upstream `0.2.11`)** — reader drain / statement ownership; HTTP Hrana errors/baton; unprefixed param normalize for `FromSqlInterpolated` (ADR-0001). Stock NuGet may still lag soft-fork-only patches. | — | — |
 | C-003 | Scaffolding | CLR type inference via `typeof(max(...))` sampling | Remote/sqld may fail sampling with “database disk image is malformed”; factory logs warning and continues without inferred CLR types. Catalog + CREATE SQL facets still work. | — | — |
 | C-004 | Scaffolding | Virtual tables / libSQL vector types | Preview 1 does not reverse-engineer `CREATE VIRTUAL TABLE` (FTS, rtree, vector indexes, etc.) and does not ship first-class FLOAT32/vector CLR mappings. Named SpatiaLite/vector catalog tables remain denylisted. | — | — |
 | C-005 | Migrations | Local `EnsureDeleted` / `File.Delete` on Windows | **Mitigated** — soft-fork Close finalizes commands + `ClearPool`; when OS delete remains blocked, provider wipes schema and tombstones the path so `Exists()` is false (file may linger until process exit). | — | — |
