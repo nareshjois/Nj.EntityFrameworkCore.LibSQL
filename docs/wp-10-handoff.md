@@ -1,7 +1,10 @@
 # WP-10 handoff
 
-**Status:** **merged to `wp-10-harness` branch** — EF specification/compliance harness,
-hosted G6–G8 suites (local + remote slice), functional deferred-gap closure, CI/reporting.
+**Status:** **closed on `main`** — EF specification/compliance harness,
+hosted G6–G8 suites (local + remote slice), functional deferred-gap closure,
+CI/reporting. Soft-fork pin `@8b5a289` (upstream `0.2.11` + HTTP ISO DateTime
+binds). Merged via PR [#19](https://github.com/nareshjois/Nj.EntityFrameworkCore.LibSQL/pull/19);
+CI follow-up PR [#20](https://github.com/nareshjois/Nj.EntityFrameworkCore.LibSQL/pull/20).
 
 ## Gates
 
@@ -81,5 +84,6 @@ WP-11/12 platform/perf matrix.
 
 ## Next
 
-- Preview 2: expand hosted suites / burn down `C-008`–`C-012` compliance deltas.
+- WP-11 connection-mode matrix (local/remote depth; embedded replica Preview 2+).
+- Preview 2: expand hosted suites / burn down remaining `C-008`–`C-016` deltas where feasible.
 - Publish `10.0.0-preview.2` after Nelknet upstream alignment.
