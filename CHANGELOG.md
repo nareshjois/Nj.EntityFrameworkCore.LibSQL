@@ -12,9 +12,11 @@ with EF Core major/minor lines.
 
 - Soft-fork [nareshjois/Nelknet.LibSQL](https://github.com/nareshjois/Nelknet.LibSQL)
   as git submodule `external/Nelknet.LibSQL` (ProjectReference; ADR-0001) at
-  `@b0a9c51`. Fixes `INSERT…RETURNING` / generated-key `SaveChanges` (`C-002`),
-  remote HTTP Hrana error surfacing + baton-backed transactions, and unprefixed
-  parameter names for EF `FromSqlInterpolated`.
+  `@aeaecfb`. Fixes `INSERT…RETURNING` / generated-key `SaveChanges` (`C-002`),
+  remote HTTP Hrana error surfacing + baton-backed transactions, unprefixed
+  parameter names for EF `FromSqlInterpolated`, and Windows local
+  `EnsureDeleted` file locks (`C-005`: dispose tracked commands on Close +
+  `ClearPool`; provider tombstones path when OS delete remains blocked).
 - Type-mapping round-trips use store-generated integer keys (no longer
   `ValueGeneratedNever`).
 - Scaffolding reads COLLATE / AUTOINCREMENT from `sqlite_master` CREATE SQL
@@ -26,9 +28,12 @@ with EF Core major/minor lines.
 
 ### Added
 
+- WP-09 G9: MigrationsSample (Blog/Post + design-time factory + InitialCreate),
+  `eng/verify-migrations-sample.sh` CLI smoke, reverse-engineer / migration
+  script / virtual-table goldens, and `docs/wp-09-handoff.md` (G9 closed).
 - WP-09 first-slice scaffolding FunctionalTests matrix (local + remote
   `IDatabaseModelFactory` catalog cases + design DI / `UseLibSql` codegen)
-  and `docs/wp-09-handoff.md`.
+  and initial `docs/wp-09-handoff.md`.
 - WP-08 first-slice migrations FunctionalTests matrix (local + remote
   EnsureCreated/Deleted + Migrate) and `docs/wp-08-handoff.md`.
 - WP-07 first-slice update / transaction FunctionalTests matrix (local + remote)
@@ -38,8 +43,11 @@ with EF Core major/minor lines.
 
 ### Fixed
 
-- Scaffolding CLR type inference: tolerate remote/sqld failures of the
-  `typeof(max(...))` sampling query (warn and continue; catalog facets intact).
+- **C-005:** `EnsureDeleted` on Windows — soft-fork Close finalizes commands +
+  `ClearPool`; if `File.Delete` still fails, wipe schema and tombstone the path
+  so `Exists()` is false (file may linger until process exit).
+- Scaffolding skips `CREATE VIRTUAL TABLE` (C-004); CLR type inference tolerates
+  remote/sqld `typeof(max(...))` sampling failures (warn and continue; C-003).
 - Migration lock acquire under Nelknet: `LibSqlHistoryRepository` no longer
   relies on multi-statement `SELECT changes()` via ExecuteScalar.
 - WP-05 type-mapping / SQL generation round-trips (local + remote), Nelknet

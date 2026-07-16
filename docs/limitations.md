@@ -53,7 +53,7 @@ expose, including:
 
 | Mode | `EnsureCreated` | `EnsureDeleted` |
 |------|-----------------|-----------------|
-| Local file | May create schema and file (EF SQLite–like) | May delete the database file |
+| Local file | May create schema and file (EF SQLite–like) | Deletes the file when possible; on Windows if the native handle is still locked (`C-005`), wipes schema and treats the path as deleted for `Exists()` until `Create` |
 | Remote | Schema only inside an already-addressable database | Always throws `NotSupportedException` |
 | Embedded replica | Same as remote for create semantics | Always throws `NotSupportedException` |
 
@@ -62,5 +62,12 @@ expose, including:
 - **Preview 1:** local + remote.
 - **Preview 2+:** embedded replicas and an EF `DatabaseFacade` sync API that
   delegates to Nelknet without inventing stronger consistency guarantees.
+
+## Scaffolding / reverse engineering
+
+- Virtual tables (`CREATE VIRTUAL TABLE` … FTS, rtree, vector indexes) are
+  **not** reverse-engineered (compatibility `C-004`).
+- libSQL vector / `FLOAT32` store types have **no** first-class CLR mapping in
+  Preview 1; treat as out of scope for scaffolding.
 
 Feature-level capability tracking lives in [compatibility.md](compatibility.md).

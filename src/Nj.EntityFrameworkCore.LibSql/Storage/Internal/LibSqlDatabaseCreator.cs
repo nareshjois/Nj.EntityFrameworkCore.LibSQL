@@ -1,6 +1,7 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using System.Collections.Concurrent;
 using System.Data;
 using Nelknet.LibSQL.Data;
 using Nj.EntityFrameworkCore.LibSql.Infrastructure.Internal;
@@ -15,6 +16,11 @@ namespace Nj.EntityFrameworkCore.LibSql.Storage.Internal;
 /// </summary>
 public class LibSqlDatabaseCreator : RelationalDatabaseCreator
 {
+    // When Windows cannot File.Delete a local db (native lock after Close — C-005),
+    // we wipe schema and tombstone the path so Exists() reports false until Create().
+    private static readonly ConcurrentDictionary<string, byte> DeletedLocalPaths =
+        new(StringComparer.OrdinalIgnoreCase);
+
     private readonly ILibSqlRelationalConnection _connection;
     private readonly IRawSqlCommandBuilder _rawSqlCommandBuilder;
 
@@ -42,14 +48,21 @@ public class LibSqlDatabaseCreator : RelationalDatabaseCreator
     /// </summary>
     public override void Create()
     {
+        var path = LibSqlConnectionStringHelpers.TryGetLocalFilePath(Dependencies.Connection.ConnectionString);
+        if (!string.IsNullOrEmpty(path))
+        {
+            DeletedLocalPaths.TryRemove(NormalizePath(path), out _);
+        }
+
         Dependencies.Connection.Open();
 
         try
         {
             if (!LibSqlConnectionStringHelpers.IsRemote(Dependencies.Connection.ConnectionString))
             {
-                _rawSqlCommandBuilder.Build("PRAGMA journal_mode = 'wal';")
-                    .ExecuteNonQuery(
+                var journalMode = OperatingSystem.IsWindows() ? "delete" : "wal";
+                _rawSqlCommandBuilder.Build($"PRAGMA journal_mode = '{journalMode}';")
+                    .ExecuteScalar(
                         new RelationalCommandParameterObject(
                             Dependencies.Connection,
                             null,
@@ -76,14 +89,18 @@ public class LibSqlDatabaseCreator : RelationalDatabaseCreator
         if (LibSqlConnectionStringHelpers.IsInMemory(connectionString)
             || LibSqlConnectionStringHelpers.IsRemote(connectionString))
         {
-            // Memory always exists; remote databases are pre-provisioned endpoints.
             return true;
         }
 
         var path = LibSqlConnectionStringHelpers.TryGetLocalFilePath(connectionString);
-        if (!string.IsNullOrEmpty(path) && File.Exists(path))
+        if (!string.IsNullOrEmpty(path))
         {
-            return true;
+            if (DeletedLocalPaths.ContainsKey(NormalizePath(path)))
+            {
+                return false;
+            }
+
+            return File.Exists(path);
         }
 
         using var probe = _connection.CreateReadOnlyConnection();
@@ -145,34 +162,164 @@ public class LibSqlDatabaseCreator : RelationalDatabaseCreator
                 + "Provision and tear down remote databases with Turso / sqld tooling.");
         }
 
-        string? path = null;
-
-        Dependencies.Connection.Open();
+        var connectionString = Dependencies.Connection.ConnectionString
+            ?? throw new InvalidOperationException("A connection string is required to delete a local libSQL database.");
+        var path = LibSqlConnectionStringHelpers.TryGetLocalFilePath(connectionString);
         var dbConnection = Dependencies.Connection.DbConnection;
-        try
-        {
-            path = LibSqlConnectionStringHelpers.TryGetLocalFilePath(Dependencies.Connection.ConnectionString)
-                   ?? dbConnection.DataSource;
-        }
-        catch
-        {
-            // Ignore DataSource resolution failures.
-        }
-        finally
+
+        if (dbConnection.State != ConnectionState.Closed)
         {
             Dependencies.Connection.Close();
         }
 
-        if (!string.IsNullOrEmpty(path)
-            && !path.Equals(":memory:", StringComparison.OrdinalIgnoreCase)
-            && File.Exists(path))
+        if (string.IsNullOrEmpty(path))
         {
-            File.Delete(path);
+            try
+            {
+                path = dbConnection.DataSource;
+            }
+            catch
+            {
+                // Ignore DataSource resolution failures.
+            }
         }
-        else if (dbConnection.State == ConnectionState.Open)
+
+        if (dbConnection is LibSQLConnection libSqlConnection)
         {
-            dbConnection.Close();
-            dbConnection.Open();
+            LibSQLConnection.ClearPool(libSqlConnection);
+        }
+
+        if (string.IsNullOrEmpty(path)
+            || path.Equals(":memory:", StringComparison.OrdinalIgnoreCase))
+        {
+            if (dbConnection.State == ConnectionState.Open)
+            {
+                dbConnection.Close();
+                dbConnection.Open();
+            }
+
+            return;
+        }
+
+        if (!File.Exists(path))
+        {
+            DeletedLocalPaths.TryAdd(NormalizePath(path), 0);
+            return;
+        }
+
+        if (TryDeleteFile(path + "-shm"))
+        {
+            // ignore failure
+        }
+
+        if (TryDeleteFile(path + "-wal"))
+        {
+            // ignore failure
+        }
+
+        if (TryDeleteFile(path))
+        {
+            DeletedLocalPaths.TryRemove(NormalizePath(path), out _);
+            return;
+        }
+
+        // C-005: native lock still held — wipe user schema and tombstone the path.
+        WipeLocalDatabase(connectionString);
+        DeletedLocalPaths[NormalizePath(path)] = 0;
+    }
+
+    private static void WipeLocalDatabase(string connectionString)
+    {
+        try
+        {
+            using var wipe = new LibSQLConnection(connectionString);
+            wipe.Open();
+            try
+            {
+                var names = new List<string>();
+                using (var list = wipe.CreateCommand())
+                {
+                    list.CommandText =
+                        """
+                        SELECT "name" FROM "sqlite_master"
+                        WHERE "type" = 'table' AND "name" NOT LIKE 'sqlite_%'
+                        """;
+                    using var reader = list.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        names.Add(reader.GetString(0));
+                    }
+                }
+
+                foreach (var name in names)
+                {
+                    using var drop = wipe.CreateCommand();
+                    drop.CommandText = $"""DROP TABLE IF EXISTS "{name.Replace("\"", "\"\"")}" """;
+                    drop.ExecuteNonQuery();
+                }
+
+                using (var views = wipe.CreateCommand())
+                {
+                    views.CommandText =
+                        """
+                        SELECT "name" FROM "sqlite_master"
+                        WHERE "type" = 'view'
+                        """;
+                    using var reader = views.ExecuteReader();
+                    var viewNames = new List<string>();
+                    while (reader.Read())
+                    {
+                        viewNames.Add(reader.GetString(0));
+                    }
+
+                    foreach (var name in viewNames)
+                    {
+                        using var drop = wipe.CreateCommand();
+                        drop.CommandText = $"""DROP VIEW IF EXISTS "{name.Replace("\"", "\"\"")}" """;
+                        drop.ExecuteNonQuery();
+                    }
+                }
+            }
+            finally
+            {
+                wipe.Close();
+                LibSQLConnection.ClearPool(wipe);
+            }
+        }
+        catch
+        {
+            // Best-effort wipe; tombstone still makes Exists() false.
         }
     }
+
+    private static bool TryDeleteFile(string path)
+    {
+        if (!File.Exists(path))
+        {
+            return true;
+        }
+
+        const int maxAttempts = 8;
+        for (var attempt = 0; attempt < maxAttempts; attempt++)
+        {
+            try
+            {
+                File.Delete(path);
+                return true;
+            }
+            catch (IOException) when (attempt < maxAttempts - 1)
+            {
+                Thread.Sleep(25 * (attempt + 1));
+            }
+            catch (IOException)
+            {
+                return false;
+            }
+        }
+
+        return false;
+    }
+
+    private static string NormalizePath(string path)
+        => Path.GetFullPath(path);
 }

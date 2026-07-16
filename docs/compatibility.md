@@ -12,10 +12,10 @@ without adding a row below (rationale + tracked issue).
 | Item | Value |
 |------|--------|
 | EF Core target | 10.0.10 |
-| Nelknet.LibSQL.Data | Soft-fork submodule @ `b0a9c51` (upstream `0.2.10` + patches; see [versions.md](versions.md)) |
+| Nelknet.LibSQL.Data | Soft-fork submodule @ `aeaecfb` (upstream `0.2.10` + patches; see [versions.md](versions.md)) |
 | Provider version | `10.0.0-preview.1` (in-repo; `UseLibSql` available — not published to NuGet.org yet) |
 | Spec suite status | Host project present; fixtures land with compliance work (WP-10) |
-| Last completed gate | WP-09 first slice (FunctionalTests scaffolding matrix); full G6–G9 still WP-10 / later |
+| Last completed gate | WP-09 G9 (MigrationsSample + scaffold goldens + CLI smoke); full G6–G8 still WP-10 |
 
 ## Capability matrix (Preview 1)
 
@@ -27,7 +27,8 @@ without adding a row below (rationale + tracked issue).
 | Full LINQ query surface | Matrix (WP-06 slice); full G6 = WP-10 | Matrix (WP-06 slice); full G6 = WP-10 | Preview 2+ |
 | Transactions / savepoints | Matrix (WP-07 slice); savepoints/stress deferred | Matrix (WP-07 slice); savepoints/stress deferred | Preview 2+ |
 | Migrations | Matrix (WP-08 slice); locking stress / full G8 deferred | Matrix (WP-08 slice); locking stress / full G8 deferred | Preview 2+ |
-| Reverse engineering / design-time DI | Matrix (WP-09 slice); CLI goldens / full G9 deferred | Matrix (WP-09 slice); CLR inference may warn+skip on sqld | Preview 2+ |
+| Reverse engineering / design-time DI | Working (WP-09 G9: factory + CLI + goldens) | Working (CLR inference may warn+skip on sqld; C-003) | Preview 2+ |
+| Virtual tables / vector types (scaffold) | **Skipped** (C-004) | **Skipped** (C-004) | Preview 2+ |
 | `EnsureCreated` (schema in addressable DB) | Working | Working (schema only; no remote admin) | Preview 2+ |
 | `EnsureDeleted` | Working (may delete file) | **Not supported** (throws) | **Not supported** (throws) |
 | DatabaseFacade sync API | N/A | N/A | Preview 2+ |
@@ -39,8 +40,10 @@ No permanent exclusions yet.
 | ID | Area | Test / feature | Reason | Issue | Owner |
 |----|------|----------------|--------|-------|-------|
 | C-001 | Query / UDFs | decimal REAL rewrite; `Regex.IsMatch` → libSQL `REGEXP` (PCRE2) | Not a hard skip: intentional dialect differences vs Microsoft EF SQLite (`ef_*` exact decimal / .NET Regex UDF). See [udf-gap.md](udf-gap.md). | — | — |
-| C-002 | Updates / keys | `INSERT…RETURNING` / store-generated ints under `SaveChanges` | **Resolved (soft-fork `main` @ `b0a9c51`)** — reader drain; HTTP Hrana errors/baton; unprefixed param normalize for `FromSqlInterpolated` (ADR-0001). Stock NuGet still needs a separate upstream PR. | — | — |
+| C-002 | Updates / keys | `INSERT…RETURNING` / store-generated ints under `SaveChanges` | **Resolved (soft-fork `main` @ `aeaecfb`)** — reader drain; HTTP Hrana errors/baton; unprefixed param normalize for `FromSqlInterpolated` (ADR-0001). Stock NuGet still needs a separate upstream PR. | — | — |
 | C-003 | Scaffolding | CLR type inference via `typeof(max(...))` sampling | Remote/sqld may fail sampling with “database disk image is malformed”; factory logs warning and continues without inferred CLR types. Catalog + CREATE SQL facets still work. | — | — |
+| C-004 | Scaffolding | Virtual tables / libSQL vector types | Preview 1 does not reverse-engineer `CREATE VIRTUAL TABLE` (FTS, rtree, vector indexes, etc.) and does not ship first-class FLOAT32/vector CLR mappings. Named SpatiaLite/vector catalog tables remain denylisted. | — | — |
+| C-005 | Migrations | Local `EnsureDeleted` / `File.Delete` on Windows | **Mitigated** — soft-fork Close finalizes commands + `ClearPool`; when OS delete remains blocked, provider wipes schema and tombstones the path so `Exists()` is false (file may linger until process exit). | — | — |
 
 ## How to add a waiver
 

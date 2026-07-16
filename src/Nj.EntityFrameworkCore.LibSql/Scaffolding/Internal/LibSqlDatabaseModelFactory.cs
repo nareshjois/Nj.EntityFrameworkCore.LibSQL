@@ -279,10 +279,18 @@ WHERE "type" IN ('table', 'view') AND instr("name", 'sqlite_') <> 1 AND "name" N
                     continue;
                 }
 
-                _logger.TableFound(name);
-
                 var type = reader.GetString(1);
                 var createSql = !reader.IsDBNull(2) ? reader.GetString(2) : null;
+
+                // Preview 1: do not reverse-engineer SQLite/libSQL virtual tables
+                // (FTS, rtree, vector indexes, etc.). See compatibility C-004.
+                if (type == "table" && IsVirtualTableCreateSql(createSql))
+                {
+                    continue;
+                }
+
+                _logger.TableFound(name);
+
                 var table = type == "table"
                     ? new DatabaseTable { Database = databaseModel, Name = name }
                     : new DatabaseView { Database = databaseModel, Name = name };
@@ -316,6 +324,17 @@ WHERE "type" IN ('table', 'view') AND instr("name", 'sqlite_') <> 1 AND "name" N
         }
 
         return false;
+    }
+
+    private static bool IsVirtualTableCreateSql(string? createSql)
+    {
+        if (string.IsNullOrWhiteSpace(createSql))
+        {
+            return false;
+        }
+
+        var trimmed = createSql.AsSpan().TrimStart();
+        return trimmed.StartsWith("CREATE VIRTUAL TABLE", StringComparison.OrdinalIgnoreCase);
     }
 
     private void GetColumns(DbConnection connection, DatabaseTable table, string? createSql)
