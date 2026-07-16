@@ -62,7 +62,7 @@ public class LibSqlDatabaseCreator : RelationalDatabaseCreator
             {
                 var journalMode = OperatingSystem.IsWindows() ? "delete" : "wal";
                 _rawSqlCommandBuilder.Build($"PRAGMA journal_mode = '{journalMode}';")
-                    .ExecuteNonQuery(
+                    .ExecuteScalar(
                         new RelationalCommandParameterObject(
                             Dependencies.Connection,
                             null,
