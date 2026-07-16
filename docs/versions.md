@@ -9,7 +9,7 @@ Pinned at repository scaffold (2026-07-15). Update this file when bumps land.
 | EF Core SQLite source baseline (`v10.0.10`) | commit `db55508a7fbc1535bdb65b85159a8d0d36d6942a` — see [upstream-baseline.md](upstream-baseline.md) |
 | Test framework (our suites) | `xunit.v3` `3.2.2` |
 | Test framework (ComplianceTests / EF Spec packages) | `xunit` `2.9.3` |
-| `Nelknet.LibSQL.Data` (runtime) | Soft-fork submodule [`external/Nelknet.LibSQL`](../external/Nelknet.LibSQL) → [nareshjois/Nelknet.LibSQL](https://github.com/nareshjois/Nelknet.LibSQL) `@aeaecfb` (upstream `0.2.10` + RETURNING drain + HTTP Hrana errors/baton + unprefixed parameter normalize + Close command finalize / ClearAllPools) |
+| `Nelknet.LibSQL.Data` (runtime) | Soft-fork submodule [`external/Nelknet.LibSQL`](../external/Nelknet.LibSQL) → [nareshjois/Nelknet.LibSQL](https://github.com/nareshjois/Nelknet.LibSQL) `@a312c97` (upstream [`0.2.11`](https://github.com/nelknet/Nelknet.LibSQL/releases/tag/v0.2.11) + soft-fork patches; see [adr/0001-soft-fork-nelknet.md](adr/0001-soft-fork-nelknet.md)) |
 | Bundled libSQL (bindings) | `libsql-server-v0.24.32` — see [driver-contract.md](driver-contract.md) |
 | Provider package | `10.0.0-preview.1` |
 | `dotnet-ef` tool | `10.0.10` |

@@ -43,6 +43,10 @@ dotnet format Nj.EntityFrameworkCore.LibSql.slnx --verify-no-changes --exclude .
 dotnet build Nj.EntityFrameworkCore.LibSql.slnx -c Release
 dotnet test test/Nj.EntityFrameworkCore.LibSql.UnitTests -c Release
 dotnet test test/Nj.EntityFrameworkCore.LibSql.DriverContractTests -c Release
+dotnet test test/Nj.EntityFrameworkCore.LibSql.FunctionalTests -c Release
+dotnet test test/Nj.EntityFrameworkCore.LibSql.ComplianceTests -c Release \
+  --filter "FullyQualifiedName~LibSqlComplianceTest|FullyQualifiedName~UpdatesLibSqlTest"
+./eng/generate-compliance-report.sh || true
 ./eng/verify-package.sh
 ```
 

@@ -1,7 +1,7 @@
 # WP-06 handoff
 
 **Status:** first slice **merged to `main`** (PR #14). Full G6 EF specification
-suites remain WP-10.
+suites **closed in WP-10** ([wp-10-handoff](wp-10-handoff.md)).
 
 ## Done
 
@@ -17,12 +17,13 @@ suites remain WP-10.
 - **C-001 regex:** `Regex.IsMatch` → native libSQL `REGEXP` / PCRE2 (no
   CreateFunction); engine differs from `System.Text.RegularExpressions`.
 
-## Deferred (not this slice)
+## Closed in WP-10
 
-- Full G6 EF relational / SQLite specification suites (WP-10 fixtures).
-- TPH inheritance, compiled queries/models, Glob/Hex/Substring goldens,
-  interceptor suites.
-- Exact `decimal` / .NET Regex parity via Nelknet CreateFunction (optional).
+- Full G6 EF relational specification host + functional deferred gaps (TPH, glob/hex/substr, compiled query, interceptors).
+
+## Optional follow-up
+
+- Exact `decimal` / .NET Regex parity via Nelknet CreateFunction.
 
 ## Verify
 
@@ -33,5 +34,4 @@ dotnet test test/Nj.EntityFrameworkCore.LibSql.FunctionalTests -c Release --filt
 
 ## Next
 
-- **WP-09** design-time / scaffolding (or deeper WP-08).
-- Deeper WP-06/WP-07 coverage and/or WP-10 compliance toward full G6/G7.
+- Preview 2: burn down `C-009` string-translation SQL golden deltas.

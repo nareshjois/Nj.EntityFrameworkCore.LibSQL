@@ -29,8 +29,20 @@ dotnet build Nj.EntityFrameworkCore.LibSql.slnx -c Release
 # Unit tests
 dotnet test test/Nj.EntityFrameworkCore.LibSql.UnitTests -c Release
 
-# Functional placeholders / integration (expands over time)
+# Functional + compliance tests
 dotnet test test/Nj.EntityFrameworkCore.LibSql.FunctionalTests -c Release
+dotnet test test/Nj.EntityFrameworkCore.LibSql.ComplianceTests -c Release
+
+# Local compliance gate (excludes remote BuiltInDataTypes; CI parity)
+dotnet test test/Nj.EntityFrameworkCore.LibSql.ComplianceTests -c Release \
+  --filter "FullyQualifiedName!~BuiltInDataTypesRemoteLibSqlTest"
+
+# Remote compliance slice (integration; non-blocking tracked under C-016)
+dotnet test test/Nj.EntityFrameworkCore.LibSql.ComplianceTests -c Release \
+  --filter "FullyQualifiedName~Remote"
+
+# Compliance report artifact
+./eng/generate-compliance-report.sh
 
 # Pack
 ./eng/pack.sh

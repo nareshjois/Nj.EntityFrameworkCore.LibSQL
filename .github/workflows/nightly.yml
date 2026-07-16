@@ -35,6 +35,22 @@ jobs:
             --logger "trx;LogFileName=nightly-${{ matrix.os }}.trx" \
             --results-directory artifacts/test-results
 
+      - name: Compliance report (Ubuntu)
+        if: runner.os == 'Linux'
+        run: |
+          chmod +x eng/generate-compliance-report.sh
+          ./eng/generate-compliance-report.sh
+        env:
+          MODE: local
+
+      - name: Upload compliance report
+        if: runner.os == 'Linux'
+        uses: actions/upload-artifact@v7
+        with:
+          name: compliance-report
+          path: artifacts/compliance
+          if-no-files-found: warn
+
       - name: Pack + verify (Ubuntu)
         if: runner.os == 'Linux'
         run: |

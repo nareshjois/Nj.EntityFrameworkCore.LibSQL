@@ -48,9 +48,19 @@ internal static class UpdateTestHelpers
         await context.Database.ExecuteSqlRawAsync(
             """
             DELETE FROM "Accounts";
-            DELETE FROM "VersionedItems";
             """,
             cancellationToken);
+
+        await using var command = context.Database.GetDbConnection().CreateCommand();
+        command.CommandText =
+            """SELECT COUNT(*) FROM "sqlite_master" WHERE "type" = 'table' AND "name" = 'VersionedItems';""";
+        if (Convert.ToInt64(await command.ExecuteScalarAsync(cancellationToken)) > 0)
+        {
+            await context.Database.ExecuteSqlRawAsync(
+                """DELETE FROM "VersionedItems";""",
+                cancellationToken);
+        }
+
         context.ChangeTracker.Clear();
     }
 

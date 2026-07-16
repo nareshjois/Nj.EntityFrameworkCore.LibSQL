@@ -1,7 +1,7 @@
 # WP-08 handoff
 
 **Status:** first slice **merged to `main`** (PR #16). Full G8 EF specification
-suites remain WP-10.
+suites closed in **WP-10** ([wp-10-handoff](wp-10-handoff.md)).
 
 ## Done
 
@@ -14,13 +14,10 @@ suites remain WP-10.
   `SELECT changes()` returned null via ExecuteScalar).
 - Soft-fork Nelknet `@b0a9c51` unchanged this slice.
 
-## Deferred (not this slice)
+## Closed in WP-10
 
-- Concurrent migrators / lock recovery after crash.
-- Full SQLite migration op matrix + unsupported ops.
-- Idempotent script generation / MigrationsSample polish.
-- Preview package N→N+1 chain.
-- Full G8 EF specification suites (WP-10).
+- Full G8 EF migration specification host (`LibSqlMigrationsSqlGeneratorTest`).
+- Concurrent migrators, lock recovery, extended op matrix, unsupported ops, remote txn migrate, failure/resume, multi-version chain, N→N+1 pin (`MigrationDeferredCases`).
 
 ## Verify
 
@@ -30,5 +27,4 @@ dotnet test test/Nj.EntityFrameworkCore.LibSql.FunctionalTests -c Release --filt
 
 ## Next
 
-- **WP-09** design-time / scaffolding (toward G9).
-- Deeper WP-08 coverage and/or WP-10 compliance toward full G8.
+- Preview 2: idempotent script policy; MigrationsSample polish.

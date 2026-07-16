@@ -6,11 +6,13 @@ Accepted — 2026-07-15
 
 ## Context
 
-Stock `Nelknet.LibSQL.Data` 0.2.10 blocks EF `SaveChanges` with database-generated
-keys (`INSERT…RETURNING`): the driver can return an id while the write does not
-reliably commit (`C-002`). Separately, remote HTTP connections did not round-trip
-Hrana stream batons and mis-reported pipeline-level SQL errors, so EF remote
-`SaveChanges` / `EnsureCreated` failed. Waiting solely on upstream stalls Preview.
+Stock `Nelknet.LibSQL.Data` historically blocked EF `SaveChanges` with
+database-generated keys (`INSERT…RETURNING`): the driver could return an id while
+the write did not reliably commit (`C-002`). Separately, remote HTTP connections
+did not round-trip Hrana stream batons and mis-reported pipeline-level SQL errors,
+so EF remote `SaveChanges` / `EnsureCreated` failed. Upstream [0.2.11](https://github.com/nelknet/Nelknet.LibSQL/releases/tag/v0.2.11)
+absorbed the RETURNING drain and HTTP stream fixes; the soft-fork rebases onto
+that tag and keeps EF-compliance patches that are not yet upstream.
 
 Extensions / `CreateFunction` / SpatiaLite remain **out of scope** for this
 initiative (`C-001` stays fail-fast translation).
@@ -25,40 +27,27 @@ initiative (`C-001` stays fail-fast translation).
    instead of the NuGet package pin.
 4. Keep public types (`LibSQLConnection`, etc.) so `UseLibSql` stays stable.
 5. Prefer upstreaming patches to Nelknet; rebase the submodule periodically.
-   Soft-fork `main` is the consumed tip (currently `@aeaecfb`).
+   Soft-fork tip consumed here is currently `@a312c97` (branch `soft/main-0.2.11`
+   on top of upstream `v0.2.11`).
 
-## Patch set on soft-fork `main`
+## Patch set on soft-fork tip
 
-### C-002 — RETURNING reader drain (local/native)
+### Upstream 0.2.11 (now base)
 
-Stock Nelknet closed `LibSQLDataReader` without stepping remaining rows to
-`SQLITE_DONE`, and disposed parameterized statements before the reader finished.
-EF `SaveChanges` reads one `INSERT…RETURNING` row and closes the reader, leaving
-the write in a rollback journal (`cannot commit` / phantom generated keys).
+1. Local `INSERT`/`UPDATE`/`DELETE`/`REPLACE` with `RETURNING`: keep statement
+   handles alive and drain/complete readers so commits persist (`C-002`).
+2. Preserve Hrana HTTP stream state, honor server pipeline URLs, surface
+   top-level protocol errors so remote transactions commit/roll back correctly.
 
-Fork changes in `LibSQLDataReader` / `LibSQLCommand`:
+### Soft-fork-only (rebased onto 0.2.11)
 
-1. Drain remaining rows in `Close()` before releasing handles.
-2. Transfer prepared-statement ownership to the reader for parameterized queries.
-3. Keep scalar-statement lifetime until after rows are drained; avoid double-free
-   of row/rows handles in `ExecuteScalar`.
+#### Parameters — unprefixed names
 
-### HTTP — Hrana errors + baton streams
-
-1. Surface pipeline-level `{ "type": "error", "error": { … } }` instead of
-   "Invalid response from server".
-2. Round-trip the Hrana `baton` (and honor `base_url`) so BEGIN/COMMIT share one
-   stream across HTTP pipeline requests.
-3. Treat COMMIT/ROLLBACK when no transaction is active as a no-op (sqld DDL
-   autocommit + EF CreateTables).
-
-### Parameters — unprefixed names
-
-Normalize names lacking `@`/`:`/`$`/`?` by prefixing `@` in `Validate()`, so EF
+Normalize names lacking `@`/`:`/`$`/`?` by prefixing `@` so EF
 `FromSqlInterpolated` (`p0` in the collection, `@p0` in SQL) binds like
 Microsoft.Data.Sqlite.
 
-### C-005 — Close + EnsureDeleted on Windows
+#### C-005 — Close + EnsureDeleted on Windows
 
 1. Track `LibSQLCommand` instances on the connection; dispose them (finalize
    prepared statements) before `libsql_disconnect` / `libsql_close`.
@@ -67,6 +56,15 @@ Microsoft.Data.Sqlite.
    `File.Delete`.
 3. When Windows still cannot delete/rename the file, wipe user schema and
    tombstone the path so `Exists()` is false until `Create()` (file may linger).
+
+#### EF compliance (C-011 and related)
+
+1. Prefetch first `libsql_next_row` in `ExecuteReader` so UNIQUE/FK failures
+   surface even when EF never calls `Read()` (NoResults inserts).
+2. Map constraint error text to `LibSQLConstraintException`.
+3. Split SQL batches for `ExecuteNonQuery` (EF `HasData` + `SELECT changes()`),
+   without breaking `CREATE TRIGGER … BEGIN … END` bodies.
+4. Empty BLOB / temporal / `DbParameter.Size` parity fixes for EF type tests.
 
 ## Consequences
 

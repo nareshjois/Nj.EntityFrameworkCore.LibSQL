@@ -40,6 +40,31 @@ jobs:
             --logger "trx;LogFileName=driver-remote.trx" \
             --results-directory artifacts/test-results
 
+      - name: Remote compliance slice
+        id: remote-compliance
+        continue-on-error: true
+        run: |
+          # Remote BuiltInDataTypes and related suites are tracked separately from the local
+          # compliance gate (C-016). Shared temporal/BLOB fixes apply; remaining remote-only
+          # deltas (e.g. HTTP 400 max-length) are non-blocking until waived or fixed.
+          set +e
+          dotnet test test/Nj.EntityFrameworkCore.LibSql.ComplianceTests/Nj.EntityFrameworkCore.LibSql.ComplianceTests.csproj \
+            -c Release \
+            --filter "FullyQualifiedName~Remote" \
+            --logger "trx;LogFileName=compliance-remote.trx" \
+            --results-directory artifacts/test-results
+          exit_code=$?
+          echo "remote_exit_code=$exit_code" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Upload remote compliance results
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: compliance-remote
+          path: artifacts/test-results/compliance-remote.trx
+          if-no-files-found: warn
+
       - name: Upload failure artifacts
         if: failure()
         uses: actions/upload-artifact@v7
