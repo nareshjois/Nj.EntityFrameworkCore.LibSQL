@@ -12,7 +12,7 @@ with EF Core major/minor lines.
 
 - Soft-fork [nareshjois/Nelknet.LibSQL](https://github.com/nareshjois/Nelknet.LibSQL)
   as git submodule `external/Nelknet.LibSQL` (ProjectReference; ADR-0001) at
-  `@c73baf3`. Fixes `INSERT…RETURNING` / generated-key `SaveChanges` (`C-002`),
+  `@aeaecfb`. Fixes `INSERT…RETURNING` / generated-key `SaveChanges` (`C-002`),
   remote HTTP Hrana error surfacing + baton-backed transactions, unprefixed
   parameter names for EF `FromSqlInterpolated`, and Windows local
   `EnsureDeleted` file locks (`C-005`: dispose tracked commands on Close +

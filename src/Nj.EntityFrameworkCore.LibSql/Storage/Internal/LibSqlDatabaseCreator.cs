@@ -201,20 +201,54 @@ public class LibSqlDatabaseCreator : RelationalDatabaseCreator
                 continue;
             }
 
-            const int maxAttempts = 10;
-            for (var attempt = 0; attempt < maxAttempts; attempt++)
+            if (TryDeleteFile(candidate))
             {
+                continue;
+            }
+
+            // On Windows, libSQL may keep a share lock that blocks Delete but allows Move.
+            // Relocate the file so Exists()/EnsureDeleted see the original path as gone (C-005).
+            if (OperatingSystem.IsWindows() && string.Equals(candidate, path, StringComparison.OrdinalIgnoreCase))
+            {
+                var trashDir = Path.Combine(Path.GetTempPath(), "nj-libsql-trash");
+                Directory.CreateDirectory(trashDir);
+                var trash = Path.Combine(trashDir, Guid.NewGuid().ToString("N") + ".db");
                 try
                 {
-                    File.Delete(candidate);
-                    break;
+                    File.Move(candidate, trash);
+                    TryDeleteFile(trash);
+                    continue;
                 }
-                catch (IOException) when (attempt < maxAttempts - 1)
+                catch (IOException)
                 {
-                    LibSQLConnection.ClearAllPools();
-                    Thread.Sleep(50 * (attempt + 1));
+                    // Fall through to final Delete which throws with the original error.
                 }
             }
+
+            File.Delete(candidate);
         }
+    }
+
+    private static bool TryDeleteFile(string path)
+    {
+        const int maxAttempts = 10;
+        for (var attempt = 0; attempt < maxAttempts; attempt++)
+        {
+            try
+            {
+                File.Delete(path);
+                return true;
+            }
+            catch (IOException) when (attempt < maxAttempts - 1)
+            {
+                Thread.Sleep(50 * (attempt + 1));
+            }
+            catch (IOException)
+            {
+                return false;
+            }
+        }
+
+        return false;
     }
 }

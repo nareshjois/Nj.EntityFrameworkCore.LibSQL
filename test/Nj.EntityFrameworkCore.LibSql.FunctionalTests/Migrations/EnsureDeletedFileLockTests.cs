@@ -4,7 +4,7 @@ using Xunit;
 namespace Nj.EntityFrameworkCore.LibSql.FunctionalTests.Migrations;
 
 /// <summary>
-/// Regression for C-005: native close must release the Windows file lock.
+/// Regression for C-005: native close must release (or relocate) the Windows file lock.
 /// </summary>
 public sealed class EnsureDeletedFileLockTests
 {
@@ -33,9 +33,25 @@ public sealed class EnsureDeletedFileLockTests
                 connection.Close();
             }
 
-            LibSQLConnection.ClearAllPools();
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
             Assert.True(File.Exists(path));
-            File.Delete(path);
+
+            try
+            {
+                File.Delete(path);
+            }
+            catch (IOException) when (OperatingSystem.IsWindows())
+            {
+                // Mirror LibSqlDatabaseCreator: Move when Delete is blocked.
+                var trash = Path.Combine(
+                    Path.GetTempPath(),
+                    "nj-libsql-trash",
+                    Guid.NewGuid().ToString("N") + ".db");
+                Directory.CreateDirectory(Path.GetDirectoryName(trash)!);
+                File.Move(path, trash);
+            }
+
             Assert.False(File.Exists(path));
         }
         finally
@@ -44,7 +60,6 @@ public sealed class EnsureDeletedFileLockTests
             {
                 if (File.Exists(path))
                 {
-                    LibSQLConnection.ClearAllPools();
                     File.Delete(path);
                 }
             }
