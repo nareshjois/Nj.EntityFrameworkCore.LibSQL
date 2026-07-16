@@ -12,7 +12,7 @@ with EF Core major/minor lines.
 
 - Soft-fork [nareshjois/Nelknet.LibSQL](https://github.com/nareshjois/Nelknet.LibSQL)
   as git submodule `external/Nelknet.LibSQL` (ProjectReference; ADR-0001) at
-  `@a312c97` (rebased onto upstream [Nelknet 0.2.11](https://github.com/nelknet/Nelknet.LibSQL/releases/tag/v0.2.11)).
+  `@8b5a289` (rebased onto upstream [Nelknet 0.2.11](https://github.com/nelknet/Nelknet.LibSQL/releases/tag/v0.2.11)).
   Upstream absorbed RETURNING drain + HTTP stream/baton fixes (`C-002`); soft-fork
   keeps unprefixed parameter names, Close/`ClearPool` (`C-005`), and EF compliance
   patches (constraint surfacing, batch `ExecuteNonQuery`, trigger-aware splitter).

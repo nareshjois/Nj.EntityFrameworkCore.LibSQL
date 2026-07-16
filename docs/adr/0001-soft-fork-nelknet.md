@@ -27,7 +27,7 @@ initiative (`C-001` stays fail-fast translation).
    instead of the NuGet package pin.
 4. Keep public types (`LibSQLConnection`, etc.) so `UseLibSql` stays stable.
 5. Prefer upstreaming patches to Nelknet; rebase the submodule periodically.
-   Soft-fork tip consumed here is currently `@a312c97` (branch `soft/main-0.2.11`
+   Soft-fork tip consumed here is currently `@8b5a289` (branch `soft/main-0.2.11`
    on top of upstream `v0.2.11`).
 
 ## Patch set on soft-fork tip

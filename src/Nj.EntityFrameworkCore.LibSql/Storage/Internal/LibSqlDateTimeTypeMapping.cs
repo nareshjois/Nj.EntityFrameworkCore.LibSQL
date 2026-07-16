@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System.Data;
+using System.Data.Common;
+using System.Globalization;
 using Nj.EntityFrameworkCore.LibSql.Storage.Json.Internal;
 
 namespace Nj.EntityFrameworkCore.LibSql.Storage.Internal;
@@ -68,4 +70,18 @@ public class LibSqlDateTimeTypeMapping : DateTimeTypeMapping
     /// </summary>
     protected override string SqlLiteralFormatString
         => DateTimeFormatConst;
+
+    /// <summary>
+    ///     Bind as invariant ISO TEXT so remote Hrana does not culture-format DateTime.
+    /// </summary>
+    protected override void ConfigureParameter(DbParameter parameter)
+    {
+        if (parameter.Value is DateTime dateTime)
+        {
+            parameter.Value = dateTime.ToString("yyyy-MM-dd HH:mm:ss.FFFFFFF", CultureInfo.InvariantCulture);
+            parameter.DbType = System.Data.DbType.String;
+        }
+
+        base.ConfigureParameter(parameter);
+    }
 }
