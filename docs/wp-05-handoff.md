@@ -22,7 +22,7 @@
 ## Deferred (not G5 blockers)
 
 - UDF / `ef_*` / `regexp` / `EF_DECIMAL` rewrite (keep fail-fast; `C-001`).
-- Full EF BuiltInDataTypes specification host (WP-10).
+- ~~Full EF BuiltInDataTypes specification host (WP-10).~~ **Closed** — see [wp-10-handoff](wp-10-handoff.md).
 
 ## Verify
 

@@ -251,6 +251,9 @@ WHERE "name" = 'geometry_columns' AND "type" = 'table'
         var tablesToSelect = new HashSet<string>(tables.ToList(), StringComparer.OrdinalIgnoreCase);
         var selectedTables = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
+        // Materialize sqlite_master rows first — libSQL cannot run nested queries
+        // (PRAGMA table_xinfo, etc.) while a reader is still open on the connection.
+        var discovered = new List<(string Name, string Type, string? CreateSql)>();
         using (var command = connection.CreateCommand())
         {
             command.CommandText =
@@ -289,19 +292,24 @@ WHERE "type" IN ('table', 'view') AND instr("name", 'sqlite_') <> 1 AND "name" N
                     continue;
                 }
 
-                _logger.TableFound(name);
-
-                var table = type == "table"
-                    ? new DatabaseTable { Database = databaseModel, Name = name }
-                    : new DatabaseView { Database = databaseModel, Name = name };
-
-                GetColumns(connection, table, createSql);
-                GetPrimaryKey(connection, table);
-                GetUniqueConstraints(connection, table);
-                GetIndexes(connection, table);
-
-                databaseModel.Tables.Add(table);
+                discovered.Add((name, type, createSql));
             }
+        }
+
+        foreach (var (name, type, createSql) in discovered)
+        {
+            _logger.TableFound(name);
+
+            var table = type == "table"
+                ? new DatabaseTable { Database = databaseModel, Name = name }
+                : new DatabaseView { Database = databaseModel, Name = name };
+
+            GetColumns(connection, table, createSql);
+            GetPrimaryKey(connection, table);
+            GetUniqueConstraints(connection, table);
+            GetIndexes(connection, table);
+
+            databaseModel.Tables.Add(table);
         }
 
         foreach (var table in tablesToSelect.Except(selectedTables, StringComparer.OrdinalIgnoreCase))
@@ -981,10 +989,17 @@ ORDER BY "seq"
         parameter1.Value = table.Name;
         command1.Parameters.Add(parameter1);
 
-        using var reader1 = command1.ExecuteReader();
-        while (reader1.Read())
+        var constraintNames = new List<string>();
+        using (var reader1 = command1.ExecuteReader())
         {
-            var constraintName = reader1.GetString(0);
+            while (reader1.Read())
+            {
+                constraintNames.Add(reader1.GetString(0));
+            }
+        }
+
+        foreach (var constraintName in constraintNames)
+        {
             var uniqueConstraint = new DatabaseUniqueConstraint
             {
                 Table = table, Name = constraintName.StartsWith("sqlite_", StringComparison.Ordinal) ? string.Empty : constraintName
@@ -1038,14 +1053,22 @@ ORDER BY "seq"
         parameter1.Value = table.Name;
         command1.Parameters.Add(parameter1);
 
-        using var reader1 = command1.ExecuteReader();
-        while (reader1.Read())
+        var indexRows = new List<(string Name, bool IsUnique)>();
+        using (var reader1 = command1.ExecuteReader())
+        {
+            while (reader1.Read())
+            {
+                indexRows.Add((reader1.GetString(0), reader1.GetBoolean(1)));
+            }
+        }
+
+        foreach (var (indexName, isUnique) in indexRows)
         {
             var index = new DatabaseIndex
             {
                 Table = table,
-                Name = reader1.GetString(0),
-                IsUnique = reader1.GetBoolean(1)
+                Name = indexName,
+                IsUnique = isUnique
             };
 
             _logger.IndexFound(index.Name, table.Name, index.IsUnique);
@@ -1097,12 +1120,17 @@ ORDER BY "id"
         parameter1.Value = table.Name;
         command1.Parameters.Add(parameter1);
 
-        using var reader1 = command1.ExecuteReader();
-        while (reader1.Read())
+        var foreignKeyRows = new List<(long Id, string PrincipalTableName, string OnDelete)>();
+        using (var reader1 = command1.ExecuteReader())
         {
-            var id = reader1.GetInt64(0);
-            var principalTableName = reader1.GetString(1);
-            var onDelete = reader1.GetString(2);
+            while (reader1.Read())
+            {
+                foreignKeyRows.Add((reader1.GetInt64(0), reader1.GetString(1), reader1.GetString(2)));
+            }
+        }
+
+        foreach (var (id, principalTableName, onDelete) in foreignKeyRows)
+        {
             var principalTable = tables.FirstOrDefault(t => t.Name == principalTableName)
                 ?? tables.FirstOrDefault(t => t.Name.Equals(principalTableName, StringComparison.OrdinalIgnoreCase));
 

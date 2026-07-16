@@ -4,6 +4,7 @@
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
     <RootNamespace>Nj.EntityFrameworkCore.LibSql.ComplianceTests</RootNamespace>
+    <NoWarn>$(NoWarn);EF1001;xUnit1003;xUnit1026;xUnit1024</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
@@ -11,6 +12,10 @@
     <PackageReference Include="xunit" />
     <PackageReference Include="xunit.runner.visualstudio" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational.Specification.Tests" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Specification.Tests" />
+    <PackageReference Include="Testcontainers" />
+    <PackageReference Include="NetTopologySuite" />
+    <PackageReference Include="Xunit.SkippableFact" />
   </ItemGroup>
 
   <ItemGroup>

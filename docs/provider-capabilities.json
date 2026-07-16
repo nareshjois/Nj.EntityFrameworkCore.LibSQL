@@ -1,0 +1,3154 @@
+{
+  "waivers": [
+    {
+      "id": "C-016",
+      "suiteType": "Microsoft.EntityFrameworkCore.BuiltInDataTypesRemoteLibSqlTest",
+      "suitePatterns": [
+        "BuiltInDataTypesRemote"
+      ],
+      "reason": "Remote-only BuiltInDataTypes suite; excluded from local CI gate. Tracked in integration.yml (continue-on-error) until remote deltas are waived or fixed.",
+      "modes": [
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-006",
+      "suitePatterns": [
+        "Spatial",
+        "NetTopology"
+      ],
+      "reason": "SpatiaLite / spatial types are out of scope (Preview 1).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-007",
+      "suitePatterns": [
+        "FromSqlSproc",
+        "SqlExecutor",
+        "UdfDbFunction",
+        "StoredProcedure"
+      ],
+      "reason": "Stored procedures and UDF DbFunctions are not supported.",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.AdHocManyToManyQueryTestBase",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.AdHocMiscellaneousQueryTestBase",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.ApiConsistencyTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.BadDataJsonDeserializationTestBase",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.BuiltInDataTypesTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.BulkUpdates.BulkUpdatesTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.BulkUpdates.FiltersInheritanceBulkUpdatesRelationalTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.BulkUpdates.FiltersInheritanceBulkUpdatesTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.BulkUpdates.InheritanceBulkUpdatesRelationalTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.BulkUpdates.InheritanceBulkUpdatesTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.BulkUpdates.NonSharedModelBulkUpdatesRelationalTestBase",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.BulkUpdates.NonSharedModelBulkUpdatesTestBase",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.BulkUpdates.NorthwindBulkUpdatesRelationalTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.BulkUpdates.NorthwindBulkUpdatesTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.BulkUpdates.TPCFiltersInheritanceBulkUpdatesTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.BulkUpdates.TPCInheritanceBulkUpdatesTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.BulkUpdates.TPHInheritanceBulkUpdatesTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.BulkUpdates.TPTFiltersInheritanceBulkUpdatesTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.BulkUpdates.TPTInheritanceBulkUpdatesTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.CommandInterceptionTestBase",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.ComplexTypesTrackingRelationalTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.ComplexTypesTrackingTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.CompositeKeyEndToEndTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.ConcurrencyDetectorDisabledRelationalTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.ConcurrencyDetectorEnabledRelationalTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.ConferencePlannerTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.ConnectionInterceptionTestBase",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.ConvertToProviderTypesTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.CustomConvertersTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.DataAnnotationRelationalTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.DataAnnotationTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.DataBindingTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.DesignTimeTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.EntityFrameworkServiceCollectionExtensionsTestBase",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.EntitySplittingTestBase",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.FieldMappingTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.FieldsOnlyLoadTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.FindTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.InterceptionTestBase",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.JsonTypesRelationalTestBase",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.JsonTypesTestBase",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.KeysWithConvertersTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.LazyLoadProxyRelationalTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.LazyLoadProxyTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.LoadTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.LoggingRelationalTestBase\u00602",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.LoggingTestBase",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.ManyToManyFieldsLoadTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.ManyToManyLoadTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.ManyToManyTrackingRelationalTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.ManyToManyTrackingTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.MaterializationInterceptionTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Migrations.MigrationsInfrastructureTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Migrations.MigrationsTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.ModelBuilding.ModelBuilderTest\u002BComplexCollectionTestBase",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.ModelBuilding.ModelBuilderTest\u002BComplexTypeTestBase",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.ModelBuilding.ModelBuilderTest\u002BInheritanceTestBase",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.ModelBuilding.ModelBuilderTest\u002BManyToManyTestBase",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.ModelBuilding.ModelBuilderTest\u002BManyToOneTestBase",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.ModelBuilding.ModelBuilderTest\u002BModelBuilderTestBase",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.ModelBuilding.ModelBuilderTest\u002BNonRelationshipTestBase",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.ModelBuilding.ModelBuilderTest\u002BOneToManyTestBase",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.ModelBuilding.ModelBuilderTest\u002BOneToOneTestBase",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.ModelBuilding.ModelBuilderTest\u002BOwnedTypesTestBase",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.ModelBuilding.RelationalModelBuilderTest\u002BRelationalComplexCollectionTestBase",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.ModelBuilding.RelationalModelBuilderTest\u002BRelationalComplexTypeTestBase",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.ModelBuilding.RelationalModelBuilderTest\u002BRelationalInheritanceTestBase",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.ModelBuilding.RelationalModelBuilderTest\u002BRelationalManyToManyTestBase",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.ModelBuilding.RelationalModelBuilderTest\u002BRelationalManyToOneTestBase",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.ModelBuilding.RelationalModelBuilderTest\u002BRelationalNonRelationshipTestBase",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.ModelBuilding.RelationalModelBuilderTest\u002BRelationalOneToManyTestBase",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.ModelBuilding.RelationalModelBuilderTest\u002BRelationalOneToOneTestBase",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.ModelBuilding.RelationalModelBuilderTest\u002BRelationalOwnedTypesTestBase",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.MonsterFixupTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.MusicStoreTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.NotificationEntitiesTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.OptimisticConcurrencyRelationalTestBase\u00602",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.OverzealousInitializationTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.OwnedEntityQueryTestBase",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.PropertyValuesRelationalTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.PropertyValuesTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.ProxyGraphUpdatesTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.AdHocAdvancedMappingsQueryRelationalTestBase",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.AdHocAdvancedMappingsQueryTestBase",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.AdHocComplexTypeQueryRelationalTestBase",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.AdHocComplexTypeQueryTestBase",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.AdHocJsonQueryRelationalTestBase",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.AdHocJsonQueryTestBase",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.AdHocManyToManyQueryRelationalTestBase",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.AdHocMiscellaneousQueryRelationalTestBase",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.AdHocNavigationsQueryRelationalTestBase",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.AdHocNavigationsQueryTestBase",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.AdHocPrecompiledQueryRelationalTestBase",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.AdHocQueryFiltersQueryRelationalTestBase",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.AdHocQueryFiltersQueryTestBase",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.AdHocQuerySplittingQueryTestBase",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.Associations.AssociationsBulkUpdateTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.Associations.AssociationsCollectionTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.Associations.AssociationsMiscellaneousTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.Associations.AssociationsPrimitiveCollectionTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.Associations.AssociationsProjectionTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.Associations.AssociationsSetOperationsTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.Associations.AssociationsStructuralEqualityTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.Associations.ComplexJson.ComplexJsonBulkUpdateRelationalTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.Associations.ComplexJson.ComplexJsonCollectionRelationalTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.Associations.ComplexJson.ComplexJsonMiscellaneousRelationalTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.Associations.ComplexJson.ComplexJsonPrimitiveCollectionRelationalTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.Associations.ComplexJson.ComplexJsonProjectionRelationalTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.Associations.ComplexJson.ComplexJsonSetOperationsRelationalTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.Associations.ComplexJson.ComplexJsonStructuralEqualityRelationalTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.Associations.ComplexProperties.ComplexPropertiesBulkUpdateTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.Associations.ComplexProperties.ComplexPropertiesCollectionTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.Associations.ComplexProperties.ComplexPropertiesMiscellaneousTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.Associations.ComplexProperties.ComplexPropertiesPrimitiveCollectionTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.Associations.ComplexProperties.ComplexPropertiesProjectionTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.Associations.ComplexProperties.ComplexPropertiesSetOperationsTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.Associations.ComplexProperties.ComplexPropertiesStructuralEqualityTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.Associations.ComplexTableSplitting.ComplexTableSplittingBulkUpdateRelationalTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.Associations.ComplexTableSplitting.ComplexTableSplittingMiscellaneousRelationalTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.Associations.ComplexTableSplitting.ComplexTableSplittingPrimitiveCollectionRelationalTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.Associations.ComplexTableSplitting.ComplexTableSplittingProjectionRelationalTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.Associations.ComplexTableSplitting.ComplexTableSplittingStructuralEqualityRelationalTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.Associations.Navigations.NavigationsCollectionRelationalTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.Associations.Navigations.NavigationsCollectionTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.Associations.Navigations.NavigationsIncludeRelationalTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.Associations.Navigations.NavigationsIncludeTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.Associations.Navigations.NavigationsMiscellaneousRelationalTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.Associations.Navigations.NavigationsMiscellaneousTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.Associations.Navigations.NavigationsPrimitiveCollectionRelationalTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.Associations.Navigations.NavigationsPrimitiveCollectionTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.Associations.Navigations.NavigationsProjectionRelationalTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.Associations.Navigations.NavigationsProjectionTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.Associations.Navigations.NavigationsSetOperationsRelationalTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.Associations.Navigations.NavigationsSetOperationsTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.Associations.Navigations.NavigationsStructuralEqualityRelationalTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.Associations.Navigations.NavigationsStructuralEqualityTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.Associations.OwnedJson.OwnedJsonBulkUpdateRelationalTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.Associations.OwnedJson.OwnedJsonCollectionRelationalTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.Associations.OwnedJson.OwnedJsonMiscellaneousRelationalTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.Associations.OwnedJson.OwnedJsonPrimitiveCollectionRelationalTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.Associations.OwnedJson.OwnedJsonProjectionRelationalTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.Associations.OwnedJson.OwnedJsonStructuralEqualityRelationalTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.Associations.OwnedNavigations.OwnedNavigationsCollectionRelationalTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.Associations.OwnedNavigations.OwnedNavigationsCollectionTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.Associations.OwnedNavigations.OwnedNavigationsMiscellaneousRelationalTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.Associations.OwnedNavigations.OwnedNavigationsMiscellaneousTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.Associations.OwnedNavigations.OwnedNavigationsPrimitiveCollectionRelationalTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.Associations.OwnedNavigations.OwnedNavigationsPrimitiveCollectionTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.Associations.OwnedNavigations.OwnedNavigationsProjectionRelationalTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.Associations.OwnedNavigations.OwnedNavigationsProjectionTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.Associations.OwnedNavigations.OwnedNavigationsSetOperationsRelationalTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.Associations.OwnedNavigations.OwnedNavigationsSetOperationsTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.Associations.OwnedNavigations.OwnedNavigationsStructuralEqualityRelationalTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.Associations.OwnedNavigations.OwnedNavigationsStructuralEqualityTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.Associations.OwnedTableSplitting.OwnedTableSplittingMiscellaneousRelationalTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.Associations.OwnedTableSplitting.OwnedTableSplittingPrimitiveCollectionRelationalTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.Associations.OwnedTableSplitting.OwnedTableSplittingProjectionRelationalTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.Associations.OwnedTableSplitting.OwnedTableSplittingStructuralEqualityRelationalTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.ComplexNavigationsCollectionsQueryRelationalTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.ComplexNavigationsCollectionsQueryTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.ComplexNavigationsCollectionsSharedTypeQueryRelationalTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.ComplexNavigationsCollectionsSharedTypeQueryTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.ComplexNavigationsCollectionsSplitQueryRelationalTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.ComplexNavigationsCollectionsSplitSharedTypeQueryRelationalTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.ComplexNavigationsQueryRelationalTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.ComplexNavigationsQueryTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.ComplexNavigationsSharedTypeQueryRelationalTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.ComplexNavigationsSharedTypeQueryTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.ComplexTypeQueryRelationalTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.ComplexTypeQueryTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.CompositeKeysQueryRelationalTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.CompositeKeysQueryTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.CompositeKeysSplitQueryRelationalTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.Ef6GroupByTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.EntitySplittingQueryTestBase",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.FilteredQueryTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.FiltersInheritanceQueryTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.FromSqlQueryTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.FromSqlSprocQueryTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.FunkyDataQueryTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.GearsOfWarFromSqlQueryTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.GearsOfWarQueryRelationalTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.GearsOfWarQueryTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.IncludeOneToOneTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.InheritanceRelationshipsQueryRelationalTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.InheritanceRelationshipsQueryTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.JsonQueryRelationalTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.JsonQueryTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.ManyToManyNoTrackingQueryRelationalTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.ManyToManyNoTrackingQueryTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.ManyToManyQueryRelationalTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.ManyToManyQueryTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.MappingQueryTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.NonSharedPrimitiveCollectionsQueryRelationalTestBase",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.NonSharedPrimitiveCollectionsQueryTestBase",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.NorthwindAggregateOperatorsQueryRelationalTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.NorthwindAggregateOperatorsQueryTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.NorthwindAsNoTrackingQueryTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.NorthwindAsTrackingQueryTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.NorthwindChangeTrackingQueryTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.NorthwindCompiledQueryTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.NorthwindDbFunctionsQueryRelationalTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.NorthwindDbFunctionsQueryTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.NorthwindEFPropertyIncludeQueryTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.NorthwindFunctionsQueryRelationalTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.NorthwindFunctionsQueryTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.NorthwindGroupByQueryRelationalTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.NorthwindGroupByQueryTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.NorthwindIncludeNoTrackingQueryTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.NorthwindIncludeQueryRelationalTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.NorthwindIncludeQueryTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.NorthwindJoinQueryRelationalTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.NorthwindJoinQueryTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.NorthwindKeylessEntitiesQueryRelationalTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.NorthwindKeylessEntitiesQueryTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.NorthwindMiscellaneousQueryRelationalTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.NorthwindMiscellaneousQueryTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.NorthwindNavigationsQueryRelationalTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.NorthwindNavigationsQueryTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.NorthwindQueryFiltersQueryTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.NorthwindQueryTaggingQueryTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.NorthwindSelectQueryRelationalTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.NorthwindSelectQueryTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.NorthwindSetOperationsQueryRelationalTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.NorthwindSetOperationsQueryTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.NorthwindSplitIncludeNoTrackingQueryTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.NorthwindSplitIncludeQueryTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.NorthwindSqlQueryTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.NorthwindStringIncludeQueryTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.NorthwindWhereQueryRelationalTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.NorthwindWhereQueryTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.NullKeysTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.NullSemanticsQueryTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.OperatorsProceduralQueryTestBase",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.OptionalDependentQueryTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.OwnedEntityQueryRelationalTestBase",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.OwnedQueryRelationalTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.OwnedQueryTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.PrecompiledQueryRelationalTestBase",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.PrecompiledSqlPregenerationQueryRelationalTestBase",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.PrimitiveCollectionsQueryRelationalTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.PrimitiveCollectionsQueryTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.QueryFilterFuncletizationTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.QueryNoClientEvalTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.SharedTypeQueryRelationalTestBase",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.SpatialQueryRelationalTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.SpatialQueryTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.SqlExecutorTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.SqlQueryTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.TPCFiltersInheritanceQueryTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.TPCGearsOfWarQueryRelationalTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.TPCInheritanceQueryTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.TPCManyToManyNoTrackingQueryRelationalTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.TPCManyToManyQueryRelationalTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.TPCRelationshipsQueryTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.TPHInheritanceQueryTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.TPTFiltersInheritanceQueryTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.TPTGearsOfWarQueryRelationalTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.TPTInheritanceQueryTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.TPTManyToManyNoTrackingQueryRelationalTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.TPTManyToManyQueryRelationalTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.TPTRelationshipsQueryTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.ToSqlQueryTestBase",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.Translations.ByteArrayTranslationsTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.Translations.EnumTranslationsTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.Translations.GuidTranslationsTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.Translations.MathTranslationsTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.Translations.MiscellaneousTranslationsRelationalTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.Translations.MiscellaneousTranslationsTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.Translations.Operators.ArithmeticOperatorTranslationsTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.Translations.Operators.BitwiseOperatorTranslationsTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.Translations.Operators.ComparisonOperatorTranslationsTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.Translations.Operators.LogicalOperatorTranslationsTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.Translations.Operators.MiscellaneousOperatorTranslationsTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.Translations.StringTranslationsRelationalTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.Translations.Temporal.DateOnlyTranslationsTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.Translations.Temporal.DateTimeOffsetTranslationsTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.Translations.Temporal.DateTimeTranslationsTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.Translations.Temporal.TimeOnlyTranslationsTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.Translations.Temporal.TimeSpanTranslationsTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.UdfDbFunctionTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Query.WarningsTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.QueryExpressionInterceptionTestBase",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.RelationalServiceCollectionExtensionsTestBase",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.SaveChangesInterceptionTestBase",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Scaffolding.CompiledModelRelationalTestBase",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Scaffolding.CompiledModelTestBase",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.SeedingTestBase",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.SerializationTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.SharedTypeQueryTestBase",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.SingletonInterceptorsTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.SpatialTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.StoreGeneratedFixupRelationalTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.StoreGeneratedFixupTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.StoreGeneratedTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.TPTTableSplittingTestBase",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.TableSplittingTestBase",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.TransactionInterceptionTestBase",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.TransactionTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.TwoDatabasesTestBase",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Types.RelationalTypeTestBase\u00602",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Types.TypeTestBase\u00602",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Update.ComplexCollectionJsonUpdateTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Update.JsonUpdateTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Update.NonSharedModelUpdatesTestBase",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Update.StoreValueGenerationTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Update.StoredProcedureUpdateTestBase",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Update.UpdateSqlGeneratorTestBase",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.Update.UpdatesRelationalTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.ValueConvertersEndToEndTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    },
+    {
+      "id": "C-AUTO",
+      "suiteType": "Microsoft.EntityFrameworkCore.WithConstructorsTestBase\u00601",
+      "reason": "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+      "modes": [
+        "local",
+        "remote"
+      ],
+      "owner": "provider"
+    }
+  ]
+}

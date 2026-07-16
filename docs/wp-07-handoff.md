@@ -1,7 +1,7 @@
 # WP-07 handoff
 
 **Status:** first slice **merged to `main`** (PR #15). Full G7 EF specification
-suites remain WP-10.
+suites closed in **WP-10** ([wp-10-handoff](wp-10-handoff.md)).
 
 ## Done
 
@@ -14,12 +14,10 @@ suites remain WP-10.
 - Soft-fork Nelknet `@b0a9c51` assumed for RETURNING + HTTP baton (no submodule
   bump this slice).
 
-## Deferred (not this slice)
+## Closed in WP-10
 
-- Savepoints nested under user transactions.
-- Busy/locked, cancellation/timeout, ambiguous transport failure.
-- RETURNING fallbacks for triggers / virtual tables.
-- Full G7 EF update / concurrency / transaction specification suites (WP-10).
+- Full G7 EF update / concurrency / transaction specification suites (`ComplianceTests`).
+- Savepoints, busy/locked stress, cancellation, RETURNING+trigger edge, pooled stress (`UpdateDeferredCases`).
 
 ## Verify
 
@@ -29,5 +27,4 @@ dotnet test test/Nj.EntityFrameworkCore.LibSql.FunctionalTests -c Release --filt
 
 ## Next
 
-- **WP-08** migrations / EnsureCreated / EnsureDeleted (toward G8).
-- Deeper WP-07 coverage and/or WP-10 compliance toward full G7.
+- Preview 2: transport ambiguity matrix; deeper concurrency stress on remote Turso.

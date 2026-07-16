@@ -28,4 +28,4 @@ dotnet test test/Nj.EntityFrameworkCore.LibSql.FunctionalTests -c Release --filt
 
 ## Next
 
-- WP-10 EF specification / compliance suites (full G6–G8 matrix).
+- Preview 2: embedded replica, expanded remote matrix — see [wp-10-handoff](wp-10-handoff.md) out-of-scope list.

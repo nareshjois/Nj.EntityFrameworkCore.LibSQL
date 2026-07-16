@@ -16,7 +16,7 @@ Branch: `wp-04-provider-core`
 
 ## Deferred
 
-- Full query / compliance suites (WP-06 / WP-10); migrations (WP-08).
+- ~~Full query / compliance suites (WP-06 / WP-10); migrations (WP-08).~~ **Closed** — [wp-10-handoff](wp-10-handoff.md).
 - Embedded replica sync API (Preview 2+).
 - Restore or rewrite `ef_*` / `regexp` / `EF_DECIMAL` after Nelknet UDF APIs
   or a documented translation rewrite ([udf-gap.md](udf-gap.md)).

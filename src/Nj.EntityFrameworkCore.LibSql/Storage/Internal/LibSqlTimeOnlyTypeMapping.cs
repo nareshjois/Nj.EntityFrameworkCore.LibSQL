@@ -72,9 +72,12 @@ public class LibSqlTimeOnlyTypeMapping : TimeOnlyTypeMapping
     /// <inheritdoc />
     protected override void ConfigureParameter(DbParameter parameter)
     {
+        // Bind as invariant TEXT so Nelknet does not culture-format TimeOnly as "HH:mm".
         if (parameter.Value is TimeOnly timeOnly)
         {
-            parameter.Value = timeOnly.ToString("HH:mm:ss.fff", CultureInfo.InvariantCulture);
+            parameter.Value = timeOnly.Ticks % TimeSpan.TicksPerSecond == 0
+                ? timeOnly.ToString("HH:mm:ss", CultureInfo.InvariantCulture)
+                : timeOnly.ToString("HH:mm:ss.fffffff", CultureInfo.InvariantCulture);
             parameter.DbType = System.Data.DbType.String;
         }
 
