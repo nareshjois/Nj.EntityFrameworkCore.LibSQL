@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.EntityFrameworkCore.Storage;
 using Xunit;
 
 namespace Nj.EntityFrameworkCore.LibSql.FunctionalTests.Migrations;
@@ -45,10 +46,12 @@ internal static class MigrationCases
 
         var path = ExtractLocalPath(connectionString);
         Assert.False(string.IsNullOrEmpty(path));
-        Assert.False(File.Exists(path), "Local EnsureDeleted should remove the database file.");
 
-        // Reopen on a fresh file should not carry over Widgets until created again.
+        // Reopen: Widgets must be gone (file may remain on Windows under C-005 tombstone).
         await using var verify = new MigrationDbContext(MigrationTestHelpers.Configure(connectionString).Options);
+        var creator = verify.GetService<IRelationalDatabaseCreator>();
+        Assert.False(creator.Exists(), "EnsureDeleted should make Exists() false.");
+
         await verify.Database.OpenConnectionAsync(ct);
         try
         {

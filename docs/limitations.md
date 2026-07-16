@@ -53,7 +53,7 @@ expose, including:
 
 | Mode | `EnsureCreated` | `EnsureDeleted` |
 |------|-----------------|-----------------|
-| Local file | May create schema and file (EF SQLite–like) | May delete the database file |
+| Local file | May create schema and file (EF SQLite–like) | Deletes the file when possible; on Windows if the native handle is still locked (`C-005`), wipes schema and treats the path as deleted for `Exists()` until `Create` |
 | Remote | Schema only inside an already-addressable database | Always throws `NotSupportedException` |
 | Embedded replica | Same as remote for create semantics | Always throws `NotSupportedException` |
 

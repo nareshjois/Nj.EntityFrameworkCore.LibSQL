@@ -11,7 +11,7 @@ workflow validated by WP-09 (factory matrix, goldens, and
 | Surface | Status |
 |---------|--------|
 | `EnsureCreated` (schema in addressable DB) | Working (local + remote) |
-| `EnsureDeleted` local | Working (may delete file) |
+| `EnsureDeleted` local | Working (`Exists()` false; deletes file when unlocked, else wipe + tombstone on Windows `C-005`) |
 | `EnsureDeleted` remote / replica | Throws `NotSupportedException` |
 | `Database.Migrate` up / down | Working (FunctionalTests matrix) |
 | Migration lock table acquire/release | Working (Nelknet-safe split commands) |

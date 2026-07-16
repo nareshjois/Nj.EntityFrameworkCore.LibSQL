@@ -43,7 +43,7 @@ No permanent exclusions yet.
 | C-002 | Updates / keys | `INSERT…RETURNING` / store-generated ints under `SaveChanges` | **Resolved (soft-fork `main` @ `aeaecfb`)** — reader drain; HTTP Hrana errors/baton; unprefixed param normalize for `FromSqlInterpolated` (ADR-0001). Stock NuGet still needs a separate upstream PR. | — | — |
 | C-003 | Scaffolding | CLR type inference via `typeof(max(...))` sampling | Remote/sqld may fail sampling with “database disk image is malformed”; factory logs warning and continues without inferred CLR types. Catalog + CREATE SQL facets still work. | — | — |
 | C-004 | Scaffolding | Virtual tables / libSQL vector types | Preview 1 does not reverse-engineer `CREATE VIRTUAL TABLE` (FTS, rtree, vector indexes, etc.) and does not ship first-class FLOAT32/vector CLR mappings. Named SpatiaLite/vector catalog tables remain denylisted. | — | — |
-| C-005 | Migrations | Local `EnsureDeleted` / `File.Delete` on Windows | **Mitigated (soft-fork `@aeaecfb` + provider)** — Close finalizes commands; `ClearPool` before delete; Windows falls back to rename-out-of-band when Delete is still blocked so `Exists` sees the path gone. | — | — |
+| C-005 | Migrations | Local `EnsureDeleted` / `File.Delete` on Windows | **Mitigated** — soft-fork Close finalizes commands + `ClearPool`; when OS delete remains blocked, provider wipes schema and tombstones the path so `Exists()` is false (file may linger until process exit). | — | — |
 
 ## How to add a waiver
 

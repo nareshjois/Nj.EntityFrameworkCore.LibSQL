@@ -1,63 +1,69 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Storage;
 using Nelknet.LibSQL.Data;
 using Xunit;
 
 namespace Nj.EntityFrameworkCore.LibSql.FunctionalTests.Migrations;
 
 /// <summary>
-/// Regression for C-005: native close must release (or relocate) the Windows file lock.
+/// Regression for C-005: EnsureDeleted must clear Exists() even when Windows
+/// cannot File.Delete the local db after Close.
 /// </summary>
 public sealed class EnsureDeletedFileLockTests
 {
     [Fact]
-    public void LibSQLConnection_Close_releases_local_file_for_delete()
+    public async Task EnsureDeleted_makes_Exists_false_even_if_file_locked()
     {
         var path = Path.Combine(Path.GetTempPath(), "nj-libsql-close-" + Guid.NewGuid().ToString("N") + ".db");
         var cs = $"Data Source={path}";
         try
         {
-            using (var connection = new LibSQLConnection(cs))
+            await using (var context = new MigrationDbContext(MigrationTestHelpers.Configure(cs).Options))
             {
-                connection.Open();
-                using (var create = connection.CreateCommand())
+                await context.Database.OpenConnectionAsync(TestContext.Current.CancellationToken);
+                try
                 {
-                    create.CommandText = "CREATE TABLE t(id INTEGER PRIMARY KEY)";
-                    create.ExecuteNonQuery();
+                    await MigrationTestHelpers.EnsureSchemaViaCreateAsync(
+                        context,
+                        TestContext.Current.CancellationToken);
                 }
-
-                using (var insert = connection.CreateCommand())
+                finally
                 {
-                    insert.CommandText = "INSERT INTO t VALUES (1)";
-                    insert.ExecuteNonQuery();
+                    await context.Database.CloseConnectionAsync();
                 }
-
-                connection.Close();
             }
 
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
-            Assert.True(File.Exists(path));
-
-            try
+            await using (var context = new MigrationDbContext(MigrationTestHelpers.Configure(cs).Options))
             {
-                File.Delete(path);
-            }
-            catch (IOException) when (OperatingSystem.IsWindows())
-            {
-                // Mirror LibSqlDatabaseCreator: Move when Delete is blocked.
-                var trash = Path.Combine(
-                    Path.GetTempPath(),
-                    "nj-libsql-trash",
-                    Guid.NewGuid().ToString("N") + ".db");
-                Directory.CreateDirectory(Path.GetDirectoryName(trash)!);
-                File.Move(path, trash);
+                await context.Database.EnsureDeletedAsync(TestContext.Current.CancellationToken);
+                var creator = context.GetService<IRelationalDatabaseCreator>();
+                Assert.False(creator.Exists());
             }
 
-            Assert.False(File.Exists(path));
+            await using (var verify = new MigrationDbContext(MigrationTestHelpers.Configure(cs).Options))
+            {
+                await verify.Database.OpenConnectionAsync(TestContext.Current.CancellationToken);
+                try
+                {
+                    Assert.Equal(
+                        0,
+                        await MigrationTestHelpers.TableCountAsync(
+                            verify,
+                            "Widgets",
+                            TestContext.Current.CancellationToken));
+                }
+                finally
+                {
+                    await verify.Database.CloseConnectionAsync();
+                }
+            }
         }
         finally
         {
             try
             {
+                LibSQLConnection.ClearPool(new LibSQLConnection(cs));
                 if (File.Exists(path))
                 {
                     File.Delete(path);

@@ -58,13 +58,15 @@ Normalize names lacking `@`/`:`/`$`/`?` by prefixing `@` in `Validate()`, so EF
 `FromSqlInterpolated` (`p0` in the collection, `@p0` in SQL) binds like
 Microsoft.Data.Sqlite.
 
-### C-005 — Close releases local file locks (Windows EnsureDeleted)
+### C-005 — Close + EnsureDeleted on Windows
 
 1. Track `LibSQLCommand` instances on the connection; dispose them (finalize
    prepared statements) before `libsql_disconnect` / `libsql_close`.
-2. Expose `LibSQLConnection.ClearAllPools` / `ClearPool` so
-   `LibSqlDatabaseCreator.Delete` can mirror Microsoft.Data.Sqlite before
+2. Expose `LibSQLConnection.ClearPool` / `ClearAllPools` so
+   `LibSqlDatabaseCreator.Delete` can release the connection before
    `File.Delete`.
+3. When Windows still cannot delete/rename the file, wipe user schema and
+   tombstone the path so `Exists()` is false until `Create()` (file may linger).
 
 ## Consequences
 
