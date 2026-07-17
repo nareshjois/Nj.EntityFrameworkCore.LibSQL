@@ -5,7 +5,8 @@ versus Turso’s official [bindings/dotnet](https://github.com/tursodatabase/tur
 (`Turso.Data` / `turso_sdk_kit`).
 
 **Nj stance:** differentiate on **remote EF** + embedded replica Sync (sqld) + deep EF
-compliance; close high-value ADO gaps (`DbBatch`, keywords, RIDs). Opt-in Turso
+compliance; close high-value ADO gaps (`DbBatch`, keywords). Desktop RID set stays
+the three smoked RIDs (`linux-x64`, `osx-arm64`, `win-x64`) for now. Opt-in Turso
 engine for local EF is planned via
 `UseLibSql(cs, o => o.NativeEngine(LibSqlNativeEngine.Turso))` — not a full cutover.
 

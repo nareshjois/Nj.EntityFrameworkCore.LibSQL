@@ -70,7 +70,7 @@ dotnet nuget push artifacts/packages/*.nupkg \
 Not required for Preview NuGet; track before labeling `10.0.0`:
 
 - [ ] Advertise additional RIDs only after smoke (`win-arm64`, `linux-arm64`,
-      `osx-x64`, musl) — [deployment.md](deployment.md)
+      `osx-x64`, musl) — deferred; Preview keeps three RIDs — [deployment.md](deployment.md)
 - [ ] Drive unexplained compliance skips toward zero / document remaining
 - [ ] Package signing (if required by policy)
 - [ ] API compatibility baselining for public surface

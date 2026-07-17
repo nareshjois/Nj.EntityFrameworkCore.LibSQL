@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Data.Common;
+using System.Diagnostics.CodeAnalysis;
 using Nj.LibSql.Data.Http;
 
 namespace Nj.LibSql.Data;
@@ -86,6 +87,7 @@ internal sealed class LibSqlBatchDataReader : DbDataReader
     public override string GetDataTypeName(int ordinal)
         => Current.GetDataTypeName(ordinal);
 
+    [return: DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.PublicProperties)]
     public override Type GetFieldType(int ordinal)
         => Current.GetFieldType(ordinal);
 
