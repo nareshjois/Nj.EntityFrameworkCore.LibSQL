@@ -82,6 +82,7 @@ jobs:
           --results-directory artifacts/test-results
 
       - name: Pack
+        shell: bash
         run: |
           set -euo pipefail
           # Nj.LibSql.Data is not on nuget.org yet — pack Bindings → Data → EF so
