@@ -64,7 +64,7 @@ internal sealed class HranaValue
     [JsonPropertyName("value")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public object? Value { get; set; }
-    
+
     [JsonPropertyName("base64")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? Base64 { get; set; }
@@ -77,10 +77,10 @@ internal sealed class HranaBatchResponse
 {
     [JsonPropertyName("baton")]
     public string? Baton { get; set; }
-    
+
     [JsonPropertyName("base_url")]
     public string? BaseUrl { get; set; }
-    
+
     [JsonPropertyName("results")]
     public List<HranaResult> Results { get; set; } = new();
 }
@@ -139,18 +139,18 @@ internal sealed class HranaQueryResult
 
     [JsonPropertyName("last_insert_rowid")]
     public string? LastInsertRowid { get; set; }
-    
+
     [JsonPropertyName("replication_index")]
     public string? ReplicationIndex { get; set; }
-    
+
     [JsonPropertyName("rows_read")]
     [JsonNumberHandling(JsonNumberHandling.AllowReadingFromString)]
     public ulong RowsRead { get; set; }
-    
+
     [JsonPropertyName("rows_written")]
     [JsonNumberHandling(JsonNumberHandling.AllowReadingFromString)]
     public ulong RowsWritten { get; set; }
-    
+
     [JsonPropertyName("query_duration_ms")]
     public double QueryDurationMs { get; set; }
 }

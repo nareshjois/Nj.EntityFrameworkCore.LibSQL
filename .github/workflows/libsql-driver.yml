@@ -60,8 +60,6 @@ jobs:
       - name: Restore driver projects
         run: >
           dotnet restore
-          src/Nj.LibSql.Bindings/Nj.LibSql.Bindings.csproj
-          src/Nj.LibSql.Data/Nj.LibSql.Data.csproj
           test/Nj.LibSql.DriverContractTests/Nj.LibSql.DriverContractTests.csproj
 
       - name: Build (committed natives)

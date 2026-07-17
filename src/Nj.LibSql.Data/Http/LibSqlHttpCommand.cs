@@ -81,7 +81,7 @@ internal sealed class LibSqlHttpCommand : DbCommand
             return 0;
 
         var result = response.Results[0];
-        
+
         // Handle sequence response (multiple results)
         if (result.Type == HranaTypes.Sequence)
         {
@@ -89,7 +89,7 @@ internal sealed class LibSqlHttpCommand : DbCommand
             // Return -1 to indicate the operation succeeded but row count is unknown
             return -1;
         }
-        
+
         // Handle single execute response
         if (result.Response?.Result != null)
         {
@@ -152,7 +152,7 @@ internal sealed class LibSqlHttpCommand : DbCommand
             throw new LibSqlException("No results returned from server");
 
         var result = response.Results[0];
-        
+
         // Handle sequence response
         if (result.Type == HranaTypes.Sequence)
         {
@@ -165,7 +165,7 @@ internal sealed class LibSqlHttpCommand : DbCommand
                 AffectedRowCount = 0
             });
         }
-        
+
         // Handle single execute response
         if (result.Response?.Result == null)
         {
@@ -198,11 +198,11 @@ internal sealed class LibSqlHttpCommand : DbCommand
     private HranaBatchRequest CreateBatch()
     {
         var batch = new HranaBatchRequest();
-        
+
         // Check if we have multiple statements (naive check for semicolons outside of strings)
         var sql = CommandText?.Trim() ?? string.Empty;
         var hasMultipleStatements = CountStatements(sql) > 1;
-        
+
         if (hasMultipleStatements && (_parameters == null || _parameters.Count == 0))
         {
             // Use sequence request for multi-statement execution without parameters
@@ -233,14 +233,14 @@ internal sealed class LibSqlHttpCommand : DbCommand
 
         return batch;
     }
-    
+
     private static int CountStatements(string sql)
     {
         // Simple count of statements by splitting on semicolons
         // This is a naive implementation that doesn't handle semicolons in strings
         if (string.IsNullOrWhiteSpace(sql))
             return 0;
-            
+
         var statements = sql.Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
         return statements.Where(s => !string.IsNullOrWhiteSpace(s)).Count();
     }
@@ -271,7 +271,7 @@ internal sealed class LibSqlHttpCommand : DbCommand
     private static HranaValue ConvertParameter(LibSqlParameter parameter)
     {
         var value = parameter.Value;
-        
+
         if (value == null || value == DBNull.Value)
         {
             return new HranaValue { Type = HranaTypes.Null, Value = null };
@@ -279,25 +279,25 @@ internal sealed class LibSqlHttpCommand : DbCommand
 
         return parameter.DbType switch
         {
-            DbType.Boolean => new HranaValue 
-            { 
-                Type = HranaTypes.Integer, 
-                Value = (Convert.ToBoolean(value, CultureInfo.InvariantCulture) ? 1 : 0).ToString(CultureInfo.InvariantCulture) 
+            DbType.Boolean => new HranaValue
+            {
+                Type = HranaTypes.Integer,
+                Value = (Convert.ToBoolean(value, CultureInfo.InvariantCulture) ? 1 : 0).ToString(CultureInfo.InvariantCulture)
             },
-            DbType.Byte or DbType.SByte or DbType.Int16 or DbType.UInt16 or 
-            DbType.Int32 or DbType.UInt32 or DbType.Int64 or DbType.UInt64 => new HranaValue 
-            { 
-                Type = HranaTypes.Integer, 
-                Value = Convert.ToInt64(value, CultureInfo.InvariantCulture).ToString(CultureInfo.InvariantCulture) 
+            DbType.Byte or DbType.SByte or DbType.Int16 or DbType.UInt16 or
+            DbType.Int32 or DbType.UInt32 or DbType.Int64 or DbType.UInt64 => new HranaValue
+            {
+                Type = HranaTypes.Integer,
+                Value = Convert.ToInt64(value, CultureInfo.InvariantCulture).ToString(CultureInfo.InvariantCulture)
             },
-            DbType.Single or DbType.Double or DbType.Decimal => new HranaValue 
-            { 
-                Type = HranaTypes.Float, 
-                Value = Convert.ToDouble(value, CultureInfo.InvariantCulture) 
+            DbType.Single or DbType.Double or DbType.Decimal => new HranaValue
+            {
+                Type = HranaTypes.Float,
+                Value = Convert.ToDouble(value, CultureInfo.InvariantCulture)
             },
-            DbType.Binary => new HranaValue 
-            { 
-                Type = HranaTypes.Blob, 
+            DbType.Binary => new HranaValue
+            {
+                Type = HranaTypes.Blob,
                 Base64 = value is byte[] bytes ? Convert.ToBase64String(bytes) : Convert.ToBase64String((byte[])value),
                 Value = null
             },
@@ -309,8 +309,8 @@ internal sealed class LibSqlHttpCommand : DbCommand
                     Type = HranaTypes.Text,
                     Value = (string)LibSqlTypeConverter.ConvertToLibSql(value, LibSqlDbType.Text)
                 },
-            _ => new HranaValue 
-            { 
+            _ => new HranaValue
+            {
                 Type = HranaTypes.Text,
                 Value = value is DateTime or DateTimeOffset or TimeSpan or Guid
 #if NET6_0_OR_GREATER
@@ -373,9 +373,9 @@ internal sealed class LibSqlHttpCommand : DbCommand
         hranaBatch.Steps.Add(new HranaBatchStep
         {
             Statement = new HranaStatement { Sql = "ROLLBACK", Args = null },
-            Condition = new HranaBatchCondition 
-            { 
-                Type = "not", 
+            Condition = new HranaBatchCondition
+            {
+                Type = "not",
                 InnerCondition = new HranaBatchCondition { Type = "ok", Step = statements.Length + 1 }
             }
         });

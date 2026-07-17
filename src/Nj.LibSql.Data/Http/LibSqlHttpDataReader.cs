@@ -332,21 +332,21 @@ internal sealed class LibSqlHttpDataReader : DbDataReader
         {
             if (element.ValueKind == JsonValueKind.Null)
                 return DBNull.Value;
-                
+
             return value.Type switch
             {
                 HranaTypes.Null => DBNull.Value,
-                HranaTypes.Integer => element.ValueKind == JsonValueKind.String 
-                    ? long.Parse(element.GetString() ?? "0", CultureInfo.InvariantCulture) 
+                HranaTypes.Integer => element.ValueKind == JsonValueKind.String
+                    ? long.Parse(element.GetString() ?? "0", CultureInfo.InvariantCulture)
                     : element.GetInt64(),
-                HranaTypes.Float => element.ValueKind == JsonValueKind.String 
-                    ? double.Parse(element.GetString() ?? "0", CultureInfo.InvariantCulture) 
+                HranaTypes.Float => element.ValueKind == JsonValueKind.String
+                    ? double.Parse(element.GetString() ?? "0", CultureInfo.InvariantCulture)
                     : element.GetDouble(),
                 HranaTypes.Text => element.GetString() ?? string.Empty,
-                HranaTypes.Blob => !string.IsNullOrEmpty(value.Base64) 
-                    ? ConvertFromBase64(value.Base64) 
-                    : (element.ValueKind == JsonValueKind.String 
-                        ? ConvertFromBase64(element.GetString() ?? "") 
+                HranaTypes.Blob => !string.IsNullOrEmpty(value.Base64)
+                    ? ConvertFromBase64(value.Base64)
+                    : (element.ValueKind == JsonValueKind.String
+                        ? ConvertFromBase64(element.GetString() ?? "")
                         : value.Value),
                 _ => element.GetString() ?? string.Empty
             };
@@ -386,7 +386,7 @@ internal sealed class LibSqlHttpDataReader : DbDataReader
             {
                 padded = base64String + new string('=', paddingNeeded);
             }
-            
+
             return Convert.FromBase64String(padded);
         }
         catch (FormatException ex)

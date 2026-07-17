@@ -27,19 +27,19 @@ internal sealed class LibSqlHttpClient : ILibSqlHranaSession
             throw new ArgumentException("URL cannot be null or empty", nameof(url));
 
         _streamBaseUri = ParseStreamBaseUri(NormalizeHttpUrl(url), currentBaseUri: null);
-        
+
         _httpClient = new HttpClient
         {
             Timeout = TimeSpan.FromSeconds(30)
         };
-        
+
         // Only add authorization header if token is provided
         if (!string.IsNullOrWhiteSpace(authToken))
         {
-            _httpClient.DefaultRequestHeaders.Authorization = 
+            _httpClient.DefaultRequestHeaders.Authorization =
                 new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authToken);
         }
-        
+
         _httpClient.DefaultRequestHeaders.Add("User-Agent", "Nj.LibSql.Data/1.0");
     }
 
@@ -62,7 +62,7 @@ internal sealed class LibSqlHttpClient : ILibSqlHranaSession
             var pipelineUri = new Uri(_streamBaseUri, "v2/pipeline");
 
             using var response = await _httpClient.PostAsync(pipelineUri, content, cancellationToken).ConfigureAwait(false);
-            
+
             if (!response.IsSuccessStatusCode)
             {
                 var errorContent = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
@@ -75,7 +75,7 @@ internal sealed class LibSqlHttpClient : ILibSqlHranaSession
 
             var responseJson = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
             var result = JsonSerializer.Deserialize(responseJson, HranaJsonSerializerContext.Default.HranaBatchResponse);
-            
+
             if (result == null)
                 throw new LibSqlException("Failed to deserialize response from server");
 
@@ -215,12 +215,12 @@ public sealed class LibSqlHttpException : LibSqlException
     /// Gets the HTTP status code associated with this exception.
     /// </summary>
     public int StatusCode { get; }
-    
+
     /// <summary>
     /// Gets the response content from the server, if available.
     /// </summary>
     public string? ResponseContent { get; }
-    
+
     /// <summary>
     /// Gets the request content that was sent to the server, if available.
     /// </summary>
