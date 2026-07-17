@@ -62,6 +62,13 @@ jobs:
           dotnet restore
           test/Nj.LibSql.DriverContractTests/Nj.LibSql.DriverContractTests.csproj
 
+      - name: Format (verify)
+        if: runner.os == 'Linux'
+        run: >
+          dotnet format Nj.EntityFrameworkCore.LibSql.slnx --verify-no-changes --no-restore
+          --exclude ./src/Nj.EntityFrameworkCore.LibSql/**
+          --exclude ./external/**
+
       - name: Build (committed natives)
         run: >
           dotnet build test/Nj.LibSql.DriverContractTests/Nj.LibSql.DriverContractTests.csproj

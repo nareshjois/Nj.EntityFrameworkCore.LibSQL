@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# Install repo-local git hooks (format gate on commit).
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
+cd "$ROOT"
+
+git config core.hooksPath eng/githooks
+chmod +x eng/githooks/pre-commit
+
+echo "Installed git hooks: core.hooksPath=$(git config --get core.hooksPath)"
+echo "pre-commit will auto-format + verify (matching CI Linux format step)."
