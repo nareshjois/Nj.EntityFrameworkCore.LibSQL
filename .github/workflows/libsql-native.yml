@@ -1,0 +1,275 @@
+name: libsql-native
+
+# Builds FFI client libs (linux-x64, osx-arm64, win-x64) and publishes a GitHub Release
+# tagged native-libsql-v* for DuckDB-style Bindings downloads (ADR-0002).
+# Also refreshes committed src/Nj.LibSql.Bindings/runtimes/** on the target branch.
+
+on:
+  workflow_dispatch:
+    inputs:
+      libsql_ref:
+        description: 'libSQL release tag or commit (prefer libsql-server-v*)'
+        required: true
+        type: string
+        default: 'libsql-server-v0.24.32'
+      publish_release:
+        description: 'Create/update GitHub Release with per-RID zips'
+        required: false
+        type: boolean
+        default: true
+      commit_runtimes:
+        description: 'Commit rebuilt natives into src/Nj.LibSql.Bindings/runtimes'
+        required: false
+        type: boolean
+        default: true
+      target_branch:
+        description: 'Branch to update when commit_runtimes is true (default: workflow ref)'
+        required: false
+        type: string
+        default: ''
+
+permissions:
+  contents: write
+
+jobs:
+  build-native:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+            output: linux-x64
+            ext: so
+          - os: ubuntu-latest
+            target: x86_64-pc-windows-gnu
+            output: win-x64
+            ext: dll
+            is_cross: true
+          - os: macos-latest
+            target: aarch64-apple-darwin
+            output: osx-arm64
+            ext: dylib
+
+    runs-on: ${{ matrix.os }}
+    outputs:
+      commit_sha: ${{ steps.version_info.outputs.commit_sha }}
+      tag_name: ${{ steps.version_info.outputs.tag_name }}
+      cargo_version: ${{ steps.version_info.outputs.cargo_version }}
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Checkout libSQL
+        uses: actions/checkout@v7
+        with:
+          repository: tursodatabase/libsql
+          ref: ${{ inputs.libsql_ref }}
+          path: libsql
+
+      - name: Get libSQL version info
+        id: version_info
+        shell: bash
+        run: |
+          cd libsql
+          commit_sha="$(git rev-parse HEAD)"
+          echo "commit_sha=${commit_sha}" >> "$GITHUB_OUTPUT"
+          tag_name="$(git describe --exact-match --tags HEAD 2>/dev/null || echo 'no-tag')"
+          echo "tag_name=${tag_name}" >> "$GITHUB_OUTPUT"
+          cargo_version="$(perl -0ne 'if (/\[workspace\.package\].*?version\s*=\s*\"([^\"]+)\"/s) { print $1; exit }' Cargo.toml)"
+          if [ -z "${cargo_version}" ] && [ -f libsql/Cargo.toml ]; then
+            cargo_version="$(perl -0ne 'if (/\[package\].*?name\s*=\s*\"libsql\".*?version\s*=\s*\"([^\"]+)\"/s) { print $1; exit }' libsql/Cargo.toml)"
+          fi
+          if [ -z "${cargo_version}" ]; then
+            echo "Unable to determine libSQL cargo version." >&2
+            exit 1
+          fi
+          echo "cargo_version=${cargo_version}" >> "$GITHUB_OUTPUT"
+
+      - name: Install MinGW for cross-compilation
+        if: matrix.is_cross == true
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y mingw-w64 cmake
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - name: Add Rust target
+        run: rustup target add ${{ matrix.target }}
+
+      - name: Build libSQL C bindings
+        working-directory: libsql/bindings/c
+        shell: bash
+        run: |
+          rm -f rust-toolchain.toml ../../rust-toolchain.toml
+          if [ "${{ matrix.target }}" = "x86_64-pc-windows-gnu" ]; then
+            perl -0pi -e 's/crate-type = \["cdylib",\s*"staticlib"\]/crate-type = ["staticlib"]/g' Cargo.toml
+            perl -0pi -e 's@if let Some\(ref cc\) = cross_cc \{\n        if cc.contains\("aarch64"\) && cc.contains\("linux"\) \{\n            cmake_opts.push\(&cmake_toolchain_opt\);\n            writeln!\(toolchain_file, "set\(CMAKE_SYSTEM_NAME \\"Linux\\"\)"\)\.unwrap\(\);\n            writeln!\(toolchain_file, "set\(CMAKE_SYSTEM_PROCESSOR \\"arm64\\"\)"\)\.unwrap\(\);\n        }\n    \}@if let Some(ref cc) = cross_cc {\n        if cc.contains("aarch64") && cc.contains("linux") {\n            cmake_opts.push(&cmake_toolchain_opt);\n            writeln!(toolchain_file, "set(CMAKE_SYSTEM_NAME \\"Linux\\")").unwrap();\n            writeln!(toolchain_file, "set(CMAKE_SYSTEM_PROCESSOR \\"arm64\\")").unwrap();\n        }\n        if cc.contains("mingw32") {\n            cmake_opts.push(&cmake_toolchain_opt);\n            writeln!(toolchain_file, "set(CMAKE_SYSTEM_NAME \\"Windows\\")").unwrap();\n            writeln!(toolchain_file, "set(CMAKE_SYSTEM_PROCESSOR \\"x86_64\\")").unwrap();\n        }\n    }@s' ../../libsql-ffi/build.rs
+            export CC_x86_64_pc_windows_gnu=x86_64-w64-mingw32-gcc
+            export CXX_x86_64_pc_windows_gnu=x86_64-w64-mingw32-g++
+            export AR_x86_64_pc_windows_gnu=x86_64-w64-mingw32-ar
+            export CARGO_TARGET_X86_64_PC_WINDOWS_GNU_LINKER=x86_64-w64-mingw32-gcc
+          fi
+          LIBSQLITE3_FLAGS="-DSQLITE_ENABLE_COLUMN_METADATA" LIBSQL_BUNDLED=1 cargo build --release --target "${{ matrix.target }}"
+
+      - name: Create shared library (Linux)
+        if: matrix.os == 'ubuntu-latest' && matrix.target == 'x86_64-unknown-linux-gnu'
+        run: |
+          cd libsql/target/${{ matrix.target }}/release
+          ar -x libsql_experimental.a
+          gcc -shared -o libsql.so *.o -lpthread -ldl -lm
+          mkdir -p "${{ github.workspace }}/artifacts/${{ matrix.output }}/native"
+          cp libsql.so "${{ github.workspace }}/artifacts/${{ matrix.output }}/native/"
+
+      - name: Create shared library (Windows)
+        if: matrix.target == 'x86_64-pc-windows-gnu'
+        shell: bash
+        run: |
+          cd libsql/target/${{ matrix.target }}/release
+          ar -x libsql_experimental.a
+          sqlite_lib="$(find ./build -name 'libsqlite3mc_static.a' -type f | head -n 1)"
+          if [ -n "${sqlite_lib}" ]; then ar -x "${sqlite_lib}"; fi
+          if [ -f sqlite3mc.c.obj ]; then mv sqlite3mc.c.obj sqlite3mc.c.o; fi
+          x86_64-w64-mingw32-gcc -shared -o libsql.dll \
+            -Wl,--whole-archive *.o -Wl,--no-whole-archive \
+            -Wl,--export-all-symbols \
+            -lws2_32 -ladvapi32 -luserenv -lbcrypt -lntdll -lcrypt32 \
+            -lsecur32 -lkernel32 -lole32 -loleaut32 -luuid -lncrypt \
+            -static-libgcc
+          mkdir -p "${{ github.workspace }}/artifacts/${{ matrix.output }}/native"
+          cp libsql.dll "${{ github.workspace }}/artifacts/${{ matrix.output }}/native/"
+
+      - name: Create shared library (macOS)
+        if: matrix.os == 'macos-latest'
+        run: |
+          cd libsql/target/${{ matrix.target }}/release
+          ar -x libsql_experimental.a
+          clang -dynamiclib -o libsql.dylib *.o \
+            -framework Security -framework CoreFoundation \
+            -lSystem -lc -lm
+          mkdir -p "${{ github.workspace }}/artifacts/${{ matrix.output }}/native"
+          cp libsql.dylib "${{ github.workspace }}/artifacts/${{ matrix.output }}/native/"
+
+      - name: Zip RID artifact
+        shell: bash
+        run: |
+          cd artifacts/${{ matrix.output }}
+          zip -r "../libsql-${{ matrix.output }}.zip" native
+          ls -la "../libsql-${{ matrix.output }}.zip"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: libsql-${{ matrix.output }}
+          path: |
+            artifacts/libsql-${{ matrix.output }}.zip
+            artifacts/${{ matrix.output }}/native/libsql.${{ matrix.ext }}
+
+      - name: Save version info
+        if: matrix.os == 'ubuntu-latest' && matrix.target == 'x86_64-unknown-linux-gnu'
+        run: |
+          mkdir -p version-info
+          {
+            echo "COMMIT_SHA=${{ steps.version_info.outputs.commit_sha }}"
+            echo "TAG_NAME=${{ steps.version_info.outputs.tag_name }}"
+            echo "CARGO_VERSION=${{ steps.version_info.outputs.cargo_version }}"
+            echo "LIBSQL_REF=${{ inputs.libsql_ref }}"
+          } > version-info/version.env
+
+      - uses: actions/upload-artifact@v4
+        if: matrix.os == 'ubuntu-latest' && matrix.target == 'x86_64-unknown-linux-gnu'
+        with:
+          name: version-info
+          path: version-info/version.env
+
+  publish:
+    needs: build-native
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.target_branch != '' && inputs.target_branch || github.ref_name }}
+          fetch-depth: 0
+
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Read version info
+        id: ver
+        run: |
+          source artifacts/version-info/version.env
+          echo "commit_sha=${COMMIT_SHA}" >> "$GITHUB_OUTPUT"
+          echo "tag_name=${TAG_NAME}" >> "$GITHUB_OUTPUT"
+          echo "cargo_version=${CARGO_VERSION}" >> "$GITHUB_OUTPUT"
+          echo "libsql_ref=${LIBSQL_REF}" >> "$GITHUB_OUTPUT"
+          # Release tag: native-libsql-v0.24.32 from libsql-server-v0.24.32
+          ref="${LIBSQL_REF}"
+          ver="${ref#libsql-server-v}"
+          ver="${ver#v}"
+          echo "release_tag=native-libsql-v${ver}" >> "$GITHUB_OUTPUT"
+          echo "native_version=${ver}" >> "$GITHUB_OUTPUT"
+
+      - name: Stage runtimes + zips
+        run: |
+          mkdir -p src/Nj.LibSql.Bindings/runtimes/linux-x64/native
+          mkdir -p src/Nj.LibSql.Bindings/runtimes/win-x64/native
+          mkdir -p src/Nj.LibSql.Bindings/runtimes/osx-arm64/native
+          mkdir -p release-assets
+
+          cp artifacts/libsql-linux-x64/libsql.so src/Nj.LibSql.Bindings/runtimes/linux-x64/native/ || \
+            cp artifacts/libsql-linux-x64/native/libsql.so src/Nj.LibSql.Bindings/runtimes/linux-x64/native/
+          cp artifacts/libsql-win-x64/libsql.dll src/Nj.LibSql.Bindings/runtimes/win-x64/native/ || \
+            cp artifacts/libsql-win-x64/native/libsql.dll src/Nj.LibSql.Bindings/runtimes/win-x64/native/
+          cp artifacts/libsql-osx-arm64/libsql.dylib src/Nj.LibSql.Bindings/runtimes/osx-arm64/native/ || \
+            cp artifacts/libsql-osx-arm64/native/libsql.dylib src/Nj.LibSql.Bindings/runtimes/osx-arm64/native/
+
+          # Prefer prebuilt zips from build job
+          cp artifacts/libsql-linux-x64/libsql-linux-x64.zip release-assets/ 2>/dev/null || true
+          cp artifacts/libsql-win-x64/libsql-win-x64.zip release-assets/ 2>/dev/null || true
+          cp artifacts/libsql-osx-arm64/libsql-osx-arm64.zip release-assets/ 2>/dev/null || true
+
+          if [ ! -f release-assets/libsql-linux-x64.zip ]; then
+            (cd src/Nj.LibSql.Bindings/runtimes/linux-x64 && zip -r ../../../release-assets/libsql-linux-x64.zip native)
+            (cd src/Nj.LibSql.Bindings/runtimes/win-x64 && zip -r ../../../release-assets/libsql-win-x64.zip native)
+            (cd src/Nj.LibSql.Bindings/runtimes/osx-arm64 && zip -r ../../../release-assets/libsql-osx-arm64.zip native)
+          fi
+
+          {
+            echo "libSQL Reference: ${{ steps.ver.outputs.libsql_ref }}"
+            echo "libSQL Commit: ${{ steps.ver.outputs.commit_sha }}"
+            echo "libSQL Tag: ${{ steps.ver.outputs.tag_name }}"
+            echo "libSQL Cargo Version: ${{ steps.ver.outputs.cargo_version }}"
+            echo "Build Date: $(date -u +"%Y-%m-%d %H:%M:%S UTC")"
+            echo "Build Workflow Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          } > src/Nj.LibSql.Bindings/runtimes/LIBSQL_VERSION
+
+          ls -la release-assets/
+          ls -la src/Nj.LibSql.Bindings/runtimes/*/native/
+
+      - name: Publish GitHub Release
+        if: ${{ inputs.publish_release }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tag="${{ steps.ver.outputs.release_tag }}"
+          if gh release view "$tag" >/dev/null 2>&1; then
+            gh release upload "$tag" release-assets/*.zip --clobber
+          else
+            gh release create "$tag" release-assets/*.zip \
+              --title "$tag" \
+              --notes "FFI client libraries for Nj.LibSql.Bindings (linux-x64, osx-arm64, win-x64). Built from ${{ steps.ver.outputs.libsql_ref }} (${{ steps.ver.outputs.commit_sha }})."
+          fi
+
+      - name: Commit runtimes
+        if: ${{ inputs.commit_runtimes }}
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add src/Nj.LibSql.Bindings/runtimes/
+          if git diff --cached --quiet; then
+            echo "No native library changes to commit."
+            exit 0
+          fi
+          git commit -m "chore(native): update Nj.LibSql.Bindings natives to ${{ steps.ver.outputs.release_tag }}"
+          branch="${{ inputs.target_branch != '' && inputs.target_branch || github.ref_name }}"
+          git push origin "HEAD:${branch}"

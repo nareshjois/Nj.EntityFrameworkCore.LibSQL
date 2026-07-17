@@ -21,6 +21,24 @@ git clone --recurse-submodules https://github.com/nareshjois/Nj.EntityFrameworkC
 git submodule update --init --recursive
 ```
 
+Install the local format gate (once per clone):
+
+```bash
+./eng/githooks/install
+```
+
+This sets `core.hooksPath` to `eng/githooks`. The `pre-commit` hook auto-formats and
+verifies C# the same way Ubuntu CI does (`dotnet format --verify-no-changes`, excluding
+the EF provider tree and `external/`), so whitespace/usings fail before push.
+
+Before pushing driver / Data / Bindings changes, run the full local CI mirror:
+
+```bash
+./eng/verify-driver-ci-local.sh
+# Turso job locally (optional):
+# export LIBSQL_TEST_URL=… LIBSQL_TEST_AUTH_TOKEN=…
+```
+
 See [`docs/adr/0001-soft-fork-nelknet.md`](docs/adr/0001-soft-fork-nelknet.md).
 
 ## Development workflow

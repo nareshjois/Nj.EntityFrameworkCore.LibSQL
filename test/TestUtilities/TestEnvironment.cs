@@ -6,8 +6,11 @@ namespace Nj.EntityFrameworkCore.LibSql.TestUtilities;
 public static class TestEnvironment
 {
     public const string RemoteUrlEnvironmentVariable = "LIBSQL_TEST_URL";
+    public const string AuthTokenEnvironmentVariable = "LIBSQL_TEST_AUTH_TOKEN";
     public const string DisableRemoteEnvironmentVariable = "LIBSQL_DISABLE_REMOTE_TESTS";
     public const string DisableTestcontainersEnvironmentVariable = "LIBSQL_DISABLE_TESTCONTAINERS";
+    public const string RequireRemoteEnvironmentVariable = "LIBSQL_REQUIRE_REMOTE";
+    public const string RequireTursoEnvironmentVariable = "LIBSQL_REQUIRE_TURSO";
 
     /// <summary>
     /// Pinned self-hosted sqld image (digest). Keep in sync with
@@ -31,6 +34,10 @@ public static class TestEnvironment
     public static string? ExternalRemoteSqldUrl
         => Environment.GetEnvironmentVariable(RemoteUrlEnvironmentVariable);
 
+    /// <summary>Optional Turso / remote auth token paired with <see cref="ExternalRemoteSqldUrl"/>.</summary>
+    public static string? AuthToken
+        => Environment.GetEnvironmentVariable(AuthTokenEnvironmentVariable);
+
     /// <summary>
     /// Remote tests run unless explicitly disabled.
     /// </summary>
@@ -50,14 +57,40 @@ public static class TestEnvironment
             "1",
             StringComparison.Ordinal);
 
-    /// <summary>Build a Nelknet connection string for a remote HTTP(S) endpoint.</summary>
-    public static string RemoteConnectionStringFromUrl(string urlOrConnectionString)
+    /// <summary>
+    /// When true (CI remote-sqld job), unavailable remote is a hard failure, not a skip.
+    /// </summary>
+    public static bool RemoteTestsRequired
+        => string.Equals(
+            Environment.GetEnvironmentVariable(RequireRemoteEnvironmentVariable),
+            "1",
+            StringComparison.Ordinal);
+
+    /// <summary>
+    /// When true (CI Turso job), missing Turso secrets / connection is a hard failure.
+    /// </summary>
+    public static bool TursoTestsRequired
+        => string.Equals(
+            Environment.GetEnvironmentVariable(RequireTursoEnvironmentVariable),
+            "1",
+            StringComparison.Ordinal);
+
+    /// <summary>Build a connection string for a remote HTTP(S) / WSS endpoint.</summary>
+    public static string RemoteConnectionStringFromUrl(
+        string urlOrConnectionString,
+        string? authToken = null)
     {
         var raw = urlOrConnectionString.Trim();
         if (raw.Contains('=', StringComparison.Ordinal)
             && raw.Contains("Data Source", StringComparison.OrdinalIgnoreCase))
         {
             return raw;
+        }
+
+        var token = authToken ?? AuthToken;
+        if (!string.IsNullOrWhiteSpace(token))
+        {
+            return $"Data Source={raw};Auth Token={token}";
         }
 
         return $"Data Source={raw}";

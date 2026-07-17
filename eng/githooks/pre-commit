@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+# Matches .github/workflows/ci.yml "Format (verify)" on Linux.
+# Auto-formats non-excluded C# so agents/humans don't round-trip CI for whitespace/usings.
+set -euo pipefail
+
+ROOT="$(git rev-parse --show-toplevel)"
+cd "$ROOT"
+
+staged_cs="$(
+  git diff --cached --name-only --diff-filter=ACMR \
+    | grep '\.cs$' \
+    | grep -v '^src/Nj.EntityFrameworkCore.LibSql/' \
+    | grep -v '^external/' \
+    || true
+)"
+
+if [[ -z "${staged_cs}" ]]; then
+  exit 0
+fi
+
+if ! command -v dotnet >/dev/null 2>&1; then
+  echo "pre-commit: dotnet SDK not on PATH; skipping format gate." >&2
+  exit 0
+fi
+
+echo "pre-commit: formatting staged C# (CI excludes: provider + external/)..."
+
+# Apply whitespace + style so commits match Ubuntu format verify.
+dotnet format whitespace Nj.EntityFrameworkCore.LibSql.slnx \
+  --exclude ./src/Nj.EntityFrameworkCore.LibSql/** \
+  --exclude ./external/**
+
+dotnet format style Nj.EntityFrameworkCore.LibSql.slnx \
+  --exclude ./src/Nj.EntityFrameworkCore.LibSql/** \
+  --exclude ./external/**
+
+# Re-stage files that were already part of this commit and format touched.
+while IFS= read -r file; do
+  [[ -z "${file}" ]] && continue
+  if [[ -f "${file}" ]]; then
+    git add -- "${file}"
+  fi
+done <<< "${staged_cs}"
+
+echo "pre-commit: verifying format (same as CI)..."
+dotnet format Nj.EntityFrameworkCore.LibSql.slnx --verify-no-changes \
+  --exclude ./src/Nj.EntityFrameworkCore.LibSql/** \
+  --exclude ./external/**
+
+echo "pre-commit: format OK"

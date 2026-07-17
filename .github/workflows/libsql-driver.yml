@@ -1,0 +1,201 @@
+name: libsql-driver
+
+# Path-filtered CI for Nj.LibSql.Data / Bindings (ADR-0002).
+# Independent of EF provider CI (ci.yml). Does not run on EF-only changes.
+#
+# Turso secrets (required for turso job — missing secrets fail the job):
+#   LIBSQL_TEST_URL          e.g. libsql://eftest-nareshjois.aws-ap-south-1.turso.io
+#   LIBSQL_TEST_AUTH_TOKEN   Turso auth token
+# Note: Turso Cloud is HTTP-only (no WebSocket upgrade). WSS large-result gate
+# runs against Testcontainers sqld in the remote-sqld job.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/Nj.LibSql.Data/**'
+      - 'src/Nj.LibSql.Bindings/**'
+      - 'test/Nj.LibSql.DriverContractTests/**'
+      - 'test/TestUtilities/**'
+      - 'eng/native/**'
+      - '.github/workflows/libsql-driver.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'src/Nj.LibSql.Data/**'
+      - 'src/Nj.LibSql.Bindings/**'
+      - 'test/Nj.LibSql.DriverContractTests/**'
+      - 'test/TestUtilities/**'
+      - 'eng/native/**'
+      - '.github/workflows/libsql-driver.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: libsql-driver-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  local:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          global-json-file: global.json
+
+      - name: Cache NuGet
+        uses: actions/cache@v6
+        with:
+          path: ~/.nuget/packages
+          key: nuget-driver-${{ runner.os }}-${{ hashFiles('**/Directory.Packages.props', '**/NuGet.config', '**/global.json') }}
+          restore-keys: |
+            nuget-driver-${{ runner.os }}-
+
+      - name: Restore driver projects
+        run: >
+          dotnet restore
+          test/Nj.LibSql.DriverContractTests/Nj.LibSql.DriverContractTests.csproj
+
+      # Format walks the solution; restore the full slnx first (same as ci.yml).
+      # Restoring only DriverContractTests leaves samples/compliance unrestored and
+      # makes `dotnet format --no-restore` fail with CS0246 noise.
+      - name: Restore solution (for format verify)
+        if: runner.os == 'Linux'
+        run: dotnet restore Nj.EntityFrameworkCore.LibSql.slnx
+
+      - name: Format (verify)
+        if: runner.os == 'Linux'
+        run: >
+          dotnet format Nj.EntityFrameworkCore.LibSql.slnx --verify-no-changes --no-restore
+          --exclude ./src/Nj.EntityFrameworkCore.LibSql/**
+          --exclude ./external/**
+
+      - name: Build (committed natives)
+        run: >
+          dotnet build test/Nj.LibSql.DriverContractTests/Nj.LibSql.DriverContractTests.csproj
+          -c Release --no-restore
+          -p:BuildType=ManagedOnly
+
+      - name: Driver contract tests (local only)
+        env:
+          LIBSQL_DISABLE_REMOTE_TESTS: "1"
+        run: >
+          dotnet test test/Nj.LibSql.DriverContractTests/Nj.LibSql.DriverContractTests.csproj
+          -c Release --no-build
+          --filter "FullyQualifiedName!~Remote&FullyQualifiedName!~Turso"
+          --logger "trx;LogFileName=nj-libsql-driver-local-${{ matrix.os }}.trx"
+          --results-directory artifacts/test-results
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nj-libsql-driver-local-${{ matrix.os }}
+          path: artifacts/test-results
+          if-no-files-found: ignore
+
+  remote-sqld:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          global-json-file: global.json
+
+      - name: Cache NuGet
+        uses: actions/cache@v6
+        with:
+          path: ~/.nuget/packages
+          key: nuget-driver-${{ runner.os }}-${{ hashFiles('**/Directory.Packages.props', '**/NuGet.config', '**/global.json') }}
+          restore-keys: |
+            nuget-driver-${{ runner.os }}-
+
+      - name: Restore and build
+        run: >
+          dotnet build test/Nj.LibSql.DriverContractTests/Nj.LibSql.DriverContractTests.csproj
+          -c Release
+          -p:BuildType=ManagedOnly
+
+      - name: Driver contract tests (Testcontainers sqld HTTP)
+        env:
+          LIBSQL_REQUIRE_REMOTE: "1"
+          # Do not use Turso secrets here — exercise HTTP sqld only.
+          LIBSQL_TEST_URL: ""
+          LIBSQL_TEST_AUTH_TOKEN: ""
+        run: >
+          dotnet test test/Nj.LibSql.DriverContractTests/Nj.LibSql.DriverContractTests.csproj
+          -c Release --no-build
+          --filter "FullyQualifiedName~Remote&FullyQualifiedName!~Turso"
+          --logger "trx;LogFileName=nj-libsql-driver-remote-sqld.trx"
+          --results-directory artifacts/test-results
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nj-libsql-driver-remote-sqld
+          path: artifacts/test-results
+          if-no-files-found: ignore
+
+  turso:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Require Turso secrets
+        env:
+          LIBSQL_TEST_URL: ${{ secrets.LIBSQL_TEST_URL }}
+          LIBSQL_TEST_AUTH_TOKEN: ${{ secrets.LIBSQL_TEST_AUTH_TOKEN }}
+        run: |
+          if [ -z "$LIBSQL_TEST_URL" ] || [ -z "$LIBSQL_TEST_AUTH_TOKEN" ]; then
+            echo "::error::Missing Turso secrets. Configure LIBSQL_TEST_URL and LIBSQL_TEST_AUTH_TOKEN (no silent skip)."
+            exit 1
+          fi
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          global-json-file: global.json
+
+      - name: Cache NuGet
+        uses: actions/cache@v6
+        with:
+          path: ~/.nuget/packages
+          key: nuget-driver-${{ runner.os }}-${{ hashFiles('**/Directory.Packages.props', '**/NuGet.config', '**/global.json') }}
+          restore-keys: |
+            nuget-driver-${{ runner.os }}-
+
+      - name: Restore and build
+        run: >
+          dotnet build test/Nj.LibSql.DriverContractTests/Nj.LibSql.DriverContractTests.csproj
+          -c Release
+          -p:BuildType=ManagedOnly
+
+      - name: Driver contract tests (Turso HTTP + large-result)
+        env:
+          LIBSQL_REQUIRE_TURSO: "1"
+          LIBSQL_DISABLE_TESTCONTAINERS: "1"
+          LIBSQL_TEST_URL: ${{ secrets.LIBSQL_TEST_URL }}
+          LIBSQL_TEST_AUTH_TOKEN: ${{ secrets.LIBSQL_TEST_AUTH_TOKEN }}
+        run: >
+          dotnet test test/Nj.LibSql.DriverContractTests/Nj.LibSql.DriverContractTests.csproj
+          -c Release --no-build
+          --filter "FullyQualifiedName~Turso"
+          --logger "trx;LogFileName=nj-libsql-driver-turso.trx"
+          --results-directory artifacts/test-results
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nj-libsql-driver-turso
+          path: artifacts/test-results
+          if-no-files-found: ignore

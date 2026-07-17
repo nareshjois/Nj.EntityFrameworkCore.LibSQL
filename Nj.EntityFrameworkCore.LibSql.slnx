@@ -1,6 +1,8 @@
 <Solution>
   <Folder Name="/src/">
     <Project Path="src/Nj.EntityFrameworkCore.LibSql/Nj.EntityFrameworkCore.LibSql.csproj" />
+    <Project Path="src/Nj.LibSql.Bindings/Nj.LibSql.Bindings.csproj" />
+    <Project Path="src/Nj.LibSql.Data/Nj.LibSql.Data.csproj" />
   </Folder>
   <Folder Name="/test/">
     <Project Path="test/TestUtilities/TestUtilities.csproj" />
@@ -8,6 +10,7 @@
     <Project Path="test/Nj.EntityFrameworkCore.LibSql.FunctionalTests/Nj.EntityFrameworkCore.LibSql.FunctionalTests.csproj" />
     <Project Path="test/Nj.EntityFrameworkCore.LibSql.ComplianceTests/Nj.EntityFrameworkCore.LibSql.ComplianceTests.csproj" />
     <Project Path="test/Nj.EntityFrameworkCore.LibSql.DriverContractTests/Nj.EntityFrameworkCore.LibSql.DriverContractTests.csproj" />
+    <Project Path="test/Nj.LibSql.DriverContractTests/Nj.LibSql.DriverContractTests.csproj" />
     <Project Path="test/Nj.EntityFrameworkCore.LibSql.PackageTests/Nj.EntityFrameworkCore.LibSql.PackageTests.csproj" />
     <Project Path="test/Nj.EntityFrameworkCore.LibSql.TypeMappingDifferentialTests/Nj.EntityFrameworkCore.LibSql.TypeMappingDifferentialTests.csproj" />
   </Folder>
