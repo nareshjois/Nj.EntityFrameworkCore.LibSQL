@@ -10,6 +10,7 @@ Update this file when pins change.
 | Test framework (our suites) | `xunit.v3` `3.2.2` |
 | Test framework (ComplianceTests / EF Spec) | `xunit` `2.9.3` |
 | `Nj.LibSql.Data` / `Nj.LibSql.Bindings` | In-monorepo; EF ProjectReferences Data. Natives: committed `runtimes/` pin `libsql-server-v0.24.32` (`40c272de…`); rebuild via [eng/native/README.md](../eng/native/README.md) / `libsql-native.yml` → `native-libsql-v0.24.32` |
+| Advertised RIDs (Preview) | `linux-x64`, `osx-arm64`, `win-x64` only — see [architecture.md](architecture.md) |
 | Bundled libSQL | `libsql-server-v0.24.32` — `src/Nj.LibSql.Bindings/runtimes/LIBSQL_VERSION` |
 | Runtime version report | `libSQL Version: 0.2.3` / `SQLite Version: 3.45.1` |
 | Provider package | `10.0.0-preview.1` |

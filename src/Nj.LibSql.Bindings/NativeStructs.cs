@@ -53,7 +53,10 @@ internal static class LibSqlType
 }
 
 /// <summary>
-/// <c>libsql_config</c> structure for database configuration.
+/// <c>libsql_config</c> matching the pinned native client
+/// (<c>libsql-server-v0.24.32</c> / commit <c>40c272de</c>).
+/// Newer upstream headers add <c>offline</c> and <c>remote_encryption_key</c>;
+/// do not append those until natives are rebuilt against a newer pin.
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
 internal struct LibSqlConfig
@@ -65,7 +68,6 @@ internal struct LibSqlConfig
     public IntPtr EncryptionKey;
     public int SyncInterval;
     public byte WithWebpki;
-    public byte Offline;
 }
 
 /// <summary>

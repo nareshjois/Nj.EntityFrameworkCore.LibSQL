@@ -1,6 +1,7 @@
 using System.Collections.Concurrent;
 using System.Data;
 using System.Data.Common;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -13,7 +14,8 @@ using Nj.LibSql.Data.Internal;
 namespace Nj.LibSql.Data;
 
 /// <summary>
-/// Represents a connection to a libSQL database (local file / <c>:memory:</c>, or remote Hrana HTTP/WSS).
+/// Represents a connection to a libSQL database (local file / <c>:memory:</c>,
+/// remote Hrana HTTP/WSS, or embedded replica).
 /// </summary>
 public sealed class LibSqlConnection : DbConnection
 {
@@ -30,6 +32,7 @@ public sealed class LibSqlConnection : DbConnection
     private LibSqlStatementCache? _statementCache;
     private bool _enableStatementCaching;
     private bool _isRemoteConnection;
+    private bool _isEmbeddedReplica;
 
     private static readonly StateChangeEventArgs FromClosedToOpenEventArgs =
         new(ConnectionState.Closed, ConnectionState.Open);
@@ -135,122 +138,119 @@ public sealed class LibSqlConnection : DbConnection
     }
 
     public override void Open()
+        => OpenAsync(CancellationToken.None).GetAwaiter().GetResult();
+
+    public override async Task OpenAsync(CancellationToken cancellationToken)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
+        // Take the lock only around state checks / local open; await remote outside.
+        LibSqlConnectionStringBuilder builder;
         lock (_lockObject)
         {
             EnsureConnectionClosed();
+            builder = ConnectionStringBuilder;
 
-            try
+            if (builder.Mode == LibSqlConnectionMode.EmbeddedReplica)
             {
-                var builder = ConnectionStringBuilder;
-
-                if (builder.Mode == LibSqlConnectionMode.EmbeddedReplica)
+                try
                 {
-                    throw new NotImplementedException(
-                        "Embedded-replica libSQL connections are deferred to Preview 2. See docs/architecture.md.");
+                    OpenEmbeddedReplica(builder);
                 }
-
-                if (builder.Mode == LibSqlConnectionMode.Remote)
+                catch
                 {
-                    OpenRemote(builder);
-                    return;
-                }
-
-                LibSqlNative.Initialize();
-
-                var dataSource = builder.DataSource;
-                if (string.IsNullOrWhiteSpace(dataSource))
-                {
-                    throw new LibSqlConnectionException(
-                        "Data source is required.",
-                        LibSqlConnectionStringBuilder.Redact(_connectionString));
-                }
-
-                int result;
-                IntPtr dbHandle;
-                IntPtr errorMsg;
-
-                if (!string.IsNullOrEmpty(builder.EncryptionKey))
-                {
-                    var config = new LibSqlConfig
-                    {
-                        DbPath = Marshal.StringToCoTaskMemUTF8(dataSource),
-                        PrimaryUrl = IntPtr.Zero,
-                        AuthToken = IntPtr.Zero,
-                        ReadYourWrites = 0,
-                        EncryptionKey = Marshal.StringToCoTaskMemUTF8(builder.EncryptionKey),
-                        SyncInterval = 0,
-                        WithWebpki = 0,
-                        Offline = 1
-                    };
-
-                    try
-                    {
-                        result = LibSqlNative.libsql_open_sync_with_config(in config, out dbHandle, out errorMsg);
-                    }
-                    finally
-                    {
-                        if (config.DbPath != IntPtr.Zero)
-                        {
-                            Marshal.FreeCoTaskMem(config.DbPath);
-                        }
-
-                        if (config.EncryptionKey != IntPtr.Zero)
-                        {
-                            Marshal.FreeCoTaskMem(config.EncryptionKey);
-                        }
-                    }
-                }
-                else
-                {
-                    result = LibSqlNative.libsql_open_file(dataSource, out dbHandle, out errorMsg);
-                }
-
-                if (result != 0)
-                {
-                    var errorMessage = LibSqlHelper.GetErrorMessage(errorMsg);
-                    LibSqlNative.libsql_free_error_msg(errorMsg);
-                    throw new LibSqlConnectionException(
-                        $"Failed to open database: {errorMessage}",
-                        result,
-                        LibSqlConnectionStringBuilder.Redact(_connectionString));
-                }
-
-                _databaseHandle = new LibSqlDatabaseHandle(dbHandle);
-
-                result = LibSqlNative.libsql_connect(_databaseHandle, out var connHandle, out errorMsg);
-                if (result != 0)
-                {
-                    var errorMessage = LibSqlHelper.GetErrorMessage(errorMsg);
-                    LibSqlNative.libsql_free_error_msg(errorMsg);
-                    _databaseHandle.Dispose();
+                    _connectionHandle?.Dispose();
+                    _connectionHandle = null;
+                    _databaseHandle?.Dispose();
                     _databaseHandle = null;
-                    throw new LibSqlConnectionException(
-                        $"Failed to connect to database: {errorMessage}",
-                        result,
-                        LibSqlConnectionStringBuilder.Redact(_connectionString));
+                    _isEmbeddedReplica = false;
+                    throw;
                 }
 
-                _connectionHandle = new LibSqlConnectionHandle(connHandle);
-                _connectionState = ConnectionState.Open;
-                OpenConnections.TryAdd(this, 0);
-
-                if (_enableStatementCaching)
-                {
-                    _statementCache = new LibSqlStatementCache(MaxCachedStatements);
-                }
-
-                OnStateChange(FromClosedToOpenEventArgs);
+                return;
             }
-            catch
+
+            if (builder.Mode != LibSqlConnectionMode.Remote)
             {
-                _connectionHandle?.Dispose();
-                _connectionHandle = null;
-                _databaseHandle?.Dispose();
-                _databaseHandle = null;
-                throw;
+                try
+                {
+                    OpenLocal(builder);
+                }
+                catch
+                {
+                    _connectionHandle?.Dispose();
+                    _connectionHandle = null;
+                    _databaseHandle?.Dispose();
+                    _databaseHandle = null;
+                    throw;
+                }
+
+                return;
             }
         }
+
+        try
+        {
+            await OpenRemoteAsync(builder, cancellationToken).ConfigureAwait(false);
+        }
+        catch
+        {
+            lock (_lockObject)
+            {
+                _hranaSession?.Dispose();
+                _hranaSession = null;
+                _isRemoteConnection = false;
+                _connectionState = ConnectionState.Closed;
+            }
+
+            throw;
+        }
+    }
+
+    /// <summary>
+    /// Synchronizes this embedded replica with its remote primary
+    /// (<c>libsql_sync2</c>). Consistency matches native libSQL settings
+    /// (<see cref="LibSqlConnectionStringBuilder.ReadYourWrites"/>, sync interval).
+    /// </summary>
+    public LibSqlSyncResult Sync()
+    {
+        EnsureConnectionOpen();
+
+        if (!_isEmbeddedReplica || _databaseHandle is null || _databaseHandle.IsInvalid)
+        {
+            throw new InvalidOperationException(
+                "Sync is only supported on open embedded-replica connections "
+                + "(Data Source=<local path>;Sync URL=<primary>).");
+        }
+
+        using var activity = LibSqlActivitySource.StartSync();
+
+        // Do not hold _lockObject across native sync — libsql uses an internal Tokio
+        // runtime (block_on); nested locks with command execution are unsafe.
+        var databaseHandle = _databaseHandle;
+        var result = LibSqlNative.libsql_sync2(databaseHandle, out var replicated, out var errorMsg);
+        if (result != 0)
+        {
+            var errorMessage = LibSqlHelper.GetErrorMessage(errorMsg);
+            LibSqlNative.libsql_free_error_msg(errorMsg);
+            activity?.SetStatus(ActivityStatusCode.Error, errorMessage);
+            throw new LibSqlException(
+                $"Failed to sync embedded replica: {errorMessage}",
+                result);
+        }
+
+        activity?.SetTag("libsql.sync.frames", replicated.FramesSynced);
+        return new LibSqlSyncResult(replicated.FrameNo, replicated.FramesSynced);
+    }
+
+    /// <summary>
+    /// Asynchronously synchronizes this embedded replica with its remote primary.
+    /// Native sync is blocking; this offloads to the thread pool.
+    /// </summary>
+    public Task<LibSqlSyncResult> SyncAsync(CancellationToken cancellationToken = default)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        return Task.Run(Sync, cancellationToken);
     }
 
     public override void Close()
@@ -314,6 +314,7 @@ public sealed class LibSqlConnection : DbConnection
                     _databaseHandle = null;
                 }
 
+                _isEmbeddedReplica = false;
                 _connectionState = ConnectionState.Closed;
                 OpenConnections.TryRemove(this, out _);
                 OnStateChange(FromOpenToClosedEventArgs);
@@ -554,9 +555,224 @@ public sealed class LibSqlConnection : DbConnection
 
     internal bool IsRemoteConnection => _isRemoteConnection;
 
+    /// <summary>True when this connection was opened as an embedded replica.</summary>
+    public bool IsEmbeddedReplica => _isEmbeddedReplica;
+
     internal ILibSqlHranaSession? HranaSession => _hranaSession;
 
-    private void OpenRemote(LibSqlConnectionStringBuilder builder)
+    private void OpenLocal(LibSqlConnectionStringBuilder builder)
+    {
+        LibSqlNative.Initialize();
+
+        var dataSource = builder.DataSource;
+        if (string.IsNullOrWhiteSpace(dataSource))
+        {
+            throw new LibSqlConnectionException(
+                "Data source is required.",
+                LibSqlConnectionStringBuilder.Redact(_connectionString));
+        }
+
+        int result;
+        IntPtr dbHandle;
+        IntPtr errorMsg;
+
+        if (!string.IsNullOrEmpty(builder.EncryptionKey))
+        {
+            var config = new LibSqlConfig
+            {
+                DbPath = Marshal.StringToCoTaskMemUTF8(dataSource),
+                PrimaryUrl = IntPtr.Zero,
+                AuthToken = IntPtr.Zero,
+                ReadYourWrites = 0,
+                EncryptionKey = Marshal.StringToCoTaskMemUTF8(builder.EncryptionKey),
+                SyncInterval = 0,
+                WithWebpki = 0
+            };
+
+            try
+            {
+                result = LibSqlNative.libsql_open_sync_with_config(in config, out dbHandle, out errorMsg);
+            }
+            finally
+            {
+                FreeConfigStrings(ref config);
+            }
+        }
+        else
+        {
+            result = LibSqlNative.libsql_open_file(dataSource, out dbHandle, out errorMsg);
+        }
+
+        CompleteNativeOpen(result, dbHandle, errorMsg, embeddedReplica: false);
+    }
+
+    private void OpenEmbeddedReplica(LibSqlConnectionStringBuilder builder)
+    {
+        LibSqlNative.Initialize();
+
+        var dataSource = builder.DataSource;
+        if (string.IsNullOrWhiteSpace(dataSource))
+        {
+            throw new LibSqlConnectionException(
+                "Data source (local replica path) is required for embedded replica mode.",
+                LibSqlConnectionStringBuilder.Redact(_connectionString));
+        }
+
+        if (dataSource.StartsWith("http://", StringComparison.OrdinalIgnoreCase)
+            || dataSource.StartsWith("https://", StringComparison.OrdinalIgnoreCase)
+            || dataSource.StartsWith("libsql://", StringComparison.OrdinalIgnoreCase)
+            || dataSource.StartsWith("ws://", StringComparison.OrdinalIgnoreCase)
+            || dataSource.StartsWith("wss://", StringComparison.OrdinalIgnoreCase)
+            || dataSource.Equals(":memory:", StringComparison.OrdinalIgnoreCase))
+        {
+            throw new LibSqlConnectionException(
+                "Embedded replica Data Source must be a local file path "
+                + "(not :memory: or a remote URL). Use Sync URL for the primary.",
+                LibSqlConnectionStringBuilder.Redact(_connectionString));
+        }
+
+        var syncUrl = builder.SyncUrl;
+        if (string.IsNullOrWhiteSpace(syncUrl))
+        {
+            throw new LibSqlConnectionException(
+                "Sync URL is required for embedded replica mode.",
+                LibSqlConnectionStringBuilder.Redact(_connectionString));
+        }
+
+        var primaryUrl = LibSqlRemoteTransport.NormalizeLibSqlToHttpUrl(builder.SyncUrl!.Trim());
+        if (builder.Offline
+            && primaryUrl.IndexOf("offline", StringComparison.OrdinalIgnoreCase) < 0)
+        {
+            primaryUrl += primaryUrl.Contains('?', StringComparison.Ordinal) ? "&offline" : "?offline";
+        }
+
+        var useWebpki = primaryUrl.StartsWith("https://", StringComparison.OrdinalIgnoreCase);
+        var authToken = builder.EffectiveSyncAuthToken ?? string.Empty;
+        var directory = Path.GetDirectoryName(Path.GetFullPath(dataSource));
+        if (!string.IsNullOrEmpty(directory))
+        {
+            Directory.CreateDirectory(directory);
+        }
+
+        int result;
+        IntPtr dbHandle;
+        IntPtr errorMsg;
+
+        // Prefer the dedicated webpki entry point when no advanced config knobs are set —
+        // it avoids libsql_config layout/padding risk across native versions.
+        // Native sync_interval is seconds (see libsql C bindings).
+        var useSimpleWebpki =
+            useWebpki
+            && builder.SyncInterval == 0
+            && string.IsNullOrEmpty(builder.EncryptionKey);
+
+        if (useSimpleWebpki)
+        {
+            result = LibSqlNative.libsql_open_sync_with_webpki(
+                dataSource,
+                primaryUrl,
+                authToken,
+                builder.ReadYourWrites ? (byte)1 : (byte)0,
+                encryptionKey: null,
+                out dbHandle,
+                out errorMsg);
+        }
+        else
+        {
+            var config = new LibSqlConfig
+            {
+                DbPath = Marshal.StringToCoTaskMemUTF8(dataSource),
+                PrimaryUrl = Marshal.StringToCoTaskMemUTF8(primaryUrl),
+                AuthToken = Marshal.StringToCoTaskMemUTF8(authToken),
+                ReadYourWrites = builder.ReadYourWrites ? (byte)1 : (byte)0,
+                EncryptionKey = string.IsNullOrEmpty(builder.EncryptionKey)
+                    ? IntPtr.Zero
+                    : Marshal.StringToCoTaskMemUTF8(builder.EncryptionKey),
+                SyncInterval = builder.SyncInterval,
+                WithWebpki = useWebpki ? (byte)1 : (byte)0
+            };
+
+            try
+            {
+                result = LibSqlNative.libsql_open_sync_with_config(in config, out dbHandle, out errorMsg);
+            }
+            finally
+            {
+                FreeConfigStrings(ref config);
+            }
+        }
+
+        CompleteNativeOpen(result, dbHandle, errorMsg, embeddedReplica: true);
+    }
+
+    private void CompleteNativeOpen(int result, IntPtr dbHandle, IntPtr errorMsg, bool embeddedReplica)
+    {
+        if (result != 0)
+        {
+            var errorMessage = LibSqlHelper.GetErrorMessage(errorMsg);
+            LibSqlNative.libsql_free_error_msg(errorMsg);
+            throw new LibSqlConnectionException(
+                $"Failed to open database: {errorMessage}",
+                result,
+                LibSqlConnectionStringBuilder.Redact(_connectionString));
+        }
+
+        _databaseHandle = new LibSqlDatabaseHandle(dbHandle);
+
+        result = LibSqlNative.libsql_connect(_databaseHandle, out var connHandle, out errorMsg);
+        if (result != 0)
+        {
+            var errorMessage = LibSqlHelper.GetErrorMessage(errorMsg);
+            LibSqlNative.libsql_free_error_msg(errorMsg);
+            _databaseHandle.Dispose();
+            _databaseHandle = null;
+            throw new LibSqlConnectionException(
+                $"Failed to connect to database: {errorMessage}",
+                result,
+                LibSqlConnectionStringBuilder.Redact(_connectionString));
+        }
+
+        _connectionHandle = new LibSqlConnectionHandle(connHandle);
+        _isEmbeddedReplica = embeddedReplica;
+        _connectionState = ConnectionState.Open;
+        OpenConnections.TryAdd(this, 0);
+
+        if (_enableStatementCaching)
+        {
+            _statementCache = new LibSqlStatementCache(MaxCachedStatements);
+        }
+
+        OnStateChange(FromClosedToOpenEventArgs);
+    }
+
+    private static void FreeConfigStrings(ref LibSqlConfig config)
+    {
+        if (config.DbPath != IntPtr.Zero)
+        {
+            Marshal.FreeCoTaskMem(config.DbPath);
+            config.DbPath = IntPtr.Zero;
+        }
+
+        if (config.PrimaryUrl != IntPtr.Zero)
+        {
+            Marshal.FreeCoTaskMem(config.PrimaryUrl);
+            config.PrimaryUrl = IntPtr.Zero;
+        }
+
+        if (config.AuthToken != IntPtr.Zero)
+        {
+            Marshal.FreeCoTaskMem(config.AuthToken);
+            config.AuthToken = IntPtr.Zero;
+        }
+
+        if (config.EncryptionKey != IntPtr.Zero)
+        {
+            Marshal.FreeCoTaskMem(config.EncryptionKey);
+            config.EncryptionKey = IntPtr.Zero;
+        }
+    }
+
+    private async Task OpenRemoteAsync(LibSqlConnectionStringBuilder builder, CancellationToken cancellationToken)
     {
         var dataSource = builder.DataSource
             ?? throw new LibSqlConnectionException(
@@ -565,25 +781,35 @@ public sealed class LibSqlConnection : DbConnection
 
         try
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             if (LibSqlRemoteTransport.IsWebSocketUrl(dataSource))
             {
-                _hranaSession = LibSqlWsClient.ConnectAsync(dataSource, builder.AuthToken)
-                    .GetAwaiter()
-                    .GetResult();
+                _hranaSession = await LibSqlWsClient
+                    .ConnectAsync(dataSource, builder.AuthToken, cancellationToken)
+                    .ConfigureAwait(false);
             }
             else
             {
                 _hranaSession = new LibSqlHttpClient(dataSource, builder.AuthToken);
             }
 
-            var testTask = _hranaSession.TestConnectionAsync();
-            if (!testTask.Wait(TimeSpan.FromSeconds(15)) || !testTask.Result)
+            using var timeoutCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+            timeoutCts.CancelAfter(TimeSpan.FromSeconds(15));
+            var ok = await _hranaSession.TestConnectionAsync(timeoutCts.Token).ConfigureAwait(false);
+            if (!ok)
             {
                 throw new LibSqlConnectionException(
                     "Failed to connect to remote libSQL server",
                     0,
                     LibSqlConnectionStringBuilder.Redact(_connectionString));
             }
+        }
+        catch (OperationCanceledException)
+        {
+            _hranaSession?.Dispose();
+            _hranaSession = null;
+            throw;
         }
         catch (Exception ex) when (ex is not LibSqlConnectionException)
         {
@@ -595,9 +821,13 @@ public sealed class LibSqlConnection : DbConnection
                 ex is AggregateException { InnerException: { } inner } ? inner : ex);
         }
 
-        _isRemoteConnection = true;
-        _connectionState = ConnectionState.Open;
-        OpenConnections.TryAdd(this, 0);
+        lock (_lockObject)
+        {
+            _isRemoteConnection = true;
+            _connectionState = ConnectionState.Open;
+            OpenConnections.TryAdd(this, 0);
+        }
+
         OnStateChange(FromClosedToOpenEventArgs);
     }
 

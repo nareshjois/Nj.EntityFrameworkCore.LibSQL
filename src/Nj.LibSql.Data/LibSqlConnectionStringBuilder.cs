@@ -1,5 +1,6 @@
 using System.Data.Common;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 
 namespace Nj.LibSql.Data;
 
@@ -29,6 +30,11 @@ public sealed class LibSqlConnectionStringBuilder : DbConnectionStringBuilder
         "Sync Auth Token",
         "SyncAuthToken",
         "SyncToken",
+        "Sync Interval",
+        "SyncInterval",
+        "Read Your Writes",
+        "ReadYourWrites",
+        "Offline",
     };
 
     private const string InMemoryConnectionString = ":memory:";
@@ -39,6 +45,9 @@ public sealed class LibSqlConnectionStringBuilder : DbConnectionStringBuilder
     private string? _encryptionKey;
     private string? _syncUrl;
     private string? _syncAuthToken;
+    private int _syncInterval;
+    private bool _readYourWrites = true;
+    private bool _offline;
     private LibSqlConnectionMode _mode = LibSqlConnectionMode.Local;
 
     public LibSqlConnectionStringBuilder()
@@ -108,8 +117,58 @@ public sealed class LibSqlConnectionStringBuilder : DbConnectionStringBuilder
         }
     }
 
+    /// <summary>
+    /// Gets or sets automatic sync interval in seconds (0 = manual <see cref="LibSqlConnection.Sync"/> only).
+    /// Matches the native libSQL <c>sync_interval</c> field.
+    /// </summary>
+    public int SyncInterval
+    {
+        get => _syncInterval;
+        set
+        {
+            ArgumentOutOfRangeException.ThrowIfNegative(value);
+            _syncInterval = value;
+            base["Sync Interval"] = value;
+        }
+    }
+
+    /// <summary>
+    /// When <see langword="true"/> (default), local writes are visible before the next remote sync.
+    /// </summary>
+    public bool ReadYourWrites
+    {
+        get => _readYourWrites;
+        set
+        {
+            _readYourWrites = value;
+            base["Read Your Writes"] = value;
+        }
+    }
+
+    /// <summary>
+    /// When <see langword="true"/>, appends <c>?offline</c> to the sync URL so the native
+    /// client opens without contacting the primary until <see cref="LibSqlConnection.Sync"/>.
+    /// (Pinned natives do not expose a separate offline config field.)
+    /// </summary>
+    public bool Offline
+    {
+        get => _offline;
+        set
+        {
+            _offline = value;
+            base["Offline"] = value;
+        }
+    }
+
     /// <summary>Gets the connection mode inferred from the current configuration.</summary>
     public LibSqlConnectionMode Mode => _mode;
+
+    /// <summary>
+    /// Auth token used for embedded-replica sync: <see cref="SyncAuthToken"/> if set,
+    /// otherwise <see cref="AuthToken"/>.
+    /// </summary>
+    public string? EffectiveSyncAuthToken
+        => !string.IsNullOrEmpty(_syncAuthToken) ? _syncAuthToken : _authToken;
 
     [AllowNull]
     public override object this[string keyword]
@@ -140,6 +199,15 @@ public sealed class LibSqlConnectionStringBuilder : DbConnectionStringBuilder
                 case "Sync Auth Token":
                     SyncAuthToken = value?.ToString();
                     break;
+                case "Sync Interval":
+                    SyncInterval = ConvertToInt32(value);
+                    break;
+                case "Read Your Writes":
+                    ReadYourWrites = ConvertToBoolean(value);
+                    break;
+                case "Offline":
+                    Offline = ConvertToBoolean(value);
+                    break;
                 default:
                     base[keyword] = value;
                     break;
@@ -166,6 +234,9 @@ public sealed class LibSqlConnectionStringBuilder : DbConnectionStringBuilder
             "encryptionkey" or "key" => "Encryption Key",
             "syncurl" => "Sync URL",
             "syncauthtoken" or "synctoken" => "Sync Auth Token",
+            "syncinterval" => "Sync Interval",
+            "readyourwrites" => "Read Your Writes",
+            "offline" => "Offline",
             _ => keyword
         };
 
@@ -201,6 +272,9 @@ public sealed class LibSqlConnectionStringBuilder : DbConnectionStringBuilder
         _encryptionKey = null;
         _syncUrl = null;
         _syncAuthToken = null;
+        _syncInterval = 0;
+        _readYourWrites = true;
+        _offline = false;
         _mode = LibSqlConnectionMode.Local;
     }
 
@@ -237,6 +311,15 @@ public sealed class LibSqlConnectionStringBuilder : DbConnectionStringBuilder
                     break;
                 case "Sync Auth Token":
                     _syncAuthToken = null;
+                    break;
+                case "Sync Interval":
+                    _syncInterval = 0;
+                    break;
+                case "Read Your Writes":
+                    _readYourWrites = true;
+                    break;
+                case "Offline":
+                    _offline = false;
                     break;
             }
         }
@@ -282,11 +365,51 @@ public sealed class LibSqlConnectionStringBuilder : DbConnectionStringBuilder
             _syncAuthToken = syncAuthToken?.ToString();
         }
 
+        if (base.TryGetValue("Sync Interval", out var syncInterval))
+        {
+            _syncInterval = ConvertToInt32(syncInterval);
+        }
+
+        if (base.TryGetValue("Read Your Writes", out var readYourWrites))
+        {
+            _readYourWrites = ConvertToBoolean(readYourWrites);
+        }
+
+        if (base.TryGetValue("Offline", out var offline))
+        {
+            _offline = ConvertToBoolean(offline);
+        }
+
         UpdateMode();
     }
 
-    /// <summary>Returns a redacted copy of a connection string, masking auth token values.</summary>
-    internal static string Redact(string? connectionString)
+    private static int ConvertToInt32(object? value)
+        => value switch
+        {
+            null => 0,
+            int i => i,
+            long l => checked((int)l),
+            string s when int.TryParse(s, NumberStyles.Integer, CultureInfo.InvariantCulture, out var parsed)
+                => parsed,
+            _ => Convert.ToInt32(value, CultureInfo.InvariantCulture)
+        };
+
+    private static bool ConvertToBoolean(object? value)
+        => value switch
+        {
+            null => false,
+            bool b => b,
+            string s when bool.TryParse(s, out var parsed) => parsed,
+            string s when int.TryParse(s, NumberStyles.Integer, CultureInfo.InvariantCulture, out var n)
+                => n != 0,
+            _ => Convert.ToBoolean(value, CultureInfo.InvariantCulture)
+        };
+
+    /// <summary>
+    /// Returns a redacted copy of a connection string, masking auth tokens and encryption keys.
+    /// Use this for logs, exceptions, and diagnostics — never echo raw connection strings.
+    /// </summary>
+    public static string Redact(string? connectionString)
     {
         if (string.IsNullOrEmpty(connectionString))
         {
@@ -296,7 +419,12 @@ public sealed class LibSqlConnectionStringBuilder : DbConnectionStringBuilder
         try
         {
             var builder = new DbConnectionStringBuilder { ConnectionString = connectionString };
-            foreach (var sensitiveKey in new[] { "Auth Token", "AuthToken", "Token", "Sync Auth Token", "SyncAuthToken", "SyncToken", "Encryption Key", "EncryptionKey", "Key" })
+            foreach (var sensitiveKey in new[]
+                     {
+                         "Auth Token", "AuthToken", "Token",
+                         "Sync Auth Token", "SyncAuthToken", "SyncToken",
+                         "Encryption Key", "EncryptionKey", "Key"
+                     })
             {
                 if (builder.ContainsKey(sensitiveKey))
                 {
@@ -319,9 +447,9 @@ public enum LibSqlConnectionMode
     /// <summary>Local file-based or in-memory database connection.</summary>
     Local,
 
-    /// <summary>Remote HTTP-based database connection (not implemented in Phase 1).</summary>
+    /// <summary>Remote HTTP/WebSocket Hrana connection.</summary>
     Remote,
 
-    /// <summary>Embedded replica with sync capabilities (not implemented in Phase 1).</summary>
+    /// <summary>Embedded replica with sync against a remote primary.</summary>
     EmbeddedReplica
 }

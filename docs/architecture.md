@@ -33,8 +33,18 @@ Connection modes are selected **only** via the connection string (or an existing
 
 ## Natives
 
-Local file / `:memory:` uses P/Invoke through Bindings. RIDs:
-`linux-x64`, `osx-arm64`, `win-x64`.
+Local file / `:memory:` uses P/Invoke through Bindings.
+
+### Advertised RIDs (Preview)
+
+| RID | Validation |
+|-----|------------|
+| `linux-x64` | CI (`ubuntu-latest`) |
+| `win-x64` | CI (`windows-latest`) |
+| `osx-arm64` | Maintainer-validated (Apple Silicon); committed natives in `runtimes/` |
+
+**Not yet advertised:** `win-arm64`, `linux-arm64`, `osx-x64`, Linux musl/Alpine,
+mobile. Do not claim them in NuGet metadata until smoke tests pass.
 
 Official [libsql releases](https://github.com/tursodatabase/libsql/releases)
 publish **libsql-server**, not the C client library. Client libs are built and
@@ -70,6 +80,5 @@ Turso driver jobs require secrets `LIBSQL_TEST_URL` and `LIBSQL_TEST_AUTH_TOKEN`
 
 ## Preview scope
 
-- **Preview 1:** local + remote (`sqld` / Turso).
-- **Preview 2+:** embedded replica sync via `DatabaseFacade` extensions that
-  delegate to the driver (CS keys already accepted as stubs).
+- **Preview 1:** local + remote (`sqld` / Turso). Embedded replica open/sync is
+  shipped; Sync is validated on self-hosted `sqld` (Turso Sync hang — **C-019**).

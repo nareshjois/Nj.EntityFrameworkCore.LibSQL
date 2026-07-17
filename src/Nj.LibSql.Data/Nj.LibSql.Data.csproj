@@ -15,5 +15,7 @@
     <None Include="$(RepoRoot)README.md" Pack="true" PackagePath="\" Condition="Exists('$(RepoRoot)README.md')" />
     <ProjectReference Include="..\Nj.LibSql.Bindings\Nj.LibSql.Bindings.csproj" />
     <InternalsVisibleTo Include="Nj.LibSql.DriverContractTests" />
+    <InternalsVisibleTo Include="Nj.EntityFrameworkCore.LibSql.UnitTests" />
+    <InternalsVisibleTo Include="Nj.EntityFrameworkCore.LibSql.FunctionalTests" />
   </ItemGroup>
 </Project>

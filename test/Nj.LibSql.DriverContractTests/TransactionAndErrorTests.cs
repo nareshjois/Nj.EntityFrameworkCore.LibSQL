@@ -293,6 +293,7 @@ public sealed class ErrorMappingLocalTests
             "Data Source=http://127.0.0.1:1;Auth Token=super-secret-token-value");
         var ex = Assert.ThrowsAny<Exception>(() => connection.Open());
         Assert.DoesNotContain("super-secret-token-value", ex.Message, StringComparison.Ordinal);
+        Assert.DoesNotContain("super-secret-token-value", ex.ToString(), StringComparison.Ordinal);
         if (ex is LibSqlConnectionException connectionException
             && connectionException.ConnectionString is not null)
         {

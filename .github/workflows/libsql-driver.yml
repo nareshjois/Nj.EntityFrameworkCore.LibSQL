@@ -132,7 +132,7 @@ jobs:
         run: >
           dotnet test test/Nj.LibSql.DriverContractTests/Nj.LibSql.DriverContractTests.csproj
           -c Release --no-build
-          --filter "FullyQualifiedName~Remote&FullyQualifiedName!~Turso"
+          --filter "FullyQualifiedName~Remote|FullyQualifiedName~EmbeddedReplica&FullyQualifiedName!~Turso"
           --logger "trx;LogFileName=nj-libsql-driver-remote-sqld.trx"
           --results-directory artifacts/test-results
 

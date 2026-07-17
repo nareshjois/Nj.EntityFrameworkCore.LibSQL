@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
@@ -22,6 +23,7 @@ internal sealed class LibSqlHttpCommand : DbCommand
     private readonly LibSqlParameterCollection _parameters;
     private string _commandText = string.Empty;
     private int _commandTimeout = 30;
+    private CancellationTokenSource? _activeExecuteCts;
 
     public LibSqlHttpCommand(ILibSqlHranaSession session)
     {
@@ -56,7 +58,16 @@ internal sealed class LibSqlHttpCommand : DbCommand
 
     public override void Cancel()
     {
-        // HTTP requests can't be cancelled once sent, this is a no-op
+        // Best-effort: cancel the linked CTS for an in-flight HTTP/WS execute.
+        // Bytes already sent may still complete server-side.
+        try
+        {
+            _activeExecuteCts?.Cancel();
+        }
+        catch (ObjectDisposedException)
+        {
+            // ignored
+        }
     }
 
     public override int ExecuteNonQuery()
@@ -74,29 +85,49 @@ internal sealed class LibSqlHttpCommand : DbCommand
             cts.CancelAfter(TimeSpan.FromSeconds(CommandTimeout));
         }
 
-        var batch = CreateBatch();
-        var response = await _session.ExecuteBatchAsync(batch, cts.Token).ConfigureAwait(false);
-
-        if (response.Results.Count == 0)
-            return 0;
-
-        var result = response.Results[0];
-
-        // Handle sequence response (multiple results)
-        if (result.Type == HranaTypes.Sequence)
+        _activeExecuteCts = cts;
+        try
         {
-            // For sequence, we don't get individual affected row counts
-            // Return -1 to indicate the operation succeeded but row count is unknown
-            return -1;
-        }
+            using var activity = LibSqlActivitySource.StartRemoteCommand("ExecuteNonQuery", CommandText);
+            try
+            {
+                var batch = CreateBatch();
+                var response = await _session.ExecuteBatchAsync(batch, cts.Token).ConfigureAwait(false);
 
-        // Handle single execute response
-        if (result.Response?.Result != null)
+                if (response.Results.Count == 0)
+                    return 0;
+
+                var result = response.Results[0];
+
+                // Handle sequence response (multiple results)
+                if (result.Type == HranaTypes.Sequence)
+                {
+                    // For sequence, we don't get individual affected row counts
+                    // Return -1 to indicate the operation succeeded but row count is unknown
+                    return -1;
+                }
+
+                // Handle single execute response
+                if (result.Response?.Result != null)
+                {
+                    return (int)result.Response.Result.AffectedRowCount;
+                }
+
+                return 0;
+            }
+            catch (Exception ex)
+            {
+                activity?.SetStatus(ActivityStatusCode.Error, ex.Message);
+                throw;
+            }
+        }
+        finally
         {
-            return (int)result.Response.Result.AffectedRowCount;
+            if (ReferenceEquals(_activeExecuteCts, cts))
+            {
+                _activeExecuteCts = null;
+            }
         }
-
-        return 0;
     }
 
     public override object? ExecuteScalar()
@@ -129,50 +160,70 @@ internal sealed class LibSqlHttpCommand : DbCommand
             cts.CancelAfter(TimeSpan.FromSeconds(CommandTimeout));
         }
 
-        // WebSocket: stream large result sets via Hrana cursor (HTTP batch has payload limits).
-        if (_session is LibSqlWsClient wsClient)
+        _activeExecuteCts = cts;
+        try
         {
-            var sql = CommandText?.Trim() ?? string.Empty;
-            if (CountStatements(sql) <= 1)
+            using var activity = LibSqlActivitySource.StartRemoteCommand("ExecuteReader", CommandText);
+            try
             {
-                var parameterLayout = SqlParameterLayout.Parse(sql);
-                var cursorResult = await wsClient.ExecuteCursorQueryAsync(
-                        parameterLayout.ToIndexedParameterSql(sql),
-                        CreateArgs(parameterLayout),
-                        cts.Token)
-                    .ConfigureAwait(false);
-                return new LibSqlHttpDataReader(cursorResult);
+                // WebSocket: stream large result sets via Hrana cursor (HTTP batch has payload limits).
+                if (_session is LibSqlWsClient wsClient)
+                {
+                    var sql = CommandText?.Trim() ?? string.Empty;
+                    if (CountStatements(sql) <= 1)
+                    {
+                        var parameterLayout = SqlParameterLayout.Parse(sql);
+                        var cursorResult = await wsClient.ExecuteCursorQueryAsync(
+                                parameterLayout.ToIndexedParameterSql(sql),
+                                CreateArgs(parameterLayout),
+                                cts.Token)
+                            .ConfigureAwait(false);
+                        return new LibSqlHttpDataReader(cursorResult);
+                    }
+                }
+
+                var batch = CreateBatch();
+                var response = await _session.ExecuteBatchAsync(batch, cts.Token).ConfigureAwait(false);
+
+                if (response.Results.Count == 0)
+                    throw new LibSqlException("No results returned from server");
+
+                var result = response.Results[0];
+
+                // Handle sequence response
+                if (result.Type == HranaTypes.Sequence)
+                {
+                    // Sequence responses don't return data readers
+                    // Return empty reader for compatibility
+                    return new LibSqlHttpDataReader(new HranaQueryResult
+                    {
+                        Cols = new List<HranaColumn>(),
+                        Rows = new List<List<HranaValue>>(),
+                        AffectedRowCount = 0
+                    });
+                }
+
+                // Handle single execute response
+                if (result.Response?.Result == null)
+                {
+                    throw new LibSqlException("Invalid response from server");
+                }
+
+                return new LibSqlHttpDataReader(result.Response.Result);
+            }
+            catch (Exception ex)
+            {
+                activity?.SetStatus(ActivityStatusCode.Error, ex.Message);
+                throw;
             }
         }
-
-        var batch = CreateBatch();
-        var response = await _session.ExecuteBatchAsync(batch, cts.Token).ConfigureAwait(false);
-
-        if (response.Results.Count == 0)
-            throw new LibSqlException("No results returned from server");
-
-        var result = response.Results[0];
-
-        // Handle sequence response
-        if (result.Type == HranaTypes.Sequence)
+        finally
         {
-            // Sequence responses don't return data readers
-            // Return empty reader for compatibility
-            return new LibSqlHttpDataReader(new HranaQueryResult
+            if (ReferenceEquals(_activeExecuteCts, cts))
             {
-                Cols = new List<HranaColumn>(),
-                Rows = new List<List<HranaValue>>(),
-                AffectedRowCount = 0
-            });
+                _activeExecuteCts = null;
+            }
         }
-
-        // Handle single execute response
-        if (result.Response?.Result == null)
-        {
-            throw new LibSqlException("Invalid response from server");
-        }
-
-        return new LibSqlHttpDataReader(result.Response.Result);
     }
 
     public override void Prepare()

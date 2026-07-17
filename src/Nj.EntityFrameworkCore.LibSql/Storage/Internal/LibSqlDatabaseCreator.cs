@@ -92,6 +92,24 @@ public class LibSqlDatabaseCreator : RelationalDatabaseCreator
             return true;
         }
 
+        if (LibSqlConnectionStringHelpers.IsEmbeddedReplica(connectionString))
+        {
+            var builder = LibSqlConnectionStringHelpers.TryParse(connectionString);
+            var replicaPath = builder?.DataSource;
+            if (string.IsNullOrWhiteSpace(replicaPath)
+                || replicaPath.Equals(":memory:", StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
+
+            if (DeletedLocalPaths.ContainsKey(NormalizePath(replicaPath)))
+            {
+                return false;
+            }
+
+            return File.Exists(replicaPath);
+        }
+
         var path = LibSqlConnectionStringHelpers.TryGetLocalFilePath(connectionString);
         if (!string.IsNullOrEmpty(path))
         {
@@ -155,11 +173,12 @@ public class LibSqlDatabaseCreator : RelationalDatabaseCreator
     /// </summary>
     public override void Delete()
     {
-        if (LibSqlConnectionStringHelpers.IsRemote(Dependencies.Connection.ConnectionString))
+        if (LibSqlConnectionStringHelpers.IsRemote(Dependencies.Connection.ConnectionString)
+            || LibSqlConnectionStringHelpers.IsEmbeddedReplica(Dependencies.Connection.ConnectionString))
         {
             throw new NotSupportedException(
-                "EnsureDeleted / database delete is not supported for remote libSQL endpoints. "
-                + "Provision and tear down remote databases with Turso / sqld tooling.");
+                "EnsureDeleted / database delete is not supported for remote or embedded-replica "
+                + "libSQL endpoints. Provision and tear down remote databases with Turso / sqld tooling.");
         }
 
         var connectionString = Dependencies.Connection.ConnectionString

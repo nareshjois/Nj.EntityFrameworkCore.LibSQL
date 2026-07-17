@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>false</IsTestProject>
+    <RootNamespace>Nj.EntityFrameworkCore.LibSql.Benchmarks</RootNamespace>
+    <!-- Transitive Microsoft.Data.Sqlite native bundle advisory; differential-only surface. -->
+    <NoWarn>$(NoWarn);NU1903</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BenchmarkDotNet" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Nj.EntityFrameworkCore.LibSql\Nj.EntityFrameworkCore.LibSql.csproj" />
+  </ItemGroup>
+</Project>
