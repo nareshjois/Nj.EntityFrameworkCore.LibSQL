@@ -333,7 +333,9 @@ public sealed class SqldReplicaFixture : DriverFixture
                 .Build();
 
             await _sqld.StartAsync();
-            var host = _sqld.Hostname;
+            // Prefer loopback IP: native embedded-replica open can fail on
+            // "localhost" / IPv6 resolution in GitHub Actions runners.
+            var host = "127.0.0.1";
             var port = _sqld.GetMappedPublicPort(8080);
             _connectionString = TestEnvironment.RemoteConnectionStringFromUrl($"http://{host}:{port}");
 

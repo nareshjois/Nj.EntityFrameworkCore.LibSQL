@@ -685,17 +685,27 @@ public sealed class LibSqlConnection : DbConnection
         IntPtr dbHandle;
         IntPtr errorMsg;
 
-        // Prefer the dedicated webpki entry point when no advanced config knobs are set —
-        // it avoids libsql_config layout/padding risk across native versions.
+        // Prefer dedicated sync entry points when no advanced config knobs are set —
+        // they avoid libsql_config layout/padding risk across native RID builds.
         // Native sync_interval is seconds (see libsql C bindings).
-        var useSimpleWebpki =
-            useWebpki
-            && builder.SyncInterval == 0
+        var useSimpleSync =
+            builder.SyncInterval == 0
             && string.IsNullOrEmpty(builder.EncryptionKey);
 
-        if (useSimpleWebpki)
+        if (useSimpleSync && useWebpki)
         {
             result = LibSqlNative.libsql_open_sync_with_webpki(
+                dataSource,
+                primaryUrl,
+                authToken,
+                builder.ReadYourWrites ? (byte)1 : (byte)0,
+                encryptionKey: null,
+                out dbHandle,
+                out errorMsg);
+        }
+        else if (useSimpleSync)
+        {
+            result = LibSqlNative.libsql_open_sync(
                 dataSource,
                 primaryUrl,
                 authToken,
