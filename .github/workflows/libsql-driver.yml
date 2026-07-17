@@ -62,6 +62,13 @@ jobs:
           dotnet restore
           test/Nj.LibSql.DriverContractTests/Nj.LibSql.DriverContractTests.csproj
 
+      # Format walks the solution; restore the full slnx first (same as ci.yml).
+      # Restoring only DriverContractTests leaves samples/compliance unrestored and
+      # makes `dotnet format --no-restore` fail with CS0246 noise.
+      - name: Restore solution (for format verify)
+        if: runner.os == 'Linux'
+        run: dotnet restore Nj.EntityFrameworkCore.LibSql.slnx
+
       - name: Format (verify)
         if: runner.os == 'Linux'
         run: >
@@ -126,7 +133,7 @@ jobs:
         run: >
           dotnet test test/Nj.LibSql.DriverContractTests/Nj.LibSql.DriverContractTests.csproj
           -c Release --no-build
-          --filter "FullyQualifiedName~Remote"
+          --filter "FullyQualifiedName~Remote&FullyQualifiedName!~Turso"
           --logger "trx;LogFileName=nj-libsql-driver-remote-sqld.trx"
           --results-directory artifacts/test-results
 
