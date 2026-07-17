@@ -28,8 +28,6 @@ ADO.NET driver (`Nj.LibSql.Data` / `Nj.LibSql.Bindings`).
 | [upstream-baseline.md](upstream-baseline.md) | EF Core SQLite import provenance |
 | [release-policy.md](release-policy.md) | Versioning and approval |
 | [releasing.md](releasing.md) | Tag → pack → NuGet push runbook |
-| [wp-14-handoff.md](wp-14-handoff.md) | G13 docs handoff |
-| [wp-15-handoff.md](wp-15-handoff.md) | Preview NuGet handoff |
 
 Root: [README](../README.md), [CONTRIBUTING](../CONTRIBUTING.md),
 [SECURITY](../SECURITY.md), [CODE_OF_CONDUCT](../CODE_OF_CONDUCT.md),
