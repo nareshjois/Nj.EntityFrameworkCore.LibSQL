@@ -17,7 +17,7 @@ engine for local EF is planned via
 | Engine | Classic libSQL C API (`libsql-server-v0.24.32` pin) | Turso (`turso_sdk_kit`) |
 | ADO | `Nj.LibSql.Data` | `Turso.Data` (+ `Turso.Data.Sqlite` facade) |
 | EF | Full EF Core 10 `UseLibSql` | Thin `UseTurso` (local only) |
-| NuGet | `10.0.0-preview.1` | `Turso.Data.Sqlite` prereleases |
+| NuGet | `10.0.0-preview.2` | `Turso.Data.Sqlite` prereleases |
 
 ## Connection modes
 

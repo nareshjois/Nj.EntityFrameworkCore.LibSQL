@@ -24,12 +24,12 @@ Prefer [Trusted Publishing](https://learn.microsoft.com/nuget/nuget-org/trusted-
 1. **Green `main`** — CI + integration (sqld) + driver suites as required.
 2. **Changelog** — move notes under `[10.0.0-preview.N]` in [CHANGELOG.md](../CHANGELOG.md).
 3. **Version** — `Directory.Build.props` `VersionPrefix` / `VersionSuffix`
-   match the tag (currently `10.0.0` + `preview.1`).
+   match the tag (currently `10.0.0` + `preview.2`).
 4. **Tag** (annotated):
 
    ```bash
-   git tag -a v10.0.0-preview.1 -m "Nj.EntityFrameworkCore.LibSql 10.0.0-preview.1"
-   git push origin v10.0.0-preview.1
+   git tag -a v10.0.0-preview.2 -m "Nj.EntityFrameworkCore.LibSql 10.0.0-preview.2"
+   git push origin v10.0.0-preview.2
    ```
 
 5. **Pack + publish CI** — tag push runs

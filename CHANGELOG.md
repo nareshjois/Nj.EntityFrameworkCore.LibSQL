@@ -8,6 +8,28 @@ with EF Core major/minor lines.
 
 ## [Unreleased]
 
+## [10.0.0-preview.2] — 2026-07-17
+
+ADO uplift and packaging polish on the Classic stack. Does **not** include
+`NativeEngine(Turso)` (separate branch). C-019 unchanged.
+
+### Added
+
+- Public `LibSqlBatch` / `CreateBatch`: remote Hrana one round-trip; local
+  sequential `ExecuteNonQuery`; local multi-command `ExecuteReader` fail-clear.
+- Connection-string uplift: `Tls`, `Filename` alias, MDS-compat keywords
+  ignored; `$` / `@` / `:` parameter prefixes interchangeable.
+- `IsAotCompatible` on Data/Bindings; `samples/AotLocalSample` +
+  `./eng/smoke-aot.sh` (dynamic natives).
+- Docs: [turso-dotnet-comparison.md](docs/turso-dotnet-comparison.md) matrices
+  and bake-off checklist.
+
+### Known limitations
+
+- Turso Cloud embedded-replica Sync hangs on pinned natives (**C-019** / #24).
+- Extra desktop RIDs (`win-arm64`, `linux-arm64`, `osx-x64`) still deferred.
+- Decimal LINQ → REAL; `Regex.IsMatch` → PCRE2 `REGEXP` (C-001).
+
 ## [10.0.0-preview.1] — 2026-07-17
 
 First public prerelease on NuGet.org. APIs may change before stable `10.0.x`.
@@ -37,5 +59,6 @@ Sync hang).
 - Extra RIDs / musl / NativeAOT not advertised (stable backlog).
 - Decimal LINQ → REAL; `Regex.IsMatch` → PCRE2 `REGEXP` (C-001).
 
-[Unreleased]: https://github.com/nareshjois/Nj.EntityFrameworkCore.LibSQL/compare/v10.0.0-preview.1...HEAD
+[Unreleased]: https://github.com/nareshjois/Nj.EntityFrameworkCore.LibSQL/compare/v10.0.0-preview.2...HEAD
+[10.0.0-preview.2]: https://github.com/nareshjois/Nj.EntityFrameworkCore.LibSQL/releases/tag/v10.0.0-preview.2
 [10.0.0-preview.1]: https://github.com/nareshjois/Nj.EntityFrameworkCore.LibSQL/releases/tag/v10.0.0-preview.1

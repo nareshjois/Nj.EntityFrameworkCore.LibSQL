@@ -12,7 +12,7 @@ below (rationale + tracked issue). Cross-vendor notes:
 |------|--------|
 | EF Core | `10.0.10` |
 | ADO.NET | In-repo `Nj.LibSql.Data` / `Nj.LibSql.Bindings` ([versions.md](versions.md)) |
-| Provider | `10.0.0-preview.1` |
+| Provider | `10.0.0-preview.2` |
 
 ## Capability matrix (Preview 1)
 
