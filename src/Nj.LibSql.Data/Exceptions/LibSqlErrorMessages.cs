@@ -5,36 +5,67 @@ namespace Nj.LibSql.Data.Exceptions;
 /// </summary>
 internal static class LibSqlErrorMessages
 {
+    /// <summary>int.</summary>
     public const int SQLITE_OK = 0;
+    /// <summary>int.</summary>
     public const int SQLITE_ERROR = 1;
+    /// <summary>int.</summary>
     public const int SQLITE_INTERNAL = 2;
+    /// <summary>int.</summary>
     public const int SQLITE_PERM = 3;
+    /// <summary>int.</summary>
     public const int SQLITE_ABORT = 4;
+    /// <summary>int.</summary>
     public const int SQLITE_BUSY = 5;
+    /// <summary>int.</summary>
     public const int SQLITE_LOCKED = 6;
+    /// <summary>int.</summary>
     public const int SQLITE_NOMEM = 7;
+    /// <summary>int.</summary>
     public const int SQLITE_READONLY = 8;
+    /// <summary>int.</summary>
     public const int SQLITE_INTERRUPT = 9;
+    /// <summary>int.</summary>
     public const int SQLITE_IOERR = 10;
+    /// <summary>int.</summary>
     public const int SQLITE_CORRUPT = 11;
+    /// <summary>int.</summary>
     public const int SQLITE_NOTFOUND = 12;
+    /// <summary>int.</summary>
     public const int SQLITE_FULL = 13;
+    /// <summary>int.</summary>
     public const int SQLITE_CANTOPEN = 14;
+    /// <summary>int.</summary>
     public const int SQLITE_PROTOCOL = 15;
+    /// <summary>int.</summary>
     public const int SQLITE_EMPTY = 16;
+    /// <summary>int.</summary>
     public const int SQLITE_SCHEMA = 17;
+    /// <summary>int.</summary>
     public const int SQLITE_TOOBIG = 18;
+    /// <summary>int.</summary>
     public const int SQLITE_CONSTRAINT = 19;
+    /// <summary>int.</summary>
     public const int SQLITE_MISMATCH = 20;
+    /// <summary>int.</summary>
     public const int SQLITE_MISUSE = 21;
+    /// <summary>int.</summary>
     public const int SQLITE_NOLFS = 22;
+    /// <summary>int.</summary>
     public const int SQLITE_AUTH = 23;
+    /// <summary>int.</summary>
     public const int SQLITE_FORMAT = 24;
+    /// <summary>int.</summary>
     public const int SQLITE_RANGE = 25;
+    /// <summary>int.</summary>
     public const int SQLITE_NOTADB = 26;
+    /// <summary>int.</summary>
     public const int SQLITE_NOTICE = 27;
+    /// <summary>int.</summary>
     public const int SQLITE_WARNING = 28;
+    /// <summary>int.</summary>
     public const int SQLITE_ROW = 100;
+    /// <summary>int.</summary>
     public const int SQLITE_DONE = 101;
 
     private static readonly Dictionary<int, string> ErrorMessages = new()
@@ -72,6 +103,7 @@ internal static class LibSqlErrorMessages
         [SQLITE_DONE] = "sqlite3_step() has finished executing",
     };
 
+    /// <summary>GetErrorMessage(int.</summary>
     public static string GetErrorMessage(int errorCode)
     {
         if (ErrorMessages.TryGetValue(errorCode, out var message))
@@ -88,6 +120,7 @@ internal static class LibSqlErrorMessages
         return $"libSQL error {errorCode}: Unknown error code";
     }
 
+    /// <summary>IsTransientError(int.</summary>
     public static bool IsTransientError(int errorCode)
         => errorCode == SQLITE_BUSY
             || errorCode == SQLITE_LOCKED
@@ -95,6 +128,7 @@ internal static class LibSqlErrorMessages
             || (errorCode & 0xFF) == SQLITE_BUSY
             || (errorCode & 0xFF) == SQLITE_LOCKED;
 
+    /// <summary>IsCorruptionError(int.</summary>
     public static bool IsCorruptionError(int errorCode)
     {
         var baseCode = errorCode & 0xFF;

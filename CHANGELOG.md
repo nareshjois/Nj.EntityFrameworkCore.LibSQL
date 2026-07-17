@@ -8,46 +8,34 @@ with EF Core major/minor lines.
 
 ## [Unreleased]
 
-### Changed
+## [10.0.0-preview.1] — 2026-07-17
 
-- EF provider now uses in-repo `Nj.LibSql.Data` / `Nj.LibSql.Bindings` (HTTP +
-  WebSocket Hrana, local natives). Documentation streamlined: architecture,
-  connection modes, testing, compatibility, limitations — ADRs and work-package
-  handoffs removed.
-- Type-mapping round-trips use store-generated integer keys.
-- Scaffolding reads COLLATE / AUTOINCREMENT from `sqlite_master` CREATE SQL.
-- Decimal LINQ rewritten to REAL/`CAST`; `Regex.IsMatch` → native libSQL
-  `REGEXP` (PCRE2). See `docs/limitations.md` and waiver C-001.
+First public prerelease on NuGet.org. APIs may change before stable `10.0.x`.
+Known gaps: [compatibility.md](docs/compatibility.md) (including **C-019** Turso
+Sync hang).
 
 ### Added
 
-- Migrations sample + `eng/verify-migrations-sample.sh`, reverse-engineer /
-  migration script / virtual-table goldens.
-- Functional matrices for scaffolding, migrations, updates/transactions, and
-  query translation (local + remote).
-- Driver contract tests (`Nj.LibSql.DriverContractTests`) with Testcontainers
-  sqld + Turso CI jobs.
-- Attributed EF Core 10.0.10 SQLite baseline import and upstream-diff tooling.
-- xunit.v3 for primary suites; ComplianceTests remains on xUnit v2 for EF Spec.
-- Governance docs, Contributor Covenant, pack/install verification.
+- EF Core 10 provider `Nj.EntityFrameworkCore.LibSql` on in-repo
+  `Nj.LibSql.Data` / `Nj.LibSql.Bindings` (local natives + HTTP/WSS Hrana).
+- Connection modes: local file / `:memory:`, remote `sqld`/Turso HTTP,
+  embedded-replica Sync vs self-hosted `sqld` (`Database.Sync`).
+- Migrations, scaffolding, updates/transactions, query translation matrices;
+  ComplianceTests harness; DriverContractTests; ConnectionModes suites.
+- Platform Preview: advertised RIDs `linux-x64`, `osx-arm64`, `win-x64`; pack /
+  publish / container smoke; soft BenchmarkDotNet baselines.
+- Observability/security: connection-string redaction, HTTP-first cancellation,
+  `LibSqlActivitySource`, CodeQL + dependency-review + gitleaks + SBOM +
+  provenance on pack.
+- Samples: Local, Remote, EmbeddedReplica, DiPooling, Migrations.
+- Docs: connection modes/strings, migrate-from-EF-Sqlite, transactions,
+  deployment, releasing runbook, CONTRIBUTING G13 path.
 
-### Fixed
+### Known limitations
 
-- Windows `EnsureDeleted` when the native handle stays locked (C-005).
-- Scaffolding skips virtual tables (C-004); CLR sampling tolerates remote
-  failures (C-003).
-- Migration lock acquire uses split commands for reliable `ExecuteScalar`.
-- Store-generated keys / RETURNING drain, constraint surfacing, batch
-  `ExecuteNonQuery` (C-002 / C-011).
+- Turso Cloud embedded-replica Sync hangs on pinned natives (**C-019** / #24).
+- Extra RIDs / musl / NativeAOT not advertised (stable backlog).
+- Decimal LINQ → REAL; `Regex.IsMatch` → PCRE2 `REGEXP` (C-001).
 
-## [10.0.0-preview.1] — unreleased (local scaffold)
-
-### Added
-
-- Repository scaffold: solution layout, central package management, CI workflows,
-  `sqld` compose (pinned digest), eng scripts, and pack/install verification.
-- Placeholder public surface `LibSqlProviderInfo` for package smoke tests.
-- Initial MIT license, security policy, and documentation stubs.
-
-[Unreleased]: https://github.com/nareshjois/Nj.EntityFrameworkCore.LibSQL/compare/main...HEAD
+[Unreleased]: https://github.com/nareshjois/Nj.EntityFrameworkCore.LibSQL/compare/v10.0.0-preview.1...HEAD
 [10.0.0-preview.1]: https://github.com/nareshjois/Nj.EntityFrameworkCore.LibSQL/releases/tag/v10.0.0-preview.1

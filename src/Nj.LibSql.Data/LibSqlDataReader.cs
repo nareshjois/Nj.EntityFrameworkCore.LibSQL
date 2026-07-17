@@ -95,8 +95,10 @@ public sealed class LibSqlDataReader : DbDataReader
         _ = behavior;
     }
 
+    /// <inheritdoc />
     public override int Depth => 0;
 
+    /// <inheritdoc />
     public override int FieldCount
     {
         get
@@ -118,6 +120,7 @@ public sealed class LibSqlDataReader : DbDataReader
         }
     }
 
+    /// <inheritdoc />
     public override bool HasRows
     {
         get
@@ -138,17 +141,22 @@ public sealed class LibSqlDataReader : DbDataReader
         }
     }
 
+    /// <inheritdoc />
     public override bool IsClosed => _closed || _disposed;
 
+    /// <inheritdoc />
     public override int RecordsAffected
         => _isHttpReader && _httpDataReader != null
             ? _httpDataReader.RecordsAffected
             : _recordsAffected;
 
+    /// <inheritdoc />
     public override object this[int ordinal] => GetValue(ordinal);
 
+    /// <inheritdoc />
     public override object this[string name] => GetValue(GetOrdinal(name));
 
+    /// <inheritdoc />
     public override void Close()
     {
         if (_closed)
@@ -193,6 +201,7 @@ public sealed class LibSqlDataReader : DbDataReader
         }
     }
 
+    /// <inheritdoc />
     public override bool GetBoolean(int ordinal)
     {
         var value = GetValue(ordinal);
@@ -204,6 +213,7 @@ public sealed class LibSqlDataReader : DbDataReader
         return (bool)LibSqlTypeConverter.ConvertFromLibSql(value, typeof(bool));
     }
 
+    /// <inheritdoc />
     public override byte GetByte(int ordinal)
     {
         var value = GetValue(ordinal);
@@ -215,6 +225,7 @@ public sealed class LibSqlDataReader : DbDataReader
         return (byte)LibSqlTypeConverter.ConvertFromLibSql(value, typeof(byte));
     }
 
+    /// <inheritdoc />
     public override long GetBytes(int ordinal, long dataOffset, byte[]? buffer, int bufferOffset, int length)
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
@@ -242,6 +253,7 @@ public sealed class LibSqlDataReader : DbDataReader
         return actualLength;
     }
 
+    /// <inheritdoc />
     public override char GetChar(int ordinal)
     {
         var value = GetValue(ordinal);
@@ -253,6 +265,7 @@ public sealed class LibSqlDataReader : DbDataReader
         return (char)LibSqlTypeConverter.ConvertFromLibSql(value, typeof(char));
     }
 
+    /// <inheritdoc />
     public override long GetChars(int ordinal, long dataOffset, char[]? buffer, int bufferOffset, int length)
     {
         var value = GetValue(ordinal);
@@ -279,6 +292,7 @@ public sealed class LibSqlDataReader : DbDataReader
         return charsToRead;
     }
 
+    /// <inheritdoc />
     public override string GetDataTypeName(int ordinal)
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
@@ -317,6 +331,7 @@ public sealed class LibSqlDataReader : DbDataReader
         return "UNKNOWN";
     }
 
+    /// <inheritdoc />
     public override DateTime GetDateTime(int ordinal)
     {
         var value = GetValue(ordinal);
@@ -328,6 +343,7 @@ public sealed class LibSqlDataReader : DbDataReader
         return (DateTime)LibSqlTypeConverter.ConvertFromLibSql(value, typeof(DateTime));
     }
 
+    /// <inheritdoc />
     public override decimal GetDecimal(int ordinal)
     {
         var value = GetValue(ordinal);
@@ -339,6 +355,7 @@ public sealed class LibSqlDataReader : DbDataReader
         return (decimal)LibSqlTypeConverter.ConvertFromLibSql(value, typeof(decimal));
     }
 
+    /// <inheritdoc />
     public override double GetDouble(int ordinal)
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
@@ -366,9 +383,11 @@ public sealed class LibSqlDataReader : DbDataReader
         return value;
     }
 
+    /// <inheritdoc />
     public override IEnumerator GetEnumerator()
         => new DbEnumerator(this);
 
+    /// <inheritdoc />
     [return: DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.PublicProperties)]
     public override Type GetFieldType(int ordinal)
     {
@@ -408,6 +427,7 @@ public sealed class LibSqlDataReader : DbDataReader
         return typeof(object);
     }
 
+    /// <inheritdoc />
     public override float GetFloat(int ordinal)
     {
         var value = GetValue(ordinal);
@@ -419,6 +439,7 @@ public sealed class LibSqlDataReader : DbDataReader
         return (float)LibSqlTypeConverter.ConvertFromLibSql(value, typeof(float));
     }
 
+    /// <inheritdoc />
     public override Guid GetGuid(int ordinal)
     {
         var value = GetValue(ordinal);
@@ -430,6 +451,7 @@ public sealed class LibSqlDataReader : DbDataReader
         return (Guid)LibSqlTypeConverter.ConvertFromLibSql(value, typeof(Guid));
     }
 
+    /// <inheritdoc />
     public override short GetInt16(int ordinal)
     {
         var value = GetValue(ordinal);
@@ -441,6 +463,7 @@ public sealed class LibSqlDataReader : DbDataReader
         return (short)LibSqlTypeConverter.ConvertFromLibSql(value, typeof(short));
     }
 
+    /// <inheritdoc />
     public override int GetInt32(int ordinal)
     {
         var value = GetValue(ordinal);
@@ -452,6 +475,7 @@ public sealed class LibSqlDataReader : DbDataReader
         return (int)LibSqlTypeConverter.ConvertFromLibSql(value, typeof(int));
     }
 
+    /// <inheritdoc />
     public override long GetInt64(int ordinal)
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
@@ -479,6 +503,7 @@ public sealed class LibSqlDataReader : DbDataReader
         return value;
     }
 
+    /// <inheritdoc />
     public override string GetName(int ordinal)
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
@@ -499,6 +524,7 @@ public sealed class LibSqlDataReader : DbDataReader
         return _columnNames![ordinal];
     }
 
+    /// <inheritdoc />
     public override int GetOrdinal(string name)
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
@@ -531,6 +557,7 @@ public sealed class LibSqlDataReader : DbDataReader
         throw new IndexOutOfRangeException($"Column '{name}' not found.");
     }
 
+    /// <inheritdoc />
     public override string GetString(int ordinal)
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
@@ -568,6 +595,7 @@ public sealed class LibSqlDataReader : DbDataReader
         }
     }
 
+    /// <inheritdoc />
     public override object GetValue(int ordinal)
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
@@ -603,6 +631,7 @@ public sealed class LibSqlDataReader : DbDataReader
         };
     }
 
+    /// <inheritdoc />
     public override int GetValues(object[] values)
     {
         ArgumentNullException.ThrowIfNull(values);
@@ -616,6 +645,7 @@ public sealed class LibSqlDataReader : DbDataReader
         return count;
     }
 
+    /// <inheritdoc />
     public override bool IsDBNull(int ordinal)
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
@@ -643,10 +673,12 @@ public sealed class LibSqlDataReader : DbDataReader
         return columnType == (int)LibSqlColumnType.Null;
     }
 
+    /// <inheritdoc />
     public override bool NextResult()
         // libSQL does not support multiple result sets from a single query execution.
         => false;
 
+    /// <inheritdoc />
     [UnconditionalSuppressMessage(
         "ReflectionAnalysis",
         "IL2111",
@@ -736,6 +768,7 @@ public sealed class LibSqlDataReader : DbDataReader
         return schemaTable;
     }
 
+    /// <inheritdoc />
     public override T GetFieldValue<T>(int ordinal)
     {
         var value = GetValue(ordinal);
@@ -761,6 +794,7 @@ public sealed class LibSqlDataReader : DbDataReader
         }
     }
 
+    /// <inheritdoc />
     public override bool Read()
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
@@ -906,6 +940,7 @@ public sealed class LibSqlDataReader : DbDataReader
         }
     }
 
+    /// <inheritdoc />
     protected override void Dispose(bool disposing)
     {
         if (!_disposed)

@@ -6,28 +6,34 @@ public class LibSqlConstraintException : LibSqlException
     /// <summary>Gets the type of constraint that was violated.</summary>
     public ConstraintType ConstraintType { get; }
 
+    /// <summary>Initializes a new instance of the <see cref="LibSqlConstraintException"/> class.</summary>
     public LibSqlConstraintException()
     {
     }
 
+    /// <summary>Initializes a new instance of the <see cref="LibSqlConstraintException"/> class.</summary>
     public LibSqlConstraintException(string message)
         : base(message)
     {
     }
 
+    /// <summary>Initializes a new instance of the <see cref="LibSqlConstraintException"/> class.</summary>
     public LibSqlConstraintException(string message, int errorCode)
         : base(message, errorCode)
     {
     }
 
+    /// <summary>Initializes a new instance of the <see cref="LibSqlConstraintException"/> class.</summary>
     public LibSqlConstraintException(string message, ConstraintType constraintType)
         : base(message)
         => ConstraintType = constraintType;
 
+    /// <summary>Initializes a new instance of the <see cref="LibSqlConstraintException"/> class.</summary>
     public LibSqlConstraintException(string message, ConstraintType constraintType, string? sqlStatement = null)
         : base(message, LibSqlErrorMessages.SQLITE_CONSTRAINT, sqlStatement: sqlStatement)
         => ConstraintType = constraintType;
 
+    /// <summary>Initializes a new instance of the <see cref="LibSqlConstraintException"/> class.</summary>
     public LibSqlConstraintException(string message, Exception innerException)
         : base(message, innerException)
     {

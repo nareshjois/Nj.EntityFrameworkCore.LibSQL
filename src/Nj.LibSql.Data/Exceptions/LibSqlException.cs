@@ -17,15 +17,18 @@ public class LibSqlException : DbException
     /// <summary>Gets additional context about the error.</summary>
     public string? ErrorContext { get; }
 
+    /// <summary>Initializes a new instance of the <see cref="LibSqlException"/> class.</summary>
     public LibSqlException()
     {
     }
 
+    /// <summary>Initializes a new instance of the <see cref="LibSqlException"/> class.</summary>
     public LibSqlException(string message)
         : base(message)
     {
     }
 
+    /// <summary>Initializes a new instance of the <see cref="LibSqlException"/> class.</summary>
     public LibSqlException(string message, int errorCode)
         : base(message)
     {
@@ -33,11 +36,13 @@ public class LibSqlException : DbException
         HResult = errorCode;
     }
 
+    /// <summary>Initializes a new instance of the <see cref="LibSqlException"/> class.</summary>
     public LibSqlException(string message, Exception innerException)
         : base(message, innerException)
     {
     }
 
+    /// <summary>Initializes a new instance of the <see cref="LibSqlException"/> class.</summary>
     public LibSqlException(
         string message,
         int errorCode,

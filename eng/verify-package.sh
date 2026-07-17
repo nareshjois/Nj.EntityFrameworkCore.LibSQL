@@ -9,16 +9,23 @@ echo "==> Restore + build"
 dotnet restore Nj.EntityFrameworkCore.LibSql.slnx
 dotnet build Nj.EntityFrameworkCore.LibSql.slnx -c Release --no-restore
 
-echo "==> Pack (Bindings → Data → EF; Data not on nuget.org yet)"
+echo "==> Pack (Bindings → Data → EF)"
 dotnet pack src/Nj.LibSql.Bindings/Nj.LibSql.Bindings.csproj \
-  -c Release --no-build -o "$ROOT/artifacts/packages"
+  -c Release -o "$ROOT/artifacts/packages"
 dotnet pack src/Nj.LibSql.Data/Nj.LibSql.Data.csproj \
-  -c Release --no-build -o "$ROOT/artifacts/packages"
+  -c Release -o "$ROOT/artifacts/packages"
 dotnet pack src/Nj.EntityFrameworkCore.LibSql/Nj.EntityFrameworkCore.LibSql.csproj \
-  -c Release --no-build -o "$ROOT/artifacts/packages"
+  -c Release -o "$ROOT/artifacts/packages"
 
 PKG=$(ls "$ROOT/artifacts/packages"/Nj.EntityFrameworkCore.LibSql.*.nupkg | head -1)
 echo "Packed: $PKG"
+
+# Drop global-cache copies of our preview packages so restore cannot reuse a
+# stale nuspec (e.g. Nelknet-era dependency graph under the same version).
+NUGET_PKGS="${NUGET_PACKAGES:-$HOME/.nuget/packages}"
+for id in nj.entityframeworkcore.libsql nj.libsql.data nj.libsql.bindings; do
+  rm -rf "$NUGET_PKGS/$id"
+done
 
 echo "==> Clean package restore + PackageTests against nupkg"
 dotnet restore test/Nj.EntityFrameworkCore.LibSql.PackageTests/Nj.EntityFrameworkCore.LibSql.PackageTests.csproj \

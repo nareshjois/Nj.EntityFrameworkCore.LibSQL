@@ -29,8 +29,18 @@ After a second maintainer: prefer **two-maintainer approval** for stable release
 | Publisher | Accounts under `nareshjois` |
 | Symbols | `.snupkg` with SourceLink |
 
-Manual publish is fine for early previews. Automate after NuGet secrets are
-configured for maintainers.
+Manual publish is fine for early previews — see [releasing.md](releasing.md).
+Automate `dotnet nuget push` after NuGet secrets are configured for maintainers.
+
+## Stable backlog
+
+Before labeling a release `10.0.0` (not Preview):
+
+- Extra advertised RIDs / musl only after smoke
+- Compliance skip cleanup / documentation
+- Package signing as required
+- Public API compatibility baseline
+- Support window and upgrade notes
 
 ## Security releases
 

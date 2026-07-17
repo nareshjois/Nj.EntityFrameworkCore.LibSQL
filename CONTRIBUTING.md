@@ -7,6 +7,33 @@ Please read this guide before opening a pull request.
 
 Participation is governed by [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).
 
+## First-time path (G13 — no private secrets)
+
+A new contributor should be able to do this with only public instructions
+(Docker optional for remote):
+
+```bash
+git clone https://github.com/nareshjois/Nj.EntityFrameworkCore.LibSQL.git
+cd Nj.EntityFrameworkCore.LibSQL
+
+dotnet restore Nj.EntityFrameworkCore.LibSql.slnx
+dotnet build Nj.EntityFrameworkCore.LibSql.slnx -c Release
+dotnet test test/Nj.EntityFrameworkCore.LibSql.UnitTests -c Release
+
+# Local sample (no Docker)
+dotnet run --project samples/LocalSample
+
+# Remote sample vs self-hosted sqld (requires Docker)
+./eng/start-sqld.sh && ./eng/wait-for-sqld.sh
+dotnet run --project samples/RemoteSample
+```
+
+Optional: `samples/DiPoolingSample`, `samples/EmbeddedReplicaSample` (sqld),
+`samples/MigrationsSample` ([README](samples/MigrationsSample/README.md)).
+
+Turso Cloud secrets (`LIBSQL_TEST_*`) are **not** required for this path.
+See [docs/testing.md](docs/testing.md) for full suites.
+
 ## Prerequisites
 
 - [.NET 10 SDK](https://dotnet.microsoft.com/download) matching [`global.json`](global.json)

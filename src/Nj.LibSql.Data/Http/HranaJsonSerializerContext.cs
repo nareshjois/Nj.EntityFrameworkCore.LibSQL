@@ -15,6 +15,7 @@ internal sealed partial class HranaJsonSerializerContext : JsonSerializerContext
 
 internal sealed class HranaValueJsonConverter : JsonConverter<HranaValue>
 {
+    /// <inheritdoc />
     public override HranaValue Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         if (reader.TokenType != JsonTokenType.StartObject)
@@ -54,6 +55,7 @@ internal sealed class HranaValueJsonConverter : JsonConverter<HranaValue>
         throw new JsonException("Unexpected end of Hrana value.");
     }
 
+    /// <inheritdoc />
     public override void Write(Utf8JsonWriter writer, HranaValue value, JsonSerializerOptions options)
     {
         ArgumentNullException.ThrowIfNull(value);

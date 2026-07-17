@@ -29,13 +29,25 @@ Preview packaging notes for `Nj.LibSql.Bindings` / `Nj.EntityFrameworkCore.LibSq
 
 ## Troubleshooting
 
-- **Missing native library:** ensure the package includes `runtimes/<rid>/native/libsql.*`
-  and the app RID matches. Rebuild natives via [eng/native/README.md](../eng/native/README.md).
-- **Wrong RID advertised:** Preview metadata must not claim RIDs without smoke — see
-  [architecture.md](architecture.md) and [versions.md](versions.md).
-- **AOT / heavy trimming:** not a Preview product line; do not rely on PublishAot yet.
+- **`Failed to load libsql native library`:** the process RID must match an
+  advertised runtime pack (`linux-x64`, `win-x64`, `osx-arm64`). On Apple Silicon
+  containers, force `linux/amd64` so `linux-x64` natives load
+  (`./eng/smoke-container.sh`).
+- **Missing `runtimes/<rid>/native/libsql.*` in the nupkg:** run
+  `./eng/verify-package.sh`; rebuild natives via
+  [eng/native/README.md](../eng/native/README.md) / `libsql-native.yml`.
+- **Wrong RID in publish:** self-contained / single-file must use `-r` equal to
+  an advertised RID. Cross-RID publish without matching natives will fail at
+  open.
+- **Single-file:** natives must extract beside the host; if load fails on a RID,
+  treat single-file as unsupported for that RID (do not invent extract hacks).
+- **AOT / heavy trimming:** not a Preview product line; do not rely on
+  `PublishAot` yet.
+- **Auth tokens in logs:** use `LibSqlConnectionStringBuilder.Redact`; see
+  [observability.md](observability.md).
 
 ## Related
 
 - Pack verify: `./eng/verify-package.sh`
 - Connection modes: [connection-modes.md](connection-modes.md)
+- Connection strings: [connection-strings.md](connection-strings.md)

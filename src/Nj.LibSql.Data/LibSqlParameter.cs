@@ -13,27 +13,33 @@ public sealed class LibSqlParameter : DbParameter
     private DbType _dbType = DbType.String;
     private ParameterDirection _direction = ParameterDirection.Input;
 
+    /// <summary>Initializes a new instance of the <see cref="LibSqlParameter"/> class.</summary>
     public LibSqlParameter()
     {
     }
 
+    /// <summary>Initializes a new instance of the <see cref="LibSqlParameter"/> class.</summary>
     public LibSqlParameter(string parameterName)
         => ParameterName = parameterName;
 
+    /// <summary>Initializes a new instance of the <see cref="LibSqlParameter"/> class.</summary>
     public LibSqlParameter(string parameterName, object? value)
         : this(parameterName)
         => Value = value;
 
+    /// <summary>Initializes a new instance of the <see cref="LibSqlParameter"/> class.</summary>
     public LibSqlParameter(string parameterName, DbType dbType)
         : this(parameterName)
         => DbType = dbType;
 
+    /// <inheritdoc />
     public override DbType DbType
     {
         get => _dbType;
         set => _dbType = value;
     }
 
+    /// <inheritdoc />
     public override ParameterDirection Direction
     {
         get => _direction;
@@ -48,8 +54,10 @@ public sealed class LibSqlParameter : DbParameter
         }
     }
 
+    /// <inheritdoc />
     public override bool IsNullable { get; set; } = true;
 
+    /// <inheritdoc />
     [AllowNull]
     public override string ParameterName
     {
@@ -57,15 +65,20 @@ public sealed class LibSqlParameter : DbParameter
         set => _parameterName = NormalizeParameterName(value);
     }
 
+    /// <inheritdoc />
     public override int Size { get; set; }
 
+    /// <inheritdoc />
     [AllowNull]
     public override string SourceColumn { get; set; } = string.Empty;
 
+    /// <inheritdoc />
     public override bool SourceColumnNullMapping { get; set; }
 
+    /// <inheritdoc />
     public override DataRowVersion SourceVersion { get; set; } = DataRowVersion.Current;
 
+    /// <inheritdoc />
     public override object? Value
     {
         get => _value;
@@ -86,11 +99,14 @@ public sealed class LibSqlParameter : DbParameter
         }
     }
 
+    /// <inheritdoc />
     public override void ResetDbType()
         => _dbType = DbType.String;
 
+    /// <inheritdoc />
     public override byte Precision { get; set; }
 
+    /// <inheritdoc />
     public override byte Scale { get; set; }
 
     /// <summary>Validates the parameter's properties.</summary>

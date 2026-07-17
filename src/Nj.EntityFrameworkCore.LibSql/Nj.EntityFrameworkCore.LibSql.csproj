@@ -10,7 +10,8 @@
     <PackageOutputPath>$(ArtifactsDir)packages/</PackageOutputPath>
     <EnablePackageValidation>true</EnablePackageValidation>
     <ImplicitUsings>enable</ImplicitUsings>
-    <NoWarn>$(NoWarn);NU5105;EF9100;EF1001</NoWarn>
+    <!-- Imported EF Sqlite baseline lacks full XML; owned public APIs keep remarks. -->
+    <NoWarn>$(NoWarn);NU5105;EF9100;EF1001;CS1591</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

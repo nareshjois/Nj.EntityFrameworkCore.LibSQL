@@ -10,10 +10,12 @@ namespace Nj.LibSql.Data.Http;
 /// </summary>
 internal static class LibSqlRemoteTransport
 {
+    /// <summary>IsWebSocketUrl(string.</summary>
     public static bool IsWebSocketUrl(string url)
         => url.StartsWith("wss://", StringComparison.OrdinalIgnoreCase)
            || url.StartsWith("ws://", StringComparison.OrdinalIgnoreCase);
 
+    /// <summary>IsHttpUrl(string.</summary>
     public static bool IsHttpUrl(string url)
         => url.StartsWith("http://", StringComparison.OrdinalIgnoreCase)
            || url.StartsWith("https://", StringComparison.OrdinalIgnoreCase)

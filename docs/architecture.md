@@ -21,6 +21,21 @@ Application
 | `Nj.LibSql.Bindings` | Native libSQL client libs (3 RIDs) |
 
 The EF project ProjectReferences Data; Data ProjectReferences Bindings.
+Consumers typically take a PackageReference on `Nj.EntityFrameworkCore.LibSql`
+only (it pulls Data + Bindings natives).
+
+## Provider vs baseline vs tests
+
+| Layer | Owns |
+|-------|------|
+| Imported EF Sqlite baseline (attributed) | Relational provider scaffolding under `src/Nj.EntityFrameworkCore.LibSql` — keep Microsoft headers; mechanical renames separate from behavior |
+| Provider-owned extensions | `UseLibSql`, `Database.Sync`, options/helpers, type mappings adapted for libSQL |
+| `Nj.LibSql.Data` / Bindings | ADO.NET + natives + Hrana — connection modes, Sync, redaction, ActivitySource |
+| Specification / ComplianceTests | EF relational Spec suite hosted locally; waivers in [compatibility.md](compatibility.md) |
+| Functional / DriverContract | Provider-owned scenarios (ConnectionModes, migrations, cancel, leak tests) |
+
+Do not copy third-party provider implementations. Do not reference
+`Microsoft.EntityFrameworkCore.Sqlite` from product packages.
 
 ## Naming
 

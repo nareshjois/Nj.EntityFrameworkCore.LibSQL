@@ -20,17 +20,21 @@ public sealed class LibSqlCommand : DbCommand
     private bool _enableStatementCaching = true;
     private LibSqlHttpCommand? _remoteCommand;
 
+    /// <summary>Initializes a new instance of the <see cref="LibSqlCommand"/> class.</summary>
     public LibSqlCommand()
     {
     }
 
+    /// <summary>Initializes a new instance of the <see cref="LibSqlCommand"/> class.</summary>
     public LibSqlCommand(string commandText)
         => CommandText = commandText;
 
+    /// <summary>Initializes a new instance of the <see cref="LibSqlCommand"/> class.</summary>
     public LibSqlCommand(string commandText, LibSqlConnection connection)
         : this(commandText)
         => Connection = connection;
 
+    /// <inheritdoc />
     [AllowNull]
     public override string CommandText
     {
@@ -50,6 +54,7 @@ public sealed class LibSqlCommand : DbCommand
         }
     }
 
+    /// <inheritdoc />
     public override int CommandTimeout
     {
         get => _commandTimeout;
@@ -63,6 +68,7 @@ public sealed class LibSqlCommand : DbCommand
         }
     }
 
+    /// <inheritdoc />
     public override CommandType CommandType
     {
         get => CommandType.Text;
@@ -75,6 +81,7 @@ public sealed class LibSqlCommand : DbCommand
         }
     }
 
+    /// <inheritdoc />
     public new LibSqlConnection? Connection
     {
         get => _connection;
@@ -91,18 +98,23 @@ public sealed class LibSqlCommand : DbCommand
         }
     }
 
+    /// <inheritdoc />
     protected override DbConnection? DbConnection
     {
         get => Connection;
         set => Connection = (LibSqlConnection?)value;
     }
 
+    /// <inheritdoc />
     protected override DbParameterCollection DbParameterCollection => Parameters;
 
+    /// <inheritdoc />
     public new LibSqlParameterCollection Parameters { get; } = new();
 
+    /// <inheritdoc />
     protected override DbTransaction? DbTransaction { get; set; }
 
+    /// <inheritdoc />
     public override bool DesignTimeVisible { get; set; }
 
     /// <summary>
@@ -115,14 +127,17 @@ public sealed class LibSqlCommand : DbCommand
         set => _enableStatementCaching = value;
     }
 
+    /// <inheritdoc />
     public override UpdateRowSource UpdatedRowSource { get; set; } = UpdateRowSource.None;
 
+    /// <inheritdoc />
     public override void Cancel()
     {
         // Local native execute cannot abort mid-flight. Remote: best-effort via HTTP CTS.
         _remoteCommand?.Cancel();
     }
 
+    /// <inheritdoc />
     public override async Task<int> ExecuteNonQueryAsync(CancellationToken cancellationToken)
     {
         EnsureConnectionOpen();
@@ -144,6 +159,7 @@ public sealed class LibSqlCommand : DbCommand
         return result;
     }
 
+    /// <inheritdoc />
     public override async Task<object?> ExecuteScalarAsync(CancellationToken cancellationToken)
     {
         EnsureConnectionOpen();
@@ -165,6 +181,7 @@ public sealed class LibSqlCommand : DbCommand
         return result;
     }
 
+    /// <inheritdoc />
     protected override async Task<DbDataReader> ExecuteDbDataReaderAsync(
         CommandBehavior behavior,
         CancellationToken cancellationToken)
@@ -186,6 +203,7 @@ public sealed class LibSqlCommand : DbCommand
         return local;
     }
 
+    /// <inheritdoc />
     public override int ExecuteNonQuery()
     {
         EnsureConnectionOpen();
@@ -297,6 +315,7 @@ public sealed class LibSqlCommand : DbCommand
         return (int)LibSqlNative.libsql_changes(connectionHandle);
     }
 
+    /// <inheritdoc />
     public override object? ExecuteScalar()
     {
         EnsureConnectionOpen();
@@ -335,6 +354,7 @@ public sealed class LibSqlCommand : DbCommand
         return value;
     }
 
+    /// <inheritdoc />
     protected override DbDataReader ExecuteDbDataReader(CommandBehavior behavior)
     {
         if (_remoteCommand != null)
@@ -347,6 +367,7 @@ public sealed class LibSqlCommand : DbCommand
         return ExecuteReader(behavior);
     }
 
+    /// <inheritdoc />
     public new LibSqlDataReader ExecuteReader(CommandBehavior behavior = CommandBehavior.Default)
     {
         EnsureConnectionOpen();
@@ -426,6 +447,7 @@ public sealed class LibSqlCommand : DbCommand
             || span.StartsWith("REPLACE", StringComparison.OrdinalIgnoreCase);
     }
 
+    /// <inheritdoc />
     public override void Prepare()
     {
         EnsureConnectionOpen();
@@ -441,9 +463,11 @@ public sealed class LibSqlCommand : DbCommand
         _isPrepared = true;
     }
 
+    /// <inheritdoc />
     protected override DbParameter CreateDbParameter()
         => new LibSqlParameter();
 
+    /// <inheritdoc />
     protected override void Dispose(bool disposing)
     {
         if (disposing)

@@ -24,6 +24,7 @@ internal sealed class LibSqlHttpDataReader : DbDataReader
     private int _currentRowIndex = -1;
     private bool _isClosed;
 
+    /// <summary>Initializes a new instance of the <see cref="LibSqlHttpDataReader"/> class.</summary>
     public LibSqlHttpDataReader(HranaQueryResult result)
     {
         ArgumentNullException.ThrowIfNull(result);
@@ -32,20 +33,28 @@ internal sealed class LibSqlHttpDataReader : DbDataReader
         _rows = result.Rows ?? new List<List<HranaValue>>();
     }
 
+    /// <inheritdoc />
     public override int FieldCount => _columns.Count;
 
+    /// <inheritdoc />
     public override bool HasRows => _rows.Count > 0;
 
+    /// <inheritdoc />
     public override bool IsClosed => _isClosed;
 
+    /// <inheritdoc />
     public override int RecordsAffected => (int)_result.AffectedRowCount;
 
+    /// <inheritdoc />
     public override object this[int ordinal] => GetValue(ordinal);
 
+    /// <inheritdoc />
     public override object this[string name] => GetValue(GetOrdinal(name));
 
+    /// <inheritdoc />
     public override int Depth => 0;
 
+    /// <inheritdoc />
     public override bool Read()
     {
         if (_isClosed)
@@ -55,17 +64,20 @@ internal sealed class LibSqlHttpDataReader : DbDataReader
         return _currentRowIndex < _rows.Count;
     }
 
+    /// <inheritdoc />
     public override bool NextResult()
     {
         // HTTP connections don't support multiple result sets
         return false;
     }
 
+    /// <inheritdoc />
     public override void Close()
     {
         _isClosed = true;
     }
 
+    /// <inheritdoc />
     public override string GetName(int ordinal)
     {
         if (ordinal < 0 || ordinal >= _columns.Count)
@@ -74,6 +86,7 @@ internal sealed class LibSqlHttpDataReader : DbDataReader
         return _columns[ordinal].Name ?? $"Column{ordinal}";
     }
 
+    /// <inheritdoc />
     public override int GetOrdinal(string name)
     {
         if (string.IsNullOrEmpty(name))
@@ -88,6 +101,7 @@ internal sealed class LibSqlHttpDataReader : DbDataReader
         throw new ArgumentException($"Column '{name}' not found", nameof(name));
     }
 
+    /// <inheritdoc />
     public override string GetDataTypeName(int ordinal)
     {
         if (ordinal < 0 || ordinal >= _columns.Count)
@@ -96,6 +110,7 @@ internal sealed class LibSqlHttpDataReader : DbDataReader
         return _columns[ordinal].DeclType ?? "TEXT";
     }
 
+    /// <inheritdoc />
     [return: DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.PublicProperties)]
     public override Type GetFieldType(int ordinal)
     {
@@ -112,6 +127,7 @@ internal sealed class LibSqlHttpDataReader : DbDataReader
         };
     }
 
+    /// <inheritdoc />
     public override object GetValue(int ordinal)
     {
         if (_isClosed)
@@ -134,6 +150,7 @@ internal sealed class LibSqlHttpDataReader : DbDataReader
         return ConvertValue(value);
     }
 
+    /// <inheritdoc />
     public override int GetValues(object[] values)
     {
         ArgumentNullException.ThrowIfNull(values);
@@ -146,6 +163,7 @@ internal sealed class LibSqlHttpDataReader : DbDataReader
         return count;
     }
 
+    /// <inheritdoc />
     public override bool IsDBNull(int ordinal)
     {
         if (_isClosed)
@@ -165,6 +183,7 @@ internal sealed class LibSqlHttpDataReader : DbDataReader
         return value == null || value.Type == HranaTypes.Null;
     }
 
+    /// <inheritdoc />
     public override bool GetBoolean(int ordinal)
     {
         var value = GetValue(ordinal);
@@ -174,6 +193,7 @@ internal sealed class LibSqlHttpDataReader : DbDataReader
         return Convert.ToBoolean(value, CultureInfo.InvariantCulture);
     }
 
+    /// <inheritdoc />
     public override byte GetByte(int ordinal)
     {
         var value = GetValue(ordinal);
@@ -183,6 +203,7 @@ internal sealed class LibSqlHttpDataReader : DbDataReader
         return Convert.ToByte(value, CultureInfo.InvariantCulture);
     }
 
+    /// <inheritdoc />
     public override long GetBytes(int ordinal, long dataOffset, byte[]? buffer, int bufferOffset, int length)
     {
         var value = GetValue(ordinal);
@@ -203,6 +224,7 @@ internal sealed class LibSqlHttpDataReader : DbDataReader
         return bytesToCopy;
     }
 
+    /// <inheritdoc />
     public override char GetChar(int ordinal)
     {
         var value = GetValue(ordinal);
@@ -212,6 +234,7 @@ internal sealed class LibSqlHttpDataReader : DbDataReader
         return Convert.ToChar(value, CultureInfo.InvariantCulture);
     }
 
+    /// <inheritdoc />
     public override long GetChars(int ordinal, long dataOffset, char[]? buffer, int bufferOffset, int length)
     {
         var value = GetValue(ordinal);
@@ -233,6 +256,7 @@ internal sealed class LibSqlHttpDataReader : DbDataReader
         return charsToRead;
     }
 
+    /// <inheritdoc />
     public override DateTime GetDateTime(int ordinal)
     {
         var value = GetValue(ordinal);
@@ -242,6 +266,7 @@ internal sealed class LibSqlHttpDataReader : DbDataReader
         return Convert.ToDateTime(value, CultureInfo.InvariantCulture);
     }
 
+    /// <inheritdoc />
     public override decimal GetDecimal(int ordinal)
     {
         var value = GetValue(ordinal);
@@ -251,6 +276,7 @@ internal sealed class LibSqlHttpDataReader : DbDataReader
         return Convert.ToDecimal(value, CultureInfo.InvariantCulture);
     }
 
+    /// <inheritdoc />
     public override double GetDouble(int ordinal)
     {
         var value = GetValue(ordinal);
@@ -260,6 +286,7 @@ internal sealed class LibSqlHttpDataReader : DbDataReader
         return Convert.ToDouble(value, CultureInfo.InvariantCulture);
     }
 
+    /// <inheritdoc />
     public override float GetFloat(int ordinal)
     {
         var value = GetValue(ordinal);
@@ -269,6 +296,7 @@ internal sealed class LibSqlHttpDataReader : DbDataReader
         return Convert.ToSingle(value, CultureInfo.InvariantCulture);
     }
 
+    /// <inheritdoc />
     public override Guid GetGuid(int ordinal)
     {
         var value = GetValue(ordinal);
@@ -281,6 +309,7 @@ internal sealed class LibSqlHttpDataReader : DbDataReader
         return (Guid)value;
     }
 
+    /// <inheritdoc />
     public override short GetInt16(int ordinal)
     {
         var value = GetValue(ordinal);
@@ -290,6 +319,7 @@ internal sealed class LibSqlHttpDataReader : DbDataReader
         return Convert.ToInt16(value, CultureInfo.InvariantCulture);
     }
 
+    /// <inheritdoc />
     public override int GetInt32(int ordinal)
     {
         var value = GetValue(ordinal);
@@ -299,6 +329,7 @@ internal sealed class LibSqlHttpDataReader : DbDataReader
         return Convert.ToInt32(value, CultureInfo.InvariantCulture);
     }
 
+    /// <inheritdoc />
     public override long GetInt64(int ordinal)
     {
         var value = GetValue(ordinal);
@@ -308,6 +339,7 @@ internal sealed class LibSqlHttpDataReader : DbDataReader
         return Convert.ToInt64(value, CultureInfo.InvariantCulture);
     }
 
+    /// <inheritdoc />
     public override string GetString(int ordinal)
     {
         var value = GetValue(ordinal);
@@ -317,6 +349,7 @@ internal sealed class LibSqlHttpDataReader : DbDataReader
         return Convert.ToString(value, CultureInfo.InvariantCulture) ?? string.Empty;
     }
 
+    /// <inheritdoc />
     public override IEnumerator GetEnumerator()
     {
         return new DbEnumerator(this);

@@ -25,6 +25,7 @@ internal sealed class LibSqlHttpCommand : DbCommand
     private int _commandTimeout = 30;
     private CancellationTokenSource? _activeExecuteCts;
 
+    /// <summary>Initializes a new instance of the <see cref="LibSqlHttpCommand"/> class.</summary>
     public LibSqlHttpCommand(ILibSqlHranaSession session)
     {
         ArgumentNullException.ThrowIfNull(session);
@@ -32,22 +33,27 @@ internal sealed class LibSqlHttpCommand : DbCommand
         _parameters = new LibSqlParameterCollection();
     }
 
+    /// <inheritdoc />
     public override string CommandText
     {
         get => _commandText;
         set => _commandText = value ?? string.Empty;
     }
 
+    /// <inheritdoc />
     public override int CommandTimeout
     {
         get => _commandTimeout;
         set => _commandTimeout = Math.Max(0, value);
     }
 
+    /// <inheritdoc />
     public override CommandType CommandType { get; set; } = CommandType.Text;
 
+    /// <inheritdoc />
     public override bool DesignTimeVisible { get; set; }
 
+    /// <inheritdoc />
     public override UpdateRowSource UpdatedRowSource { get; set; }
 
     protected override DbConnection? DbConnection { get; set; }
@@ -56,6 +62,7 @@ internal sealed class LibSqlHttpCommand : DbCommand
 
     protected override DbTransaction? DbTransaction { get; set; }
 
+    /// <inheritdoc />
     public override void Cancel()
     {
         // Best-effort: cancel the linked CTS for an in-flight HTTP/WS execute.
@@ -70,11 +77,13 @@ internal sealed class LibSqlHttpCommand : DbCommand
         }
     }
 
+    /// <inheritdoc />
     public override int ExecuteNonQuery()
     {
         return ExecuteNonQueryAsync(CancellationToken.None).GetAwaiter().GetResult();
     }
 
+    /// <inheritdoc />
     public override async Task<int> ExecuteNonQueryAsync(CancellationToken cancellationToken)
     {
         ValidateCommand();
@@ -130,11 +139,13 @@ internal sealed class LibSqlHttpCommand : DbCommand
         }
     }
 
+    /// <inheritdoc />
     public override object? ExecuteScalar()
     {
         return ExecuteScalarAsync(CancellationToken.None).GetAwaiter().GetResult();
     }
 
+    /// <inheritdoc />
     public override async Task<object?> ExecuteScalarAsync(CancellationToken cancellationToken)
     {
         using var reader = await ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
@@ -226,6 +237,7 @@ internal sealed class LibSqlHttpCommand : DbCommand
         }
     }
 
+    /// <inheritdoc />
     public override void Prepare()
     {
         // HTTP connections don't support prepared statements

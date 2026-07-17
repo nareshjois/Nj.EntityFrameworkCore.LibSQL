@@ -11,7 +11,7 @@ below (rationale + tracked issue).
 |------|--------|
 | EF Core | `10.0.10` |
 | ADO.NET | In-repo `Nj.LibSql.Data` / `Nj.LibSql.Bindings` ([versions.md](versions.md)) |
-| Provider | `10.0.0-preview.1` (in-repo; not on NuGet.org yet) |
+| Provider | `10.0.0-preview.1` |
 
 ## Capability matrix (Preview 1)
 

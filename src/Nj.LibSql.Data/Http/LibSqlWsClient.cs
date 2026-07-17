@@ -28,6 +28,7 @@ internal sealed class LibSqlWsClient : ILibSqlHranaSession
     private LibSqlWsClient(string? jwt)
         => _jwt = string.IsNullOrWhiteSpace(jwt) ? null : jwt;
 
+    /// <summary>ConnectAsync(.</summary>
     public static async Task<LibSqlWsClient> ConnectAsync(
         string url,
         string? authToken,
@@ -75,6 +76,7 @@ internal sealed class LibSqlWsClient : ILibSqlHranaSession
         }
     }
 
+    /// <summary>TestConnectionAsync(CancellationToken.</summary>
     public async Task<bool> TestConnectionAsync(CancellationToken cancellationToken = default)
     {
         try
@@ -94,6 +96,7 @@ internal sealed class LibSqlWsClient : ILibSqlHranaSession
         }
     }
 
+    /// <summary>ExecuteBatchAsync(.</summary>
     public async Task<HranaBatchResponse> ExecuteBatchAsync(
         HranaBatchRequest batch,
         CancellationToken cancellationToken = default)
@@ -642,6 +645,7 @@ internal sealed class LibSqlWsClient : ILibSqlHranaSession
         return builder.Uri;
     }
 
+    /// <summary>Dispose().</summary>
     public void Dispose()
     {
         if (_disposed)

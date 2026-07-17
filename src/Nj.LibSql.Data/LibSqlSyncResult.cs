@@ -19,21 +19,27 @@ public readonly struct LibSqlSyncResult : IEquatable<LibSqlSyncResult>
     /// <summary>Number of frames applied in this sync call.</summary>
     public int FramesSynced { get; }
 
+    /// <summary>Equals(LibSqlSyncResult.</summary>
     public bool Equals(LibSqlSyncResult other)
         => FrameNo == other.FrameNo && FramesSynced == other.FramesSynced;
 
+    /// <inheritdoc />
     public override bool Equals(object? obj)
         => obj is LibSqlSyncResult other && Equals(other);
 
+    /// <inheritdoc />
     public override int GetHashCode()
         => HashCode.Combine(FrameNo, FramesSynced);
 
+    /// <inheritdoc />
     public override string ToString()
         => $"FrameNo={FrameNo}, FramesSynced={FramesSynced}";
 
+    /// <summary>operator.</summary>
     public static bool operator ==(LibSqlSyncResult left, LibSqlSyncResult right)
         => left.Equals(right);
 
+    /// <summary>operator.</summary>
     public static bool operator !=(LibSqlSyncResult left, LibSqlSyncResult right)
         => !left.Equals(right);
 }

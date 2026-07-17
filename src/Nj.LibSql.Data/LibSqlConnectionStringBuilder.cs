@@ -50,10 +50,12 @@ public sealed class LibSqlConnectionStringBuilder : DbConnectionStringBuilder
     private bool _offline;
     private LibSqlConnectionMode _mode = LibSqlConnectionMode.Local;
 
+    /// <summary>Initializes a new instance of the <see cref="LibSqlConnectionStringBuilder"/> class.</summary>
     public LibSqlConnectionStringBuilder()
     {
     }
 
+    /// <summary>Initializes a new instance of the <see cref="LibSqlConnectionStringBuilder"/> class.</summary>
     public LibSqlConnectionStringBuilder(string connectionString)
     {
         ConnectionString = connectionString;
@@ -170,6 +172,7 @@ public sealed class LibSqlConnectionStringBuilder : DbConnectionStringBuilder
     public string? EffectiveSyncAuthToken
         => !string.IsNullOrEmpty(_syncAuthToken) ? _syncAuthToken : _authToken;
 
+    /// <inheritdoc />
     [AllowNull]
     public override object this[string keyword]
     {
@@ -264,6 +267,7 @@ public sealed class LibSqlConnectionStringBuilder : DbConnectionStringBuilder
         }
     }
 
+    /// <inheritdoc />
     public override void Clear()
     {
         base.Clear();
@@ -278,9 +282,11 @@ public sealed class LibSqlConnectionStringBuilder : DbConnectionStringBuilder
         _mode = LibSqlConnectionMode.Local;
     }
 
+    /// <inheritdoc />
     public override bool ContainsKey(string keyword)
         => IsValidKeyword(keyword);
 
+    /// <inheritdoc />
     public override bool Remove(string keyword)
     {
         if (!IsValidKeyword(keyword))
@@ -327,6 +333,7 @@ public sealed class LibSqlConnectionStringBuilder : DbConnectionStringBuilder
         return result;
     }
 
+    /// <inheritdoc />
     public override bool TryGetValue(string keyword, [NotNullWhen(true)] out object? value)
     {
         if (!IsValidKeyword(keyword))

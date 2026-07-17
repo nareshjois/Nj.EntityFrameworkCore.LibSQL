@@ -21,6 +21,7 @@ internal sealed class LibSqlHttpClient : ILibSqlHranaSession
     private string? _baton;
     private bool _disposed;
 
+    /// <summary>Initializes a new instance of the <see cref="LibSqlHttpClient"/> class.</summary>
     public LibSqlHttpClient(string url, string? authToken)
     {
         if (string.IsNullOrWhiteSpace(url))
@@ -195,6 +196,7 @@ internal sealed class LibSqlHttpClient : ILibSqlHranaSession
         return new LibSqlException($"SQL Error: {message}");
     }
 
+    /// <summary>Dispose().</summary>
     public void Dispose()
     {
         if (_disposed)

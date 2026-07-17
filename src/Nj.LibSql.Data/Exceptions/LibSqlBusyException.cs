@@ -12,15 +12,18 @@ public class LibSqlBusyException : LibSqlException
     /// <summary>Gets whether this is a database-level lock.</summary>
     public bool IsDatabaseLocked { get; }
 
+    /// <summary>Initializes a new instance of the <see cref="LibSqlBusyException"/> class.</summary>
     public LibSqlBusyException()
     {
     }
 
+    /// <summary>Initializes a new instance of the <see cref="LibSqlBusyException"/> class.</summary>
     public LibSqlBusyException(string message)
         : base(message)
     {
     }
 
+    /// <summary>Initializes a new instance of the <see cref="LibSqlBusyException"/> class.</summary>
     public LibSqlBusyException(string message, LockType lockType, bool isDatabaseLocked = false)
         : base(message)
     {
@@ -28,6 +31,7 @@ public class LibSqlBusyException : LibSqlException
         IsDatabaseLocked = isDatabaseLocked;
     }
 
+    /// <summary>Initializes a new instance of the <see cref="LibSqlBusyException"/> class.</summary>
     public LibSqlBusyException(
         string message,
         int errorCode,
@@ -41,6 +45,7 @@ public class LibSqlBusyException : LibSqlException
         IsDatabaseLocked = errorCode == LibSqlErrorMessages.SQLITE_BUSY;
     }
 
+    /// <summary>Initializes a new instance of the <see cref="LibSqlBusyException"/> class.</summary>
     public LibSqlBusyException(string message, Exception innerException)
         : base(message, innerException)
     {

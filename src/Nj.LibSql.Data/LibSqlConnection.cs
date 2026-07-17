@@ -40,13 +40,16 @@ public sealed class LibSqlConnection : DbConnection
     private static readonly StateChangeEventArgs FromOpenToClosedEventArgs =
         new(ConnectionState.Open, ConnectionState.Closed);
 
+    /// <summary>Initializes a new instance of the <see cref="LibSqlConnection"/> class.</summary>
     public LibSqlConnection()
     {
     }
 
+    /// <summary>Initializes a new instance of the <see cref="LibSqlConnection"/> class.</summary>
     public LibSqlConnection(string connectionString)
         => ConnectionString = connectionString;
 
+    /// <inheritdoc />
     [AllowNull]
     public override string ConnectionString
     {
@@ -59,15 +62,20 @@ public sealed class LibSqlConnection : DbConnection
         }
     }
 
+    /// <inheritdoc />
     public override void ChangeDatabase(string databaseName)
         => throw new NotSupportedException("libSQL does not support changing databases on an open connection.");
 
+    /// <inheritdoc />
     public override string Database => ConnectionStringBuilder.DataSource ?? string.Empty;
 
+    /// <inheritdoc />
     public override string DataSource => ConnectionStringBuilder.DataSource ?? string.Empty;
 
+    /// <inheritdoc />
     public override string ServerVersion => LibSqlVersion.GetVersionInfo();
 
+    /// <inheritdoc />
     public override ConnectionState State => _connectionState;
 
     /// <summary>Gets or sets whether to enable statement caching for improved performance.</summary>
@@ -137,9 +145,11 @@ public sealed class LibSqlConnection : DbConnection
         GC.WaitForPendingFinalizers();
     }
 
+    /// <inheritdoc />
     public override void Open()
         => OpenAsync(CancellationToken.None).GetAwaiter().GetResult();
 
+    /// <inheritdoc />
     public override async Task OpenAsync(CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
@@ -253,6 +263,7 @@ public sealed class LibSqlConnection : DbConnection
         return Task.Run(Sync, cancellationToken);
     }
 
+    /// <inheritdoc />
     public override void Close()
     {
         lock (_lockObject)
@@ -415,18 +426,23 @@ public sealed class LibSqlConnection : DbConnection
         }
     }
 
+    /// <inheritdoc />
     protected override DbCommand CreateDbCommand()
         => CreateCommand();
 
+    /// <inheritdoc />
     public new LibSqlCommand CreateCommand()
         => new() { Connection = this };
 
+    /// <inheritdoc />
     protected override DbTransaction BeginDbTransaction(IsolationLevel isolationLevel)
         => BeginTransaction(isolationLevel);
 
+    /// <inheritdoc />
     public new LibSqlTransaction BeginTransaction(IsolationLevel isolationLevel = IsolationLevel.Serializable)
         => BeginTransaction(isolationLevel, LibSqlTransactionBehavior.Deferred);
 
+    /// <summary>BeginTransaction(IsolationLevel.</summary>
     public LibSqlTransaction BeginTransaction(IsolationLevel isolationLevel, LibSqlTransactionBehavior behavior)
     {
         ValidateIsolationLevel(isolationLevel);
@@ -831,6 +847,7 @@ public sealed class LibSqlConnection : DbConnection
         OnStateChange(FromClosedToOpenEventArgs);
     }
 
+    /// <inheritdoc />
     protected override void Dispose(bool disposing)
     {
         if (disposing && _connectionState == ConnectionState.Open)

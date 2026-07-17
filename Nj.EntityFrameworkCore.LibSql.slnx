@@ -18,6 +18,7 @@
     <Project Path="samples/LocalSample/LocalSample.csproj" />
     <Project Path="samples/RemoteSample/RemoteSample.csproj" />
     <Project Path="samples/EmbeddedReplicaSample/EmbeddedReplicaSample.csproj" />
+    <Project Path="samples/DiPoolingSample/DiPoolingSample.csproj" />
     <Project Path="samples/MigrationsSample/MigrationsSample.csproj" />
   </Folder>
 </Solution>

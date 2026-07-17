@@ -24,10 +24,13 @@ public sealed class LibSqlTransaction : DbTransaction
         _behavior = behavior;
     }
 
+    /// <inheritdoc />
     public new LibSqlConnection? Connection => _connection;
 
+    /// <inheritdoc />
     protected override DbConnection? DbConnection => _connection;
 
+    /// <inheritdoc />
     public override IsolationLevel IsolationLevel => _isolationLevel;
 
     /// <summary>Gets the transaction behavior for this transaction.</summary>
@@ -36,6 +39,7 @@ public sealed class LibSqlTransaction : DbTransaction
     /// <summary>Gets a value indicating whether the transaction has been committed or rolled back.</summary>
     public bool IsCompleted => _completed;
 
+    /// <inheritdoc />
     public override void Commit()
     {
         ValidateTransaction();
@@ -69,6 +73,7 @@ public sealed class LibSqlTransaction : DbTransaction
         }
     }
 
+    /// <inheritdoc />
     public override void Rollback()
     {
         ValidateTransaction();
@@ -139,6 +144,7 @@ public sealed class LibSqlTransaction : DbTransaction
             _ => "BEGIN"
         };
 
+    /// <inheritdoc />
     protected override void Dispose(bool disposing)
     {
         if (_disposed)

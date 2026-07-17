@@ -9,16 +9,22 @@ public sealed class LibSqlParameterCollection : DbParameterCollection
 {
     private readonly List<LibSqlParameter> _parameters = [];
 
+    /// <inheritdoc />
     public override int Count => _parameters.Count;
 
+    /// <inheritdoc />
     public override bool IsFixedSize => false;
 
+    /// <inheritdoc />
     public override bool IsReadOnly => false;
 
+    /// <inheritdoc />
     public override bool IsSynchronized => false;
 
+    /// <inheritdoc />
     public override object SyncRoot => ((ICollection)_parameters).SyncRoot;
 
+    /// <inheritdoc />
     public new LibSqlParameter this[int index]
     {
         get => _parameters[index];
@@ -29,12 +35,14 @@ public sealed class LibSqlParameterCollection : DbParameterCollection
         }
     }
 
+    /// <inheritdoc />
     public new LibSqlParameter this[string parameterName]
     {
         get => (LibSqlParameter)GetParameter(parameterName);
         set => SetParameter(parameterName, value);
     }
 
+    /// <inheritdoc />
     public override int Add(object value)
     {
         if (value is not LibSqlParameter parameter)
@@ -46,6 +54,7 @@ public sealed class LibSqlParameterCollection : DbParameterCollection
         return _parameters.Count - 1;
     }
 
+    /// <summary>Add(LibSqlParameter.</summary>
     public LibSqlParameter Add(LibSqlParameter parameter)
     {
         ArgumentNullException.ThrowIfNull(parameter);
@@ -54,6 +63,7 @@ public sealed class LibSqlParameterCollection : DbParameterCollection
         return parameter;
     }
 
+    /// <summary>AddWithValue(string.</summary>
     public LibSqlParameter AddWithValue(string parameterName, object? value)
     {
         var parameter = new LibSqlParameter(parameterName, value);
@@ -61,6 +71,7 @@ public sealed class LibSqlParameterCollection : DbParameterCollection
         return parameter;
     }
 
+    /// <summary>AddWithValue(string.</summary>
     public LibSqlParameter AddWithValue(string parameterName, DbType dbType, object? value)
     {
         var parameter = new LibSqlParameter(parameterName, dbType) { Value = value };
@@ -69,6 +80,7 @@ public sealed class LibSqlParameterCollection : DbParameterCollection
         return parameter;
     }
 
+    /// <summary>AddRange(IEnumerable.</summary>
     public void AddRange(IEnumerable<LibSqlParameter> parameters)
     {
         ArgumentNullException.ThrowIfNull(parameters);
@@ -79,6 +91,7 @@ public sealed class LibSqlParameterCollection : DbParameterCollection
         }
     }
 
+    /// <inheritdoc />
     public override void AddRange(Array values)
     {
         ArgumentNullException.ThrowIfNull(values);
@@ -89,24 +102,31 @@ public sealed class LibSqlParameterCollection : DbParameterCollection
         }
     }
 
+    /// <inheritdoc />
     public override void Clear()
         => _parameters.Clear();
 
+    /// <inheritdoc />
     public override bool Contains(object value)
         => value is LibSqlParameter parameter && _parameters.Contains(parameter);
 
+    /// <inheritdoc />
     public override bool Contains(string value)
         => IndexOf(value) >= 0;
 
+    /// <inheritdoc />
     public override void CopyTo(Array array, int index)
         => ((ICollection)_parameters).CopyTo(array, index);
 
+    /// <inheritdoc />
     public override IEnumerator GetEnumerator()
         => _parameters.GetEnumerator();
 
+    /// <inheritdoc />
     public override int IndexOf(object value)
         => value is LibSqlParameter parameter ? _parameters.IndexOf(parameter) : -1;
 
+    /// <inheritdoc />
     public override int IndexOf(string parameterName)
     {
         if (string.IsNullOrEmpty(parameterName))
@@ -141,6 +161,7 @@ public sealed class LibSqlParameterCollection : DbParameterCollection
         }
     }
 
+    /// <inheritdoc />
     public override void Insert(int index, object value)
     {
         if (value is not LibSqlParameter parameter)
@@ -151,6 +172,7 @@ public sealed class LibSqlParameterCollection : DbParameterCollection
         _parameters.Insert(index, parameter);
     }
 
+    /// <inheritdoc />
     public override void Remove(object value)
     {
         if (value is LibSqlParameter parameter)
@@ -159,9 +181,11 @@ public sealed class LibSqlParameterCollection : DbParameterCollection
         }
     }
 
+    /// <inheritdoc />
     public override void RemoveAt(int index)
         => _parameters.RemoveAt(index);
 
+    /// <inheritdoc />
     public override void RemoveAt(string parameterName)
     {
         var index = IndexOf(parameterName);
@@ -171,9 +195,11 @@ public sealed class LibSqlParameterCollection : DbParameterCollection
         }
     }
 
+    /// <inheritdoc />
     protected override DbParameter GetParameter(int index)
         => _parameters[index];
 
+    /// <inheritdoc />
     protected override DbParameter GetParameter(string parameterName)
     {
         var index = IndexOf(parameterName);
@@ -185,9 +211,11 @@ public sealed class LibSqlParameterCollection : DbParameterCollection
         return _parameters[index];
     }
 
+    /// <inheritdoc />
     protected override void SetParameter(int index, DbParameter value)
         => _parameters[index] = (LibSqlParameter)value;
 
+    /// <inheritdoc />
     protected override void SetParameter(string parameterName, DbParameter value)
     {
         var index = IndexOf(parameterName);

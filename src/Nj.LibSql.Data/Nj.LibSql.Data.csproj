@@ -8,7 +8,8 @@
     <IsPackable>true</IsPackable>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PackageOutputPath>$(ArtifactsDir)packages/</PackageOutputPath>
-    <NoWarn>$(NoWarn);CS1591</NoWarn>
+    <!-- CS1591 enforced: missing XML docs on public APIs are errors. -->
+    <WarningsAsErrors>$(WarningsAsErrors);CS1591</WarningsAsErrors>
   </PropertyGroup>
 
   <ItemGroup>
