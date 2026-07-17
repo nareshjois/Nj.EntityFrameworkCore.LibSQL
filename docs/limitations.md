@@ -1,12 +1,11 @@
 # Limitations
 
 `Nj.EntityFrameworkCore.LibSql` aims for SQLite-compatible EF Core behavior where
-libSQL and the soft-forked Nelknet driver support it. The following are
+libSQL and the Nj.LibSql.Data driver support it. The following are
 **explicit non-goals** for this provider.
 
-ADO.NET comes from the git submodule `external/Nelknet.LibSQL`
-([nareshjois/Nelknet.LibSQL](https://github.com/nareshjois/Nelknet.LibSQL) soft-fork of
-upstream Nelknet). See [adr/0001-soft-fork-nelknet.md](adr/0001-soft-fork-nelknet.md).
+ADO.NET comes from in-repo `Nj.LibSql.Data` / `Nj.LibSql.Bindings`
+([ADR-0002](adr/0002-nj-libsql-data.md)). Soft-fork ADR-0001 is superseded.
 Extension / create_function APIs remain unsupported.
 
 ## Administration and platform
@@ -20,10 +19,10 @@ Extension / create_function APIs remain unsupported.
 
 ## Unsupported SQLite / native APIs
 
-Do not claim support for SQLite C APIs that Nelknet intentionally does not
+Do not claim support for SQLite C APIs that Nj.LibSql.Data intentionally does not
 expose, including:
 
-- Custom native SQL functions (`sqlite3_create_function` / aggregates) — Nelknet
+- Custom native SQL functions (`sqlite3_create_function` / aggregates) — Nj.LibSql.Data
   does not expose ADO.NET CreateFunction. Decimal LINQ is rewritten to
   REAL/`CAST` (not exact `decimal` precision). `Regex.IsMatch` uses libSQL’s
   native `REGEXP` (PCRE2), not a managed EF SQLite UDF — see
@@ -37,7 +36,7 @@ expose, including:
 ## Transactions and distributed features
 
 - Distributed transactions are not supported.
-- Nested transaction behavior follows Nelknet / libSQL (documented in driver
+- Nested transaction behavior follows Nj.LibSql.Data / libSQL (documented in driver
   contract tests when audited).
 
 ## Provider policy
@@ -61,7 +60,7 @@ expose, including:
 
 - **Preview 1:** local + remote.
 - **Preview 2+:** embedded replicas and an EF `DatabaseFacade` sync API that
-  delegates to Nelknet without inventing stronger consistency guarantees.
+  delegates to Nj.LibSql.Data without inventing stronger consistency guarantees.
 
 ## Scaffolding / reverse engineering
 

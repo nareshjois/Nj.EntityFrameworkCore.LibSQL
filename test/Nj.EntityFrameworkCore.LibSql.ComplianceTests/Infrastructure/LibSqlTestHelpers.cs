@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.TestUtilities;
 using Microsoft.Extensions.DependencyInjection;
-using Nelknet.LibSQL.Data;
+using Nj.LibSql.Data;
 
 namespace Nj.EntityFrameworkCore.LibSql.ComplianceTests.Infrastructure;
 
@@ -17,5 +17,5 @@ public class LibSqlTestHelpers : RelationalTestHelpers
         => services.AddEntityFrameworkLibSql();
 
     public override DbContextOptionsBuilder UseProviderOptions(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseLibSql(new LibSQLConnection("Data Source=:memory:"));
+        => optionsBuilder.UseLibSql(new LibSqlConnection("Data Source=:memory:"));
 }

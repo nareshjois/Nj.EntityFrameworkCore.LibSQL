@@ -13,13 +13,14 @@ Participation is governed by [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).
 - Docker Desktop (or compatible engine) for remote `sqld` integration tests
 - Optional: `dotnet tool restore` for local `dotnet-ef`
 
-Clone with submodules (ADO.NET soft-fork):
+Clone:
 
 ```bash
-git clone --recurse-submodules https://github.com/nareshjois/Nj.EntityFrameworkCore.LibSQL.git
-# or after a plain clone:
-git submodule update --init --recursive
+git clone https://github.com/nareshjois/Nj.EntityFrameworkCore.LibSQL.git
 ```
+
+The ADO.NET driver lives in-repo (`src/Nj.LibSql.Data` / `Nj.LibSql.Bindings`;
+[ADR-0002](docs/adr/0002-nj-libsql-data.md)). No git submodule is required.
 
 Install the local format gate (once per clone):
 

@@ -3,7 +3,7 @@
 
 using System.Collections.Concurrent;
 using System.Data;
-using Nelknet.LibSQL.Data;
+using Nj.LibSql.Data;
 using Nj.EntityFrameworkCore.LibSql.Infrastructure.Internal;
 
 namespace Nj.EntityFrameworkCore.LibSql.Storage.Internal;
@@ -184,9 +184,9 @@ public class LibSqlDatabaseCreator : RelationalDatabaseCreator
             }
         }
 
-        if (dbConnection is LibSQLConnection libSqlConnection)
+        if (dbConnection is LibSqlConnection libSqlConnection)
         {
-            LibSQLConnection.ClearPool(libSqlConnection);
+            LibSqlConnection.ClearPool(libSqlConnection);
         }
 
         if (string.IsNullOrEmpty(path)
@@ -232,7 +232,7 @@ public class LibSqlDatabaseCreator : RelationalDatabaseCreator
     {
         try
         {
-            using var wipe = new LibSQLConnection(connectionString);
+            using var wipe = new LibSqlConnection(connectionString);
             wipe.Open();
             try
             {
@@ -283,7 +283,7 @@ public class LibSqlDatabaseCreator : RelationalDatabaseCreator
             finally
             {
                 wipe.Close();
-                LibSQLConnection.ClearPool(wipe);
+                LibSqlConnection.ClearPool(wipe);
             }
         }
         catch

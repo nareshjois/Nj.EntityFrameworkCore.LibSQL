@@ -1,17 +1,14 @@
 # Driver contract (WP-02)
 
-Direct ADO.NET contract suite against `Nelknet.LibSQL.Data` **without** EF.
-Source: `test/Nj.EntityFrameworkCore.LibSql.DriverContractTests`.
-
-Parallel clean-driver suite: `test/Nj.LibSql.DriverContractTests` against
-`Nj.LibSql.Data` (ADR-0002). Local + Testcontainers HTTP + Turso WSS (large-result
-gate); path-filtered CI in `.github/workflows/libsql-driver.yml`.
+Direct ADO.NET contract suite against `Nj.LibSql.Data` **without** EF.
+Source: `test/Nj.LibSql.DriverContractTests` (ADR-0002). Local + Testcontainers HTTP +
+Turso (large-result) + WSS on sqld; path-filtered CI in `.github/workflows/libsql-driver.yml`.
 
 ## Native baseline
 
 | Item | Value |
 |------|--------|
-| Nelknet.LibSQL.Data | Soft-fork `main` `@8b5a289` (upstream `0.2.11` + patches) |
+| Nj.LibSql.Data | In-monorepo ([ADR-0002](adr/0002-nj-libsql-data.md)) |
 | Bundled libSQL (bindings `LIBSQL_VERSION`) | `libsql-server-v0.24.32` (`40c272de…`) |
 | Runtime `LibSQLVersion` report | `libSQL Version: 0.2.3` / `SQLite Version: 3.45.1` |
 
@@ -27,11 +24,11 @@ Update this table when Nelknet is bumped.
 
 ```bash
 # Local + remote (requires Docker for Testcontainers)
-dotnet test test/Nj.EntityFrameworkCore.LibSql.DriverContractTests -c Release
+dotnet test test/Nj.LibSql.DriverContractTests -c Release
 
 # Use an already-running sqld instead of Testcontainers
 export LIBSQL_TEST_URL=http://127.0.0.1:8080
-dotnet test test/Nj.EntityFrameworkCore.LibSql.DriverContractTests -c Release
+dotnet test test/Nj.LibSql.DriverContractTests -c Release
 
 # Disable remote entirely
 export LIBSQL_DISABLE_REMOTE_TESTS=1

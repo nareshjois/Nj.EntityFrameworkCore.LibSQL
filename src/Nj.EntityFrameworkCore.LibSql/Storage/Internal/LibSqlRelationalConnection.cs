@@ -1,7 +1,7 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-using Nelknet.LibSQL.Data;
+using Nj.LibSql.Data;
 using Nj.EntityFrameworkCore.LibSql.Infrastructure.Internal;
 using Nj.EntityFrameworkCore.LibSql.Internal;
 
@@ -56,7 +56,7 @@ public class LibSqlRelationalConnection : RelationalConnection, ILibSqlRelationa
     /// </summary>
     protected override DbConnection CreateDbConnection()
     {
-        var connection = new LibSQLConnection(GetValidatedConnectionString());
+        var connection = new LibSqlConnection(GetValidatedConnectionString());
         InitializeDbConnection(connection);
 
         return connection;
@@ -85,14 +85,14 @@ public class LibSqlRelationalConnection : RelationalConnection, ILibSqlRelationa
             SpatialiteLoader.Load(connection);
         }
 
-        if (connection is not LibSQLConnection)
+        if (connection is not LibSqlConnection)
         {
             throw new InvalidOperationException(
                 $"The connection of type '{connection.GetType().FullName}' is not supported. "
-                + $"Expected '{typeof(LibSQLConnection).FullName}'.");
+                + $"Expected '{typeof(LibSqlConnection).FullName}'.");
         }
 
-        // Nelknet does not support sqlite3_create_function / aggregates.
+        // Nj.LibSql.Data does not support sqlite3_create_function / aggregates.
         // Decimal LINQ → REAL/CAST; Regex.IsMatch → native REGEXP (docs/udf-gap.md).
     }
 }

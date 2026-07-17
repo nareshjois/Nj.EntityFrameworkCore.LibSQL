@@ -8,7 +8,7 @@ namespace Nj.EntityFrameworkCore.LibSql.Infrastructure.Internal;
 /// <summary>
 ///     Reserved helper for SQL features that Microsoft EF SQLite implements via
 ///     <c>SqliteConnection.CreateFunction</c> / <c>CreateAggregate</c> / <c>CreateCollation</c>
-///     when Nelknet cannot register equivalents. Decimal and <c>Regex.IsMatch</c> no longer
+///     when Nj.LibSql.Data cannot register equivalents. Decimal and <c>Regex.IsMatch</c> no longer
 ///     use this path (see docs/udf-gap.md). Keep for future gap features.
 /// </summary>
 public static class LibSqlUdfGaps
@@ -24,7 +24,7 @@ public static class LibSqlUdfGaps
     public static NotSupportedException CreateException(string feature)
         => new(
             $"Translation requires the SQL helper '{feature}', which depends on ADO.NET "
-            + "CreateFunction/CreateAggregate/CreateCollation. Nelknet.LibSQL.Data does not "
+            + "CreateFunction/CreateAggregate/CreateCollation. Nj.LibSql.Data does not "
             + $"expose those APIs. See {DocumentationPath}.");
 
     /// <summary>

@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
-using Nelknet.LibSQL.Data;
+using Nj.LibSql.Data;
 using Xunit;
 
 namespace Nj.EntityFrameworkCore.LibSql.FunctionalTests.Migrations;
@@ -63,7 +63,7 @@ public sealed class EnsureDeletedFileLockTests
         {
             try
             {
-                LibSQLConnection.ClearPool(new LibSQLConnection(cs));
+                LibSqlConnection.ClearPool(new LibSqlConnection(cs));
                 if (File.Exists(path))
                 {
                     File.Delete(path);

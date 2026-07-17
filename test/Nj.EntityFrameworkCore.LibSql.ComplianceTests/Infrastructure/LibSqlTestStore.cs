@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.DependencyInjection;
-using Nelknet.LibSQL.Data;
+using Nj.LibSql.Data;
 
 namespace Nj.EntityFrameworkCore.LibSql.ComplianceTests.Infrastructure;
 
@@ -83,20 +83,20 @@ public class LibSqlTestStore : RelationalTestStore
         return Task.CompletedTask;
     }
 
-    private static LibSQLConnection CreateConnection(string name, bool sharedCache, bool uniquePath)
+    private static LibSqlConnection CreateConnection(string name, bool sharedCache, bool uniquePath)
     {
         if (string.Equals(name, ":memory:", StringComparison.OrdinalIgnoreCase))
         {
             var connectionString = sharedCache
-                ? LibSQLConnectionStringBuilder.CreateSharedMemoryConnectionString()
-                : LibSQLConnectionStringBuilder.CreateInMemoryConnectionString();
-            return new LibSQLConnection(connectionString);
+                ? LibSqlConnectionStringBuilder.CreateSharedMemoryConnectionString()
+                : LibSqlConnectionStringBuilder.CreateInMemoryConnectionString();
+            return new LibSqlConnection(connectionString);
         }
 
         var fileName = uniquePath ? name + "-" + Guid.NewGuid().ToString("N") + ".db" : name + ".db";
         var databasePath = Path.Combine(Path.GetTempPath(), "nj-libsql-spec", fileName);
         Directory.CreateDirectory(Path.GetDirectoryName(databasePath)!);
-        return new LibSQLConnection($"Data Source={databasePath}");
+        return new LibSqlConnection($"Data Source={databasePath}");
     }
 }
 
@@ -148,7 +148,7 @@ public sealed class RemoteLibSqlTestStoreFactory : RelationalTestStoreFactory
 internal sealed class RemoteLibSqlTestStore : RelationalTestStore
 {
     public RemoteLibSqlTestStore(string name, string connectionString)
-        : base(name, shared: true, new LibSQLConnection(connectionString))
+        : base(name, shared: true, new LibSqlConnection(connectionString))
     {
         UseConnectionString = true;
     }

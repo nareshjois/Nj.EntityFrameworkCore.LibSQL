@@ -77,7 +77,7 @@ public class LibSqlOptionsExtension : RelationalOptionsExtension
         {
             throw new NotSupportedException(
                 "SpatiaLite / loadable SQLite extensions are not supported by Nj.EntityFrameworkCore.LibSql. "
-                + "Nelknet.LibSQL.Data does not expose sqlite3_load_extension; see docs/limitations.md.");
+                + "Nj.LibSql.Data does not expose sqlite3_load_extension; see docs/limitations.md.");
         }
 
         var clone = (LibSqlOptionsExtension)Clone();

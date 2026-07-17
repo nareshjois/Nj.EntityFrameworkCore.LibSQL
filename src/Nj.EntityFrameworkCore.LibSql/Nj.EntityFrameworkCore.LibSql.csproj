@@ -2,9 +2,9 @@
   <PropertyGroup>
     <RootNamespace>Nj.EntityFrameworkCore.LibSql</RootNamespace>
     <AssemblyName>Nj.EntityFrameworkCore.LibSql</AssemblyName>
-    <Description>EF Core 10 provider for libSQL using Nelknet.LibSQL.Data. Attributed baseline from Microsoft.EntityFrameworkCore.Sqlite.Core (WP-03).</Description>
+    <Description>EF Core 10 provider for libSQL using Nj.LibSql.Data. Attributed baseline from Microsoft.EntityFrameworkCore.Sqlite.Core (WP-03).</Description>
     <PackageId>Nj.EntityFrameworkCore.LibSql</PackageId>
-    <PackageTags>EntityFrameworkCore;EFCore;libSQL;LibSql;Turso;SQLite;Nelknet</PackageTags>
+    <PackageTags>EntityFrameworkCore;EFCore;libSQL;LibSql;Turso;SQLite</PackageTags>
     <IsPackable>true</IsPackable>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PackageOutputPath>$(ArtifactsDir)packages/</PackageOutputPath>
@@ -64,7 +64,7 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" PrivateAssets="all" />
     <PackageReference Include="Microsoft.Extensions.DependencyModel" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="All" />
-    <ProjectReference Include="..\..\external\Nelknet.LibSQL\src\Nelknet.LibSQL.Data\Nelknet.LibSQL.Data.csproj" />
+    <ProjectReference Include="..\Nj.LibSql.Data\Nj.LibSql.Data.csproj" />
   </ItemGroup>
 
   <ItemGroup>
