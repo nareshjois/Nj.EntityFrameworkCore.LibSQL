@@ -1,72 +1,66 @@
 # Limitations
 
-`Nj.EntityFrameworkCore.LibSql` aims for SQLite-compatible EF Core behavior where
-libSQL and the Nj.LibSql.Data driver support it. The following are
-**explicit non-goals** for this provider.
+Explicit non-goals for `Nj.EntityFrameworkCore.LibSql`. Feature-level tracking
+lives in [compatibility.md](compatibility.md).
 
 ADO.NET comes from in-repo `Nj.LibSql.Data` / `Nj.LibSql.Bindings`
-([ADR-0002](adr/0002-nj-libsql-data.md)). Soft-fork ADR-0001 is superseded.
-Extension / create_function APIs remain unsupported.
+([architecture.md](architecture.md)).
 
-## Administration and platform
+## Administration
 
-- Creating, deleting, or administering Turso or self-hosted `sqld` databases,
-  namespaces, auth tokens, or backups is **out of scope**. Provision those with
-  Turso / `sqld` tooling; the provider only talks to an already-addressable
-  database.
-- Turso Cloud is **not** required CI coverage. Self-hosted `sqld` is the remote
-  contract in CI. You may still use Turso connection strings in applications.
+- Creating, deleting, or administering Turso / `sqld` databases, namespaces,
+  tokens, or backups is **out of scope**. Provision those externally; the
+  provider only talks to an already-addressable database.
 
-## Unsupported SQLite / native APIs
+## Unsupported native APIs
 
-Do not claim support for SQLite C APIs that Nj.LibSql.Data intentionally does not
-expose, including:
+`Nj.LibSql.Data` does not expose:
 
-- Custom native SQL functions (`sqlite3_create_function` / aggregates) — Nj.LibSql.Data
-  does not expose ADO.NET CreateFunction. Decimal LINQ is rewritten to
-  REAL/`CAST` (not exact `decimal` precision). `Regex.IsMatch` uses libSQL’s
-  native `REGEXP` (PCRE2), not a managed EF SQLite UDF — see
-  [udf-gap.md](udf-gap.md).
-- Backup API
-- Incremental blob I/O
-- Loadable extensions (including SpatiaLite loading)
-- Authorizer callbacks
-- Progress handlers
+- Custom SQL functions / aggregates (`CreateFunction`)
+- Backup API, incremental blob I/O
+- Loadable extensions (including SpatiaLite)
+- Authorizer callbacks, progress handlers
 
-## Transactions and distributed features
+### Decimal and regex (vs EF SQLite)
+
+Microsoft EF SQLite registers managed helpers (`ef_*`, `EF_DECIMAL`, regexp UDF).
+This provider does not:
+
+| Feature | Behavior |
+|---------|----------|
+| Decimal LINQ (`+` `-` `*` `/` `%`, compare, aggregates, order) | Rewritten to SQLite `REAL` / `CAST` (IEEE double — **not** exact `System.Decimal`) |
+| `Regex.IsMatch` | Native libSQL `REGEXP` / `regexp()` (**PCRE2**, not `System.Text.RegularExpressions`) |
+
+See waiver **C-001** in [compatibility.md](compatibility.md).
+
+## Transactions
 
 - Distributed transactions are not supported.
-- Nested transaction behavior follows Nj.LibSql.Data / libSQL (documented in driver
-  contract tests when audited).
+- Nested / savepoint behavior follows the driver and libSQL.
 
 ## Provider policy
 
 - Do not silently emulate unsupported behavior in memory.
-- Do not fork or bundle the full `dotnet/efcore` tree; import only the attributed
-  SQLite provider baseline and test against published EF packages.
+- Do not fork the full `dotnet/efcore` tree; import only the attributed SQLite
+  baseline and test against published EF packages.
 - Do not copy third-party provider implementations.
-- Do not reference `Microsoft.EntityFrameworkCore.Sqlite` (brings
+- Do not reference `Microsoft.EntityFrameworkCore.Sqlite` (pulls
   `Microsoft.Data.Sqlite` and the native SQLite bundle).
 
 ## Database create / delete
 
 | Mode | `EnsureCreated` | `EnsureDeleted` |
 |------|-----------------|-----------------|
-| Local file | May create schema and file (EF SQLite–like) | Deletes the file when possible; on Windows if the native handle is still locked (`C-005`), wipes schema and treats the path as deleted for `Exists()` until `Create` |
-| Remote | Schema only inside an already-addressable database | Always throws `NotSupportedException` |
-| Embedded replica | Same as remote for create semantics | Always throws `NotSupportedException` |
+| Local file | May create schema and file | Deletes file when possible; on Windows lock (`C-005`) wipe + tombstone |
+| Remote | Schema only inside existing DB | Always throws `NotSupportedException` |
+| Embedded replica | Same as remote for create | Always throws `NotSupportedException` |
 
 ## Preview scope
 
 - **Preview 1:** local + remote.
-- **Preview 2+:** embedded replicas and an EF `DatabaseFacade` sync API that
-  delegates to Nj.LibSql.Data without inventing stronger consistency guarantees.
+- **Preview 2+:** embedded replicas and EF sync API that delegates to the driver.
 
-## Scaffolding / reverse engineering
+## Scaffolding
 
-- Virtual tables (`CREATE VIRTUAL TABLE` … FTS, rtree, vector indexes) are
-  **not** reverse-engineered (compatibility `C-004`).
-- libSQL vector / `FLOAT32` store types have **no** first-class CLR mapping in
-  Preview 1; treat as out of scope for scaffolding.
-
-Feature-level capability tracking lives in [compatibility.md](compatibility.md).
+- Virtual tables are not reverse-engineered (`C-004`).
+- libSQL vector / `FLOAT32` types have no first-class CLR mapping in Preview 1.

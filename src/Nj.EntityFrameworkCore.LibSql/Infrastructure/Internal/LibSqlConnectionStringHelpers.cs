@@ -11,7 +11,7 @@ namespace Nj.EntityFrameworkCore.LibSql.Infrastructure.Internal;
 public static class LibSqlConnectionStringHelpers
 {
     /// <summary>
-    ///     Parses a Nelknet connection string; returns null if empty/invalid.
+    ///     Parses a LibSql connection string; returns null if empty/invalid.
     /// </summary>
     public static LibSqlConnectionStringBuilder? TryParse(string? connectionString)
     {

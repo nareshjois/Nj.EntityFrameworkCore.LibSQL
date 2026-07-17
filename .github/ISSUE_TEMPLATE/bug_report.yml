@@ -17,6 +17,6 @@ body:
   - type: input
     id: versions
     attributes:
-      label: Package / EF / Nelknet versions
+      label: Package / EF / Nj.LibSql.Data versions
     validations:
       required: true

@@ -94,9 +94,9 @@ public sealed class TransactionLocalTests
     [Fact]
     public void Command_with_foreign_transaction_behavior_is_documented()
     {
-        // Nelknet 0.2.10 does not always reject a command bound to another
-        // connection's transaction at Execute time. EF must still assign
-        // transactions carefully; see docs/driver-contract.md.
+        // Driver may not always reject a command bound to another connection's
+        // transaction at Execute time. EF must still assign transactions carefully;
+        // see docs/compatibility.md.
         using var connection1 = _fixture.CreateOpenConnection();
         using var connection2 = _fixture.CreateOpenConnection();
         using var transaction = connection1.BeginTransaction();
@@ -130,7 +130,7 @@ public sealed class TransactionLocalTests
     [Fact]
     public void Sql_savepoint_create_rollback_and_release_work()
     {
-        // Nelknet has no first-class Savepoint APIs; SQL SAVEPOINT is the contract surface.
+        // No first-class Savepoint APIs; SQL SAVEPOINT is the contract surface.
         using var connection = _fixture.CreateOpenConnection();
         using (var setup = connection.CreateCommand())
         {
@@ -233,8 +233,8 @@ public sealed class ErrorMappingLocalTests
 
         var ex = Assert.ThrowsAny<LibSqlException>(() => command.ExecuteNonQuery());
         Assert.NotEqual(0, ex.LibSqlErrorCode);
-        // Observed with Nelknet 0.2.10 / bundled libSQL: code 2 "Internal logic error"
-        // rather than LibSqlConstraintException. Tracked in docs/driver-contract.md.
+        // Observed with bundled libSQL: code 2 "Internal logic error" rather than
+        // LibSqlConstraintException. See docs/compatibility.md.
         Assert.DoesNotContain("a@b.com", ex.Message, StringComparison.Ordinal);
     }
 

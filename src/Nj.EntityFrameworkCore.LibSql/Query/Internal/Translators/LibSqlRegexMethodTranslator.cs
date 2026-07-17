@@ -43,9 +43,9 @@ public class LibSqlRegexMethodTranslator : IMethodCallTranslator
     {
         if (method.Equals(RegexIsMatchMethodInfo))
         {
-            // Microsoft EF SQLite registers a managed regexp UDF; libSQL (Nelknet
-            // build) provides REGEXP / regexp() natively (PCRE2). Dialect differs
-            // from System.Text.RegularExpressions — see docs/udf-gap.md.
+            // Microsoft EF SQLite registers a managed regexp UDF; libSQL provides
+            // REGEXP / regexp() natively (PCRE2). Dialect differs from
+            // System.Text.RegularExpressions — see docs/limitations.md.
             return _sqlExpressionFactory.Regexp(arguments[0], arguments[1]);
         }
 

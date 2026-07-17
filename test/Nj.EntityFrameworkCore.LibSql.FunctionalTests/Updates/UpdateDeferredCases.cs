@@ -9,7 +9,7 @@ using Xunit;
 namespace Nj.EntityFrameworkCore.LibSql.FunctionalTests.Updates;
 
 /// <summary>
-/// WP-10 deferred WP-07 update / transaction cases.
+/// Deferred update / transaction edge cases.
 /// </summary>
 internal static class UpdateDeferredCases
 {

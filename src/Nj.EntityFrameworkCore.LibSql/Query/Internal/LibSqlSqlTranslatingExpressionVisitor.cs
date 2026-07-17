@@ -149,7 +149,7 @@ public class LibSqlSqlTranslatingExpressionVisitor : RelationalSqlTranslatingExp
             var operandType = GetProviderType(sqlUnary.Operand);
             if (operandType == typeof(decimal))
             {
-                // Nelknet has no ef_negate UDF; use REAL arithmetic (IEEE precision, not decimal).
+                // No ef_negate UDF; use REAL arithmetic (IEEE precision, not decimal).
                 return AsDecimal(
                     _sqlExpressionFactory.Negate(AsReal(sqlUnary.Operand)),
                     sqlUnary.TypeMapping);

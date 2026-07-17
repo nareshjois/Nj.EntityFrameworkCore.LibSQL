@@ -1,29 +1,27 @@
 # Docs
 
+Current-state documentation for `Nj.EntityFrameworkCore.LibSql` and the in-repo
+ADO.NET driver (`Nj.LibSql.Data` / `Nj.LibSql.Bindings`).
+
+## Using the provider
+
 | Document | Purpose |
 |----------|---------|
-| [adr/0001-soft-fork-nelknet.md](adr/0001-soft-fork-nelknet.md) | Soft-fork Nelknet via git submodule (ADO.NET fixes) |
-| [compatibility.md](compatibility.md) | Capability / waiver manifesto |
-| [capabilities.md](capabilities.md) | Local / remote / replica capability matrix |
+| [architecture.md](architecture.md) | Packages, naming, natives, HTTP/WSS, CI |
 | [connection-modes.md](connection-modes.md) | Local, remote, and embedded-replica connection strings |
 | [limitations.md](limitations.md) | Explicit non-goals and unsupported APIs |
+| [compatibility.md](compatibility.md) | Capability matrix and waiver log |
 | [migrations.md](migrations.md) | Migrations and EnsureCreated/Deleted policy |
-| [provider-development.md](provider-development.md) | Upstream baseline, review rules, implementation order |
-| [provider-service-map.md](provider-service-map.md) | Subsystem customization inventory (G3) |
-| [upstream-baseline.md](upstream-baseline.md) | EF Core SQLite tag/commit and import provenance |
-| [release-policy.md](release-policy.md) | Versioning, approval, NuGet publishing |
-| [testing.md](testing.md) | How to run tests and `sqld` locally |
-| [versions.md](versions.md) | Pinned EF / Nelknet / SDK / image versions |
-| [driver-contract.md](driver-contract.md) | Nelknet ADO.NET contract findings (WP-02) |
-| [udf-gap.md](udf-gap.md) | Microsoft EF SQLite UDF/collation helpers that fail at translation |
-| [wp-01-handoff.md](wp-01-handoff.md) | Scaffold handoff checklist |
-| [wp-02-handoff.md](wp-02-handoff.md) | Driver contract handoff checklist |
-| [wp-03-handoff.md](wp-03-handoff.md) | SQLite baseline import handoff checklist |
-| [wp-04-handoff.md](wp-04-handoff.md) | Provider core / UseLibSql handoff checklist |
-| [wp-05-handoff.md](wp-05-handoff.md) | Type mapping / SQL generation handoff checklist |
-| [wp-06-handoff.md](wp-06-handoff.md) | Query translation handoff checklist (first slice) |
 
-Governance at the repository root: [README](../README.md),
-[CONTRIBUTING](../CONTRIBUTING.md), [SECURITY](../SECURITY.md),
-[CODE_OF_CONDUCT](../CODE_OF_CONDUCT.md), [NOTICE](../NOTICE),
-[CHANGELOG](../CHANGELOG.md).
+## Developing
+
+| Document | Purpose |
+|----------|---------|
+| [testing.md](testing.md) | How to run tests, Testcontainers, Turso secrets |
+| [versions.md](versions.md) | Pinned EF / driver / SDK / image versions |
+| [upstream-baseline.md](upstream-baseline.md) | EF Core SQLite import provenance |
+| [release-policy.md](release-policy.md) | Versioning and NuGet publishing |
+
+Root: [README](../README.md), [CONTRIBUTING](../CONTRIBUTING.md),
+[SECURITY](../SECURITY.md), [CODE_OF_CONDUCT](../CODE_OF_CONDUCT.md),
+[NOTICE](../NOTICE), [CHANGELOG](../CHANGELOG.md).

@@ -10,35 +10,28 @@
 
 - Provider **major/minor track EF Core**.
 - Do **not** label experimental builds as stable.
-- EF Core providers generally require a **new build per EF major version**.
+- EF providers generally need a **new build per EF major version**.
 
-Pinned dependency versions for the current line live in
-[versions.md](versions.md) and `Directory.Packages.props`.
+Pins: [versions.md](versions.md) and `Directory.Packages.props`.
 
 ## Approval
 
-Until a second maintainer joins:
+Until a second maintainer joins: sole maintainer (`nareshjois`) **and**
+reproducible CI on the tagged commit.
 
-- Releases require the sole maintainer (`nareshjois`) **and** reproducible CI
-  provenance (successful package/release workflow on the tagged commit).
-
-After a second maintainer exists:
-
-- Prefer **two-maintainer approval** for stable releases.
+After a second maintainer: prefer **two-maintainer approval** for stable releases.
 
 ## NuGet publishing
 
 | Item | Value |
 |------|--------|
 | Package ID | `Nj.EntityFrameworkCore.LibSql` |
-| Publisher | Accounts with authority under `nareshjois` |
-| Reservation | Reserve the ID on first successful publish; do not announce before reservation |
+| Publisher | Accounts under `nareshjois` |
 | Symbols | `.snupkg` with SourceLink |
 
-Manual publish is acceptable for early previews. Automate only after NuGet
-publish secrets are configured and documented for maintainers.
+Manual publish is fine for early previews. Automate after NuGet secrets are
+configured for maintainers.
 
 ## Security releases
 
-Follow [SECURITY.md](../SECURITY.md). Dependency bumps for EF Core / Nelknet
-land through tested PRs after verification.
+Follow [SECURITY.md](../SECURITY.md). Dependency bumps land through tested PRs.

@@ -2,7 +2,7 @@
   <PropertyGroup>
     <RootNamespace>Nj.EntityFrameworkCore.LibSql</RootNamespace>
     <AssemblyName>Nj.EntityFrameworkCore.LibSql</AssemblyName>
-    <Description>EF Core 10 provider for libSQL using Nj.LibSql.Data. Attributed baseline from Microsoft.EntityFrameworkCore.Sqlite.Core (WP-03).</Description>
+    <Description>EF Core 10 provider for libSQL using Nj.LibSql.Data. Attributed baseline from Microsoft.EntityFrameworkCore.Sqlite.Core.</Description>
     <PackageId>Nj.EntityFrameworkCore.LibSql</PackageId>
     <PackageTags>EntityFrameworkCore;EFCore;libSQL;LibSql;Turso;SQLite</PackageTags>
     <IsPackable>true</IsPackable>

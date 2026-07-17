@@ -147,7 +147,7 @@ public sealed class LibSqlConnection : DbConnection
                 if (builder.Mode == LibSqlConnectionMode.EmbeddedReplica)
                 {
                     throw new NotImplementedException(
-                        "Embedded-replica libSQL connections are deferred to Preview 2. See ADR-0002.");
+                        "Embedded-replica libSQL connections are deferred to Preview 2. See docs/architecture.md.");
                 }
 
                 if (builder.Mode == LibSqlConnectionMode.Remote)

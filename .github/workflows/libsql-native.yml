@@ -1,7 +1,7 @@
 name: libsql-native
 
 # Builds FFI client libs (linux-x64, osx-arm64, win-x64) and publishes a GitHub Release
-# tagged native-libsql-v* for DuckDB-style Bindings downloads (ADR-0002).
+# tagged native-libsql-v* for DuckDB-style Bindings downloads.
 # Also refreshes committed src/Nj.LibSql.Bindings/runtimes/** on the target branch.
 
 on:

@@ -13,11 +13,11 @@
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Relational.Specification.Tests" Version="$(EfCoreVersion)" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Specification.Tests" Version="$(EfCoreVersion)" />
     <PackageVersion Include="Microsoft.Extensions.DependencyModel" Version="$(EfCoreVersion)" />
-    <!-- Differential tests only; provider uses soft-fork submodule. -->
+    <!-- Differential tests only (compare vs EF Sqlite); provider uses Nj.LibSql.Data. -->
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Sqlite" Version="$(EfCoreVersion)" />
     <!-- Build / packaging -->
     <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="10.0.301" />
-    <!-- Public API analyzers activate with the real UseLibSql surface (WP-04). -->
+    <!-- Public API analyzers for the UseLibSql surface. -->
     <PackageVersion Include="Microsoft.CodeAnalysis.PublicApiAnalyzers" Version="3.3.4" />
     <!-- Test -->
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.8.1" />

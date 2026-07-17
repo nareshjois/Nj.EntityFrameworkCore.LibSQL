@@ -74,8 +74,8 @@ public sealed class TypeMappingDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        // Integer keys use store generation (INSERT…RETURNING) — covered by soft-fork Nelknet
-        // RETURNING drain + HTTP baton fixes (C-002 / ADR-0001).
+        // Integer keys use store generation (INSERT…RETURNING) — covered by
+        // RETURNING drain + HTTP baton handling in Nj.LibSql.Data (C-002).
 
         modelBuilder.Entity<ConverterKeyRow>(e =>
         {

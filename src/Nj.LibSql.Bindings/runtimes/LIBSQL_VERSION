@@ -3,4 +3,4 @@ libSQL Commit: 40c272de85ee4e62d722c5ccae5da2e76b4253a1
 libSQL Tag: libsql-server-v0.24.32
 libSQL Cargo Version: 0.6.0
 Build Date: 2026-04-22 14:25:07 UTC
-Build Source: bootstrapped from soft-fork runtimes for Phase 1; replace via libsql-native.yml release
+Build Source: committed runtimes pin; refresh via libsql-native.yml release

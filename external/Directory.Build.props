@@ -1,9 +1,0 @@
-<!--
-  Prevent MSBuild from walking past this folder so Nelknet submodule projects
-  do not inherit Nj.EntityFrameworkCore.LibSql Directory.Build.props.
--->
-<Project>
-  <PropertyGroup>
-    <_SkipUpgradeNetCoreTargetFramework>false</_SkipUpgradeNetCoreTargetFramework>
-  </PropertyGroup>
-</Project>

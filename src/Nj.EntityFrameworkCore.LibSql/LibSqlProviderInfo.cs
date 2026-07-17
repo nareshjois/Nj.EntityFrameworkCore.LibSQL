@@ -1,8 +1,7 @@
 namespace Nj.EntityFrameworkCore.LibSql;
 
 /// <summary>
-/// Scaffold-time package identity helpers. Real EF provider APIs
-/// (<c>UseLibSql</c>, DI registration) land in WP-04.
+/// Package identity helpers used by pack/install smoke tests.
 /// </summary>
 public static class LibSqlProviderInfo
 {
@@ -16,5 +15,5 @@ public static class LibSqlProviderInfo
     /// Returns a short status message for pack/install smoke tests.
     /// </summary>
     public static string GetScaffoldStatus()
-        => $"{PackageId} {typeof(LibSqlProviderInfo).Assembly.GetName().Version} — UseLibSql provider (WP-04).";
+        => $"{PackageId} {typeof(LibSqlProviderInfo).Assembly.GetName().Version} — UseLibSql provider.";
 }

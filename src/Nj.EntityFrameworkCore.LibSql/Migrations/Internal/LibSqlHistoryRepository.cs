@@ -128,8 +128,8 @@ SELECT COUNT(*) FROM "sqlite_master" WHERE "name" = {stringTypeMapping.GenerateS
         {
             var dbLock = CreateMigrationDatabaseLock();
             var timestamp = DateTimeOffset.UtcNow;
-            // Nelknet ExecuteScalar does not reliably return the last result of a
-            // multi-statement batch (INSERT …; SELECT changes()). Split the acquire.
+            // ExecuteScalar may not return the last result of a multi-statement
+            // batch (INSERT …; SELECT changes()). Split the acquire.
             CreateInsertLockCommand(timestamp).ExecuteNonQuery(CreateRelationalCommandParameters());
             var insertCount = CreateLockOwnerCountCommand(timestamp)
                 .ExecuteScalar(CreateRelationalCommandParameters());

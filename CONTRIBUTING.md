@@ -1,7 +1,7 @@
 # Contributing to Nj.EntityFrameworkCore.LibSql
 
-Thanks for your interest in contributing. This repository is a community EF Core
-10 provider for libSQL. Please read this guide before opening a pull request.
+Thanks for your interest. This is a community EF Core 10 provider for libSQL.
+Please read this guide before opening a pull request.
 
 ## Code of conduct
 
@@ -10,55 +10,49 @@ Participation is governed by [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).
 ## Prerequisites
 
 - [.NET 10 SDK](https://dotnet.microsoft.com/download) matching [`global.json`](global.json)
-- Docker Desktop (or compatible engine) for remote `sqld` integration tests
+- Docker Desktop (or compatible) for remote `sqld` tests
 - Optional: `dotnet tool restore` for local `dotnet-ef`
-
-Clone:
 
 ```bash
 git clone https://github.com/nareshjois/Nj.EntityFrameworkCore.LibSQL.git
 ```
 
-The ADO.NET driver lives in-repo (`src/Nj.LibSql.Data` / `Nj.LibSql.Bindings`;
-[ADR-0002](docs/adr/0002-nj-libsql-data.md)). No git submodule is required.
+The ADO.NET driver is in-repo (`src/Nj.LibSql.Data` / `Nj.LibSql.Bindings`;
+[docs/architecture.md](docs/architecture.md)).
 
-Install the local format gate (once per clone):
+Install the format gate once per clone:
 
 ```bash
 ./eng/githooks/install
 ```
 
-This sets `core.hooksPath` to `eng/githooks`. The `pre-commit` hook auto-formats and
-verifies C# the same way Ubuntu CI does (`dotnet format --verify-no-changes`, excluding
-the EF provider tree and `external/`), so whitespace/usings fail before push.
+This sets `core.hooksPath` to `eng/githooks`. The hook matches Ubuntu CI
+(`dotnet format --verify-no-changes`, excluding the imported EF baseline tree).
 
-Before pushing driver / Data / Bindings changes, run the full local CI mirror:
+Before pushing driver / Data / Bindings changes:
 
 ```bash
 ./eng/verify-driver-ci-local.sh
-# Turso job locally (optional):
-# export LIBSQL_TEST_URL=… LIBSQL_TEST_AUTH_TOKEN=…
+# Optional Turso: export LIBSQL_TEST_URL=… LIBSQL_TEST_AUTH_TOKEN=…
 ```
-
-See [`docs/adr/0001-soft-fork-nelknet.md`](docs/adr/0001-soft-fork-nelknet.md).
 
 ## Development workflow
 
-1. Open an issue for non-trivial design changes before investing large effort.
-2. Branch from `main` (or the current integration branch named in the issue).
+1. Open an issue for non-trivial design changes before large effort.
+2. Branch from `main`.
 3. Keep commits focused. When touching EF SQLite baseline source:
-   - **Upstream import**, **mechanical rename**, and **LibSQL behavior changes**
-     must remain in separate commits.
-4. Do not skip specification or contract tests to make CI green. Every permanent
-   exclusion needs an entry in [`docs/compatibility.md`](docs/compatibility.md)
-   with rationale and an issue link.
+   - **Upstream import**, **mechanical rename**, and **libSQL behavior changes**
+     must stay in separate commits ([upstream-baseline.md](docs/upstream-baseline.md)).
+4. Do not skip specification or contract tests to go green. Permanent exclusions
+   need a row in [compatibility.md](docs/compatibility.md) with rationale and an issue.
 5. Prefer small PRs that leave the tree green.
 
 ### Local verification
 
 ```bash
 dotnet restore Nj.EntityFrameworkCore.LibSql.slnx
-dotnet format Nj.EntityFrameworkCore.LibSql.slnx --verify-no-changes --exclude ./src/Nj.EntityFrameworkCore.LibSql/** --exclude ./external/**
+dotnet format Nj.EntityFrameworkCore.LibSql.slnx --verify-no-changes \
+  --exclude ./src/Nj.EntityFrameworkCore.LibSql/**
 dotnet build Nj.EntityFrameworkCore.LibSql.slnx -c Release
 dotnet test test/Nj.EntityFrameworkCore.LibSql.UnitTests -c Release
 dotnet test test/Nj.LibSql.DriverContractTests -c Release
@@ -69,54 +63,30 @@ dotnet test test/Nj.EntityFrameworkCore.LibSql.ComplianceTests -c Release \
 ./eng/verify-package.sh
 ```
 
-Remote `sqld` (integration):
+More detail: [docs/testing.md](docs/testing.md).
 
-```bash
-./eng/start-sqld.sh
-./eng/wait-for-sqld.sh
-export LIBSQL_TEST_URL=http://127.0.0.1:8080
-dotnet test test/Nj.LibSql.DriverContractTests -c Release
-```
+## Design constraints
 
-More detail: [`docs/testing.md`](docs/testing.md).
-
-## Design constraints (do not break these)
-
-- Package / namespace / assembly: `Nj.EntityFrameworkCore.LibSql` (Microsoft
-  `Sqlite` naming pattern — product name compressed as `LibSql`, not `LibSQL`).
-- Public entry points mirror EF Sqlite style: `UseLibSql`,
-  `AddEntityFrameworkLibSql`, etc.
-- Connection modes are selected via the Nelknet connection string (or an existing
-  `LibSQLConnection`). Do not add `UseLibSqlLocal` / `UseLibSqlRemote` /
-  `UseLibSqlReplica` helpers.
-- Do not reference `Microsoft.EntityFrameworkCore.Sqlite` (it pulls
-  `Microsoft.Data.Sqlite` and the native SQLite bundle).
-- Do not copy third-party provider implementations (for example BMDRM). Use them
-  only as references.
-- Do not expose Turso / `sqld` administration (create database, tokens, backups)
-  through `DatabaseFacade`.
+- Package / namespace / assembly: `Nj.EntityFrameworkCore.LibSql` (`LibSql`, not `LibSQL`).
+- Public entry points mirror EF Sqlite: `UseLibSql`, `AddEntityFrameworkLibSql`, etc.
+- Connection modes via `Nj.LibSql.Data` connection string (or existing
+  `LibSqlConnection`). No `UseLibSqlLocal` / `UseLibSqlRemote` / `UseLibSqlReplica`.
+- Do not reference `Microsoft.EntityFrameworkCore.Sqlite`.
+- Do not copy third-party provider implementations.
+- Do not expose Turso / `sqld` administration through `DatabaseFacade`.
 - Remote / embedded-replica `EnsureDeleted` must throw `NotSupportedException`.
 
-See [`docs/limitations.md`](docs/limitations.md) and
-[`docs/provider-development.md`](docs/provider-development.md).
+See [limitations.md](docs/limitations.md) and [architecture.md](docs/architecture.md).
 
 ## Pull requests
 
-Use the PR template. Include:
-
-- What changed and why
-- How you tested (commands / CI)
-- Compatibility impact, if any (`docs/compatibility.md`)
-- Connection-mode impact (local / remote / embedded replica), if any
+Include what changed and why, how you tested, and any compatibility or
+connection-mode impact.
 
 ## Licensing
 
-Contributions are accepted under the MIT License ([LICENSE](LICENSE)). By
-submitting a pull request you agree that your contribution may be distributed
-under that license. There is no CLA at this time.
-
-Preserve Microsoft copyright headers on imported EF Core SQLite source files.
-Community modifications must remain clearly attributable; see [NOTICE](NOTICE).
+MIT ([LICENSE](LICENSE)). Preserve Microsoft copyright headers on imported
+baseline files. See [NOTICE](NOTICE).
 
 ## Security
 

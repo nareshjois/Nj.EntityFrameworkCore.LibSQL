@@ -9,14 +9,14 @@ namespace Nj.EntityFrameworkCore.LibSql.Infrastructure.Internal;
 ///     Reserved helper for SQL features that Microsoft EF SQLite implements via
 ///     <c>SqliteConnection.CreateFunction</c> / <c>CreateAggregate</c> / <c>CreateCollation</c>
 ///     when Nj.LibSql.Data cannot register equivalents. Decimal and <c>Regex.IsMatch</c> no longer
-///     use this path (see docs/udf-gap.md). Keep for future gap features.
+///     use this path (see docs/limitations.md). Keep for future gap features.
 /// </summary>
 public static class LibSqlUdfGaps
 {
     /// <summary>
-    ///     Canonical doc path (repo-relative) for the capability matrix.
+    ///     Canonical doc path (repo-relative) for the capability notes.
     /// </summary>
-    public const string DocumentationPath = "docs/udf-gap.md";
+    public const string DocumentationPath = "docs/limitations.md";
 
     /// <summary>
     ///     Builds a <see cref="NotSupportedException" /> for a missing UDF / collation.

@@ -68,7 +68,7 @@ foreach (var suite in unimplemented)
     {
         ["id"] = "C-AUTO",
         ["suiteType"] = suite,
-        ["reason"] = "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (WP-10 expansion backlog).",
+        ["reason"] = "Not yet hosted in Nj.EntityFrameworkCore.LibSql.ComplianceTests (expansion backlog).",
         ["modes"] = new[] { "local", "remote" },
         ["owner"] = "provider"
     });

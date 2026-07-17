@@ -214,7 +214,7 @@ public abstract class OptimisticConcurrencyLibSqlTestBase<TFixture, TRowVersion>
 {
     // C-014 / Sqlite-parity: EF #2195 optimistic offline lock — no DB rowversion / auto token bump,
     // so these paths never raise DbUpdateConcurrencyException (same skips as EF Sqlite).
-    // Duplicate-insert / M2M association cases are not skipped; soft-fork UNIQUE surfacing covers them.
+    // Duplicate-insert / M2M association cases are not skipped; UNIQUE surfacing covers them.
     [ConditionalFact(Skip = "C-014: Optimistic Offline Lock (Sqlite #2195 parity).")]
     public override Task Simple_concurrency_exception_can_be_resolved_with_store_values()
         => Task.CompletedTask;
