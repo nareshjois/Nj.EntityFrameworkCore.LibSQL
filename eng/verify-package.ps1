@@ -5,6 +5,9 @@ New-Item -ItemType Directory -Force -Path "artifacts/packages","artifacts/test-r
 
 dotnet restore Nj.EntityFrameworkCore.LibSql.slnx
 dotnet build Nj.EntityFrameworkCore.LibSql.slnx -c Release --no-restore
+# Nj.LibSql.Data is not on nuget.org yet — pack Bindings → Data → EF.
+dotnet pack src/Nj.LibSql.Bindings/Nj.LibSql.Bindings.csproj -c Release --no-build -o "$root/artifacts/packages"
+dotnet pack src/Nj.LibSql.Data/Nj.LibSql.Data.csproj -c Release --no-build -o "$root/artifacts/packages"
 dotnet pack src/Nj.EntityFrameworkCore.LibSql/Nj.EntityFrameworkCore.LibSql.csproj -c Release --no-build -o "$root/artifacts/packages"
 
 dotnet restore test/Nj.EntityFrameworkCore.LibSql.PackageTests/Nj.EntityFrameworkCore.LibSql.PackageTests.csproj `

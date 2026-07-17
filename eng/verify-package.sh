@@ -9,11 +9,13 @@ echo "==> Restore + build"
 dotnet restore Nj.EntityFrameworkCore.LibSql.slnx
 dotnet build Nj.EntityFrameworkCore.LibSql.slnx -c Release --no-restore
 
-echo "==> Pack"
+echo "==> Pack (Bindings → Data → EF; Data not on nuget.org yet)"
+dotnet pack src/Nj.LibSql.Bindings/Nj.LibSql.Bindings.csproj \
+  -c Release --no-build -o "$ROOT/artifacts/packages"
+dotnet pack src/Nj.LibSql.Data/Nj.LibSql.Data.csproj \
+  -c Release --no-build -o "$ROOT/artifacts/packages"
 dotnet pack src/Nj.EntityFrameworkCore.LibSql/Nj.EntityFrameworkCore.LibSql.csproj \
-  -c Release \
-  --no-build \
-  -o "$ROOT/artifacts/packages"
+  -c Release --no-build -o "$ROOT/artifacts/packages"
 
 PKG=$(ls "$ROOT/artifacts/packages"/Nj.EntityFrameworkCore.LibSql.*.nupkg | head -1)
 echo "Packed: $PKG"

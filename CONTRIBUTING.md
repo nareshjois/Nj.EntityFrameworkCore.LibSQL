@@ -61,7 +61,7 @@ dotnet restore Nj.EntityFrameworkCore.LibSql.slnx
 dotnet format Nj.EntityFrameworkCore.LibSql.slnx --verify-no-changes --exclude ./src/Nj.EntityFrameworkCore.LibSql/** --exclude ./external/**
 dotnet build Nj.EntityFrameworkCore.LibSql.slnx -c Release
 dotnet test test/Nj.EntityFrameworkCore.LibSql.UnitTests -c Release
-dotnet test test/Nj.EntityFrameworkCore.LibSql.DriverContractTests -c Release
+dotnet test test/Nj.LibSql.DriverContractTests -c Release
 dotnet test test/Nj.EntityFrameworkCore.LibSql.FunctionalTests -c Release
 dotnet test test/Nj.EntityFrameworkCore.LibSql.ComplianceTests -c Release \
   --filter "FullyQualifiedName~LibSqlComplianceTest|FullyQualifiedName~UpdatesLibSqlTest"
@@ -75,7 +75,7 @@ Remote `sqld` (integration):
 ./eng/start-sqld.sh
 ./eng/wait-for-sqld.sh
 export LIBSQL_TEST_URL=http://127.0.0.1:8080
-dotnet test test/Nj.EntityFrameworkCore.LibSql.DriverContractTests -c Release
+dotnet test test/Nj.LibSql.DriverContractTests -c Release
 ```
 
 More detail: [`docs/testing.md`](docs/testing.md).

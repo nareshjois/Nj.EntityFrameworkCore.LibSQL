@@ -82,9 +82,13 @@ jobs:
           --results-directory artifacts/test-results
 
       - name: Pack
-        run: >
-          dotnet pack src/Nj.EntityFrameworkCore.LibSql/Nj.EntityFrameworkCore.LibSql.csproj
-          -c Release --no-build -o artifacts/packages
+        run: |
+          set -euo pipefail
+          # Nj.LibSql.Data is not on nuget.org yet — pack Bindings → Data → EF so
+          # PackageTests can resolve the ProjectReference-as-PackageReference graph.
+          dotnet pack src/Nj.LibSql.Bindings/Nj.LibSql.Bindings.csproj -c Release --no-build -o artifacts/packages
+          dotnet pack src/Nj.LibSql.Data/Nj.LibSql.Data.csproj -c Release --no-build -o artifacts/packages
+          dotnet pack src/Nj.EntityFrameworkCore.LibSql/Nj.EntityFrameworkCore.LibSql.csproj -c Release --no-build -o artifacts/packages
 
       - name: Verify package install
         shell: bash
