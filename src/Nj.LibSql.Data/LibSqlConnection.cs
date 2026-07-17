@@ -431,6 +431,17 @@ public sealed class LibSqlConnection : DbConnection
         => CreateCommand();
 
     /// <inheritdoc />
+    public override bool CanCreateBatch => true;
+
+    /// <inheritdoc />
+    protected override DbBatch CreateDbBatch()
+        => new LibSqlBatch { Connection = this };
+
+    /// <inheritdoc />
+    public new LibSqlBatch CreateBatch()
+        => (LibSqlBatch)CreateDbBatch();
+
+    /// <inheritdoc />
     public new LibSqlCommand CreateCommand()
         => new() { Connection = this };
 
@@ -807,7 +818,8 @@ public sealed class LibSqlConnection : DbConnection
             }
             else
             {
-                _hranaSession = new LibSqlHttpClient(dataSource, builder.AuthToken);
+                var httpUrl = LibSqlRemoteTransport.NormalizeLibSqlToHttpUrl(dataSource, builder.Tls);
+                _hranaSession = new LibSqlHttpClient(httpUrl, builder.AuthToken);
             }
 
             using var timeoutCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);

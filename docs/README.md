@@ -17,6 +17,7 @@ ADO.NET driver (`Nj.LibSql.Data` / `Nj.LibSql.Bindings`).
 | [performance.md](performance.md) | Benchmark baselines and soft thresholds |
 | [limitations.md](limitations.md) | Explicit non-goals and unsupported APIs |
 | [compatibility.md](compatibility.md) | Capability matrix and waiver log |
+| [turso-dotnet-comparison.md](turso-dotnet-comparison.md) | Nj vs Turso.Data capability matrix |
 | [migrations.md](migrations.md) | Migrations and EnsureCreated/Deleted policy |
 
 ## Developing / releasing

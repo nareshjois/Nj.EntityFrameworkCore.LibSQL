@@ -3,7 +3,8 @@
 Capability matrix and waiver log for `Nj.EntityFrameworkCore.LibSql`.
 
 Do **not** skip specification or contract tests permanently without adding a row
-below (rationale + tracked issue).
+below (rationale + tracked issue). Cross-vendor notes:
+[turso-dotnet-comparison.md](turso-dotnet-comparison.md).
 
 ## Status
 
