@@ -1,5 +1,5 @@
-using Nj.LibSql.Data;
 using Nj.EntityFrameworkCore.LibSql.TestUtilities;
+using Nj.LibSql.Data;
 using Xunit;
 
 namespace Nj.LibSql.DriverContractTests;

@@ -1,7 +1,7 @@
 using DotNet.Testcontainers.Builders;
 using DotNet.Testcontainers.Containers;
-using Nj.LibSql.Data;
 using Nj.EntityFrameworkCore.LibSql.TestUtilities;
+using Nj.LibSql.Data;
 using Xunit;
 
 namespace Nj.LibSql.DriverContractTests.Infrastructure;

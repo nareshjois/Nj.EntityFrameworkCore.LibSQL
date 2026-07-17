@@ -1,8 +1,8 @@
 using System.Data;
+using Nj.EntityFrameworkCore.LibSql.TestUtilities;
 using Nj.LibSql.Data;
 using Nj.LibSql.Data.Exceptions;
 using Nj.LibSql.DriverContractTests.Infrastructure;
-using Nj.EntityFrameworkCore.LibSql.TestUtilities;
 using Xunit;
 
 namespace Nj.LibSql.DriverContractTests;
