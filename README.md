@@ -4,7 +4,7 @@ Community [EF Core](https://learn.microsoft.com/ef/core/) 10 provider for
 [libSQL](https://docs.turso.tech/libsql), backed by in-repo
 [`Nj.LibSql.Data`](src/Nj.LibSql.Data) ([architecture](docs/architecture.md)).
 
-> **Status:** [`10.0.0-preview.1`](https://www.nuget.org/packages/Nj.EntityFrameworkCore.LibSql/10.0.0-preview.1)
+> **Status:** [`10.0.0-preview.2`](https://www.nuget.org/packages/Nj.EntityFrameworkCore.LibSql/10.0.0-preview.2)
 > (prerelease on NuGet.org). APIs may change. Do **not** use in production until a
 > stable `10.0.x` release. See [releasing](docs/releasing.md).
 
@@ -18,7 +18,7 @@ dotnet add package Nj.EntityFrameworkCore.LibSql --prerelease
 |------|--------|
 | NuGet package | `Nj.EntityFrameworkCore.LibSql` (also `Nj.LibSql.Data`, `Nj.LibSql.Bindings`) |
 | Namespace / assembly | `Nj.EntityFrameworkCore.LibSql` |
-| Version | `10.0.0-preview.1` |
+| Version | `10.0.0-preview.2` |
 | License | MIT |
 | EF Core | `10.0.10` |
 | ADO.NET | `Nj.LibSql.Data` + `Nj.LibSql.Bindings` ([versions](docs/versions.md)) |

@@ -1,4 +1,5 @@
 using System.Buffers;
+using System.Diagnostics.CodeAnalysis;
 using System.Net.WebSockets;
 using System.Text;
 using System.Text.Json;
@@ -384,6 +385,14 @@ internal sealed class LibSqlWsClient : ILibSqlHranaSession
 
     private int NextRequestId() => Interlocked.Increment(ref _nextRequestId);
 
+    [UnconditionalSuppressMessage(
+        "Trimming",
+        "IL2026",
+        Justification = "WebSocket control frames use closed anonymous shapes; full source-gen for every envelope is tracked separately.")]
+    [UnconditionalSuppressMessage(
+        "AOT",
+        "IL3050",
+        Justification = "WebSocket control frames use closed anonymous shapes; AotLocalSample smoke is local-HTTP-free.")]
     private async Task SendJsonAsync(object payload, CancellationToken cancellationToken)
     {
         var json = JsonSerializer.Serialize(payload, JsonOptions);

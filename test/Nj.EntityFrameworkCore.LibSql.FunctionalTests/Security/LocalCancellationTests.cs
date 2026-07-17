@@ -25,7 +25,7 @@ public class LocalCancellationTests
         {
             try
             {
-                LibSqlConnection.ClearAllPools();
+                LibSqlConnection.ClearPool(new LibSqlConnection($"Data Source={path}"));
                 if (File.Exists(path))
                 {
                     File.Delete(path);

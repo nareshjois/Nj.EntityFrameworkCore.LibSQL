@@ -222,6 +222,15 @@ internal sealed class SqlParameterLayout
             return namedPosition;
         }
 
+        // Accept @name / :name / $name interchangeably when the SQL used a different prefix.
+        foreach (var alias in ExpandNamedAliases(parameterName))
+        {
+            if (_namedPositions.TryGetValue(alias, out namedPosition))
+            {
+                return namedPosition;
+            }
+        }
+
         if (TryParseExplicitPosition(parameterName, out var explicitPosition) && _requiredPositions.Contains(explicitPosition))
         {
             return explicitPosition;
@@ -238,6 +247,27 @@ internal sealed class SqlParameterLayout
         }
 
         return null;
+    }
+
+    private static IEnumerable<string> ExpandNamedAliases(string parameterName)
+    {
+        if (string.IsNullOrEmpty(parameterName))
+        {
+            yield break;
+        }
+
+        var core = parameterName[0] is '@' or ':' or '$'
+            ? parameterName[1..]
+            : parameterName;
+        if (string.IsNullOrEmpty(core))
+        {
+            yield break;
+        }
+
+        yield return "@" + core;
+        yield return ":" + core;
+        yield return "$" + core;
+        yield return core;
     }
 
     private int? ResolveNextPositionalPosition(HashSet<int> boundPositions, ref int nextPositionalParameter)

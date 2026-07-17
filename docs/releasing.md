@@ -24,12 +24,12 @@ Prefer [Trusted Publishing](https://learn.microsoft.com/nuget/nuget-org/trusted-
 1. **Green `main`** — CI + integration (sqld) + driver suites as required.
 2. **Changelog** — move notes under `[10.0.0-preview.N]` in [CHANGELOG.md](../CHANGELOG.md).
 3. **Version** — `Directory.Build.props` `VersionPrefix` / `VersionSuffix`
-   match the tag (currently `10.0.0` + `preview.1`).
+   match the tag (currently `10.0.0` + `preview.2`).
 4. **Tag** (annotated):
 
    ```bash
-   git tag -a v10.0.0-preview.1 -m "Nj.EntityFrameworkCore.LibSql 10.0.0-preview.1"
-   git push origin v10.0.0-preview.1
+   git tag -a v10.0.0-preview.2 -m "Nj.EntityFrameworkCore.LibSql 10.0.0-preview.2"
+   git push origin v10.0.0-preview.2
    ```
 
 5. **Pack + publish CI** — tag push runs
@@ -70,7 +70,7 @@ dotnet nuget push artifacts/packages/*.nupkg \
 Not required for Preview NuGet; track before labeling `10.0.0`:
 
 - [ ] Advertise additional RIDs only after smoke (`win-arm64`, `linux-arm64`,
-      `osx-x64`, musl) — [deployment.md](deployment.md)
+      `osx-x64`, musl) — deferred; Preview keeps three RIDs — [deployment.md](deployment.md)
 - [ ] Drive unexplained compliance skips toward zero / document remaining
 - [ ] Package signing (if required by policy)
 - [ ] API compatibility baselining for public surface

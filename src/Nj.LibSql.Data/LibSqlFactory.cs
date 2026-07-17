@@ -25,6 +25,17 @@ public sealed class LibSqlFactory : DbProviderFactory
     public override bool CanCreateDataSourceEnumerator => false;
 
     /// <inheritdoc />
+    public override bool CanCreateBatch => true;
+
+    /// <inheritdoc />
+    public override DbBatch CreateBatch()
+        => new LibSqlBatch();
+
+    /// <inheritdoc />
+    public override DbBatchCommand CreateBatchCommand()
+        => new LibSqlBatchCommand();
+
+    /// <inheritdoc />
     public override DbCommand CreateCommand()
         => new LibSqlCommand();
 

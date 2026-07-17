@@ -16,6 +16,7 @@
     <LibSqlNativeArtifactRoot Condition="'$(LibSqlNativeArtifactRoot)' == ''">https://github.com/nareshjois/Nj.EntityFrameworkCore.LibSQL/releases/download/native-libsql-v$(LibSqlNativeVersion)</LibSqlNativeArtifactRoot>
     <RuntimeIdentifiers>linux-x64;osx-arm64;win-x64</RuntimeIdentifiers>
     <PackageOutputPath>$(ArtifactsDir)packages/</PackageOutputPath>
+    <IsAotCompatible>true</IsAotCompatible>
   </PropertyGroup>
 
   <Import Project="DownloadNativeLibs.targets" />

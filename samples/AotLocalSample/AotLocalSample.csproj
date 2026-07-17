@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <IsPackable>false</IsPackable>
+    <RootNamespace>AotLocalSample</RootNamespace>
+    <!-- Smoke PublishAot against Nj.LibSql.Data + dynamic RID natives (not static link). -->
+    <PublishAot Condition="'$(PublishAot)' == ''">false</PublishAot>
+    <InvariantGlobalization>true</InvariantGlobalization>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Nj.LibSql.Data\Nj.LibSql.Data.csproj" />
+  </ItemGroup>
+</Project>

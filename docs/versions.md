@@ -6,7 +6,7 @@ Update this file when pins change.
 
 | Component | Version / pin |
 |-----------|----------------|
-| Provider packages | `Nj.EntityFrameworkCore.LibSql`, `Nj.LibSql.Data`, `Nj.LibSql.Bindings` → `10.0.0-preview.1` |
+| Provider packages | `Nj.EntityFrameworkCore.LibSql`, `Nj.LibSql.Data`, `Nj.LibSql.Bindings` → `10.0.0-preview.2` |
 | .NET SDK (`global.json`) | `10.0.100` (`rollForward: latestFeature`) |
 | EF Core (runtime, relational, design, specification tests) | `10.0.10` |
 | `dotnet-ef` | `10.0.10` |

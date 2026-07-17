@@ -18,6 +18,8 @@ public sealed class LibSqlConnectionStringBuilder : DbConnectionStringBuilder
         "DB",
         "Uri",
         "Url",
+        "Filename",
+        "File Name",
         "Auth Token",
         "AuthToken",
         "Token",
@@ -35,6 +37,20 @@ public sealed class LibSqlConnectionStringBuilder : DbConnectionStringBuilder
         "Read Your Writes",
         "ReadYourWrites",
         "Offline",
+        "Tls",
+        // Microsoft.Data.Sqlite compat — accepted and ignored (soft migration).
+        "Mode",
+        "Cache",
+        "Foreign Keys",
+        "ForeignKeys",
+        "Recursive Triggers",
+        "RecursiveTriggers",
+        "Pooling",
+        "Vfs",
+        "Default Timeout",
+        "DefaultTimeout",
+        "Command Timeout",
+        "CommandTimeout",
     };
 
     private const string InMemoryConnectionString = ":memory:";
@@ -48,6 +64,7 @@ public sealed class LibSqlConnectionStringBuilder : DbConnectionStringBuilder
     private int _syncInterval;
     private bool _readYourWrites = true;
     private bool _offline;
+    private bool _tls = true;
     private LibSqlConnectionMode _mode = LibSqlConnectionMode.Local;
 
     /// <summary>Initializes a new instance of the <see cref="LibSqlConnectionStringBuilder"/> class.</summary>
@@ -162,6 +179,20 @@ public sealed class LibSqlConnectionStringBuilder : DbConnectionStringBuilder
         }
     }
 
+    /// <summary>
+    /// When <see langword="true"/> (default), <c>libsql://</c> remotes use HTTPS.
+    /// Set <see langword="false"/> to map <c>libsql://</c> to HTTP (local sqld).
+    /// </summary>
+    public bool Tls
+    {
+        get => _tls;
+        set
+        {
+            _tls = value;
+            base["Tls"] = value;
+        }
+    }
+
     /// <summary>Gets the connection mode inferred from the current configuration.</summary>
     public LibSqlConnectionMode Mode => _mode;
 
@@ -211,6 +242,19 @@ public sealed class LibSqlConnectionStringBuilder : DbConnectionStringBuilder
                 case "Offline":
                     Offline = ConvertToBoolean(value);
                     break;
+                case "Tls":
+                    Tls = ConvertToBoolean(value);
+                    break;
+                case "Mode":
+                case "Cache":
+                case "Foreign Keys":
+                case "Recursive Triggers":
+                case "Pooling":
+                case "Vfs":
+                case "Default Timeout":
+                    // Accepted for Microsoft.Data.Sqlite connection-string soft migration; ignored.
+                    base[normalizedKeyword] = value;
+                    break;
                 default:
                     base[keyword] = value;
                     break;
@@ -232,7 +276,8 @@ public sealed class LibSqlConnectionStringBuilder : DbConnectionStringBuilder
     private static string NormalizeKeyword(string keyword)
         => keyword.ToLowerInvariant() switch
         {
-            "datasource" or "database" or "db" or "uri" or "url" => "Data Source",
+            "datasource" or "database" or "db" or "uri" or "url" or "filename" or "file name"
+                => "Data Source",
             "authtoken" or "token" => "Auth Token",
             "encryptionkey" or "key" => "Encryption Key",
             "syncurl" => "Sync URL",
@@ -240,6 +285,14 @@ public sealed class LibSqlConnectionStringBuilder : DbConnectionStringBuilder
             "syncinterval" => "Sync Interval",
             "readyourwrites" => "Read Your Writes",
             "offline" => "Offline",
+            "tls" => "Tls",
+            "foreignkeys" => "Foreign Keys",
+            "recursivetriggers" => "Recursive Triggers",
+            "defaulttimeout" or "commandtimeout" or "command timeout" => "Default Timeout",
+            "mode" => "Mode",
+            "cache" => "Cache",
+            "pooling" => "Pooling",
+            "vfs" => "Vfs",
             _ => keyword
         };
 
@@ -279,6 +332,7 @@ public sealed class LibSqlConnectionStringBuilder : DbConnectionStringBuilder
         _syncInterval = 0;
         _readYourWrites = true;
         _offline = false;
+        _tls = true;
         _mode = LibSqlConnectionMode.Local;
     }
 
@@ -326,6 +380,9 @@ public sealed class LibSqlConnectionStringBuilder : DbConnectionStringBuilder
                     break;
                 case "Offline":
                     _offline = false;
+                    break;
+                case "Tls":
+                    _tls = true;
                     break;
             }
         }
@@ -385,6 +442,11 @@ public sealed class LibSqlConnectionStringBuilder : DbConnectionStringBuilder
         if (base.TryGetValue("Offline", out var offline))
         {
             _offline = ConvertToBoolean(offline);
+        }
+
+        if (base.TryGetValue("Tls", out var tls))
+        {
+            _tls = ConvertToBoolean(tls);
         }
 
         UpdateMode();

@@ -384,7 +384,7 @@ public sealed class LibSqlCommand : DbCommand
         }
 
         var query = ExecuteNativeQuery(allowStatementCache: false);
-        var connectionHandle = Connection!.ConnectionHandle!;
+        var connectionHandle = Connection!.ConnectionHandle;
         LibSqlRowHandle? prefetchedRow = null;
         int recordsAffected;
         try
@@ -410,7 +410,10 @@ public sealed class LibSqlCommand : DbCommand
                 prefetchedRow = new LibSqlRowHandle(firstRowPtr);
             }
 
-            recordsAffected = (int)LibSqlNative.libsql_changes(connectionHandle);
+            // Guard: under rare pool/close races the handle can be cleared before changes().
+            recordsAffected = connectionHandle is { IsInvalid: false, IsClosed: false }
+                ? (int)LibSqlNative.libsql_changes(connectionHandle)
+                : 0;
             if (prefetchedRow is null && LibSqlNative.libsql_column_count(query.Rows) > 0)
             {
                 recordsAffected = -1;

@@ -103,9 +103,9 @@ public sealed class LibSqlConnection : DbConnection
         => _connectionStringBuilder ??= new LibSqlConnectionStringBuilder(_connectionString);
 
     /// <summary>
-    /// Closes <paramref name="connection"/> if it is still open and waits for native finalizers.
-    /// Prefer this over <see cref="ClearAllPools"/> when other connections may be in use
-    /// (e.g. parallel tests).
+    /// Closes <paramref name="connection"/> if it is still open and removes it from the
+    /// process tracking set. Prefer this over <see cref="ClearAllPools"/> when other
+    /// connections may be in use (e.g. parallel tests).
     /// </summary>
     public static void ClearPool(LibSqlConnection connection)
     {
@@ -121,11 +121,12 @@ public sealed class LibSqlConnection : DbConnection
         }
 
         OpenConnections.TryRemove(connection, out _);
-        GC.Collect();
-        GC.WaitForPendingFinalizers();
     }
 
-    /// <summary>Closes all open <see cref="LibSqlConnection"/> instances in this process.</summary>
+    /// <summary>
+    /// Closes all open <see cref="LibSqlConnection"/> instances in this process.
+    /// Do not call from parallel tests — use <see cref="ClearPool"/> for a single connection.
+    /// </summary>
     public static void ClearAllPools()
     {
         foreach (var connection in OpenConnections.Keys)
@@ -141,8 +142,6 @@ public sealed class LibSqlConnection : DbConnection
         }
 
         OpenConnections.Clear();
-        GC.Collect();
-        GC.WaitForPendingFinalizers();
     }
 
     /// <inheritdoc />
@@ -431,6 +430,17 @@ public sealed class LibSqlConnection : DbConnection
         => CreateCommand();
 
     /// <inheritdoc />
+    public override bool CanCreateBatch => true;
+
+    /// <inheritdoc />
+    protected override DbBatch CreateDbBatch()
+        => new LibSqlBatch { Connection = this };
+
+    /// <inheritdoc />
+    public new LibSqlBatch CreateBatch()
+        => (LibSqlBatch)CreateDbBatch();
+
+    /// <inheritdoc />
     public new LibSqlCommand CreateCommand()
         => new() { Connection = this };
 
@@ -674,17 +684,27 @@ public sealed class LibSqlConnection : DbConnection
         IntPtr dbHandle;
         IntPtr errorMsg;
 
-        // Prefer the dedicated webpki entry point when no advanced config knobs are set —
-        // it avoids libsql_config layout/padding risk across native versions.
+        // Prefer dedicated sync entry points when no advanced config knobs are set —
+        // they avoid libsql_config layout/padding risk across native RID builds.
         // Native sync_interval is seconds (see libsql C bindings).
-        var useSimpleWebpki =
-            useWebpki
-            && builder.SyncInterval == 0
+        var useSimpleSync =
+            builder.SyncInterval == 0
             && string.IsNullOrEmpty(builder.EncryptionKey);
 
-        if (useSimpleWebpki)
+        if (useSimpleSync && useWebpki)
         {
             result = LibSqlNative.libsql_open_sync_with_webpki(
+                dataSource,
+                primaryUrl,
+                authToken,
+                builder.ReadYourWrites ? (byte)1 : (byte)0,
+                encryptionKey: null,
+                out dbHandle,
+                out errorMsg);
+        }
+        else if (useSimpleSync)
+        {
+            result = LibSqlNative.libsql_open_sync(
                 dataSource,
                 primaryUrl,
                 authToken,
@@ -807,7 +827,8 @@ public sealed class LibSqlConnection : DbConnection
             }
             else
             {
-                _hranaSession = new LibSqlHttpClient(dataSource, builder.AuthToken);
+                var httpUrl = LibSqlRemoteTransport.NormalizeLibSqlToHttpUrl(dataSource, builder.Tls);
+                _hranaSession = new LibSqlHttpClient(httpUrl, builder.AuthToken);
             }
 
             using var timeoutCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
