@@ -16,8 +16,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-        with:
-          submodules: recursive
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v5
@@ -35,8 +33,9 @@ jobs:
       - name: Driver contract (Testcontainers sqld)
         run: |
           dotnet restore Nj.EntityFrameworkCore.LibSql.slnx
-          dotnet test test/Nj.EntityFrameworkCore.LibSql.DriverContractTests/Nj.EntityFrameworkCore.LibSql.DriverContractTests.csproj \
+          dotnet test test/Nj.LibSql.DriverContractTests/Nj.LibSql.DriverContractTests.csproj \
             -c Release \
+            --filter "FullyQualifiedName~Remote&FullyQualifiedName!~Turso" \
             --logger "trx;LogFileName=driver-remote.trx" \
             --results-directory artifacts/test-results
 

@@ -12,7 +12,7 @@ without adding a row below (rationale + tracked issue).
 | Item | Value |
 |------|--------|
 | EF Core target | 10.0.10 |
-| Nelknet.LibSQL.Data | Soft-fork submodule @ `8b5a289` (`main`; upstream `0.2.11` + patches; see [versions.md](versions.md)) |
+| Nj.LibSql.Data | In-monorepo ([ADR-0002](adr/0002-nj-libsql-data.md); see [versions.md](versions.md)) |
 | Provider version | `10.0.0-preview.1` (in-repo; `UseLibSql` available — not published to NuGet.org yet) |
 | Spec suite status | **Active** — `ComplianceTests` hosts G6–G8 suites; see [wp-10-handoff](wp-10-handoff.md) |
 | Last completed gate | **WP-10** G6–G8 compliance harness + functional deferred closure |
@@ -21,7 +21,7 @@ without adding a row below (rationale + tracked issue).
 
 | Capability | Local | Remote (`sqld` / Turso) | Embedded replica |
 |------------|-------|-------------------------|------------------|
-| Connect via Nelknet connection string | Working | Working | Preview 2+ |
+| Connect via LibSql connection string | Working | Working | Preview 2+ |
 | Type mapping / parameter round-trips | Working (WP-05) | Working (WP-05) | Preview 2+ |
 | Store-generated keys (`INSERT…RETURNING`) | Working (soft-fork) | Working (soft-fork) | Preview 2+ |
 | Full LINQ query surface | Compliance hosted (G6) + functional matrix | Compliance hosted (G6) + functional matrix | Preview 2+ |
@@ -57,9 +57,9 @@ No permanent exclusions yet.
 
 ## How to add a waiver
 
-1. Open an issue describing the incompatibility (root cause in Nelknet / libSQL /
+1. Open an issue describing the incompatibility (root cause in Nj.LibSql.Data / libSQL /
    intentional product limit).
 2. Add a row to the table above with a stable ID (`C-001`, …).
 3. Link the issue from the skip / `Assert.Fail` site in code and in the PR.
-4. Prefer upstreaming Nelknet fixes over provider workarounds that violate
+4. Prefer driver fixes in Nj.LibSql.Data over provider workarounds that violate
    ADO.NET or EF contracts.

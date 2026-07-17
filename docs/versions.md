@@ -9,10 +9,8 @@ Pinned at repository scaffold (2026-07-15). Update this file when bumps land.
 | EF Core SQLite source baseline (`v10.0.10`) | commit `db55508a7fbc1535bdb65b85159a8d0d36d6942a` — see [upstream-baseline.md](upstream-baseline.md) |
 | Test framework (our suites) | `xunit.v3` `3.2.2` |
 | Test framework (ComplianceTests / EF Spec packages) | `xunit` `2.9.3` |
-| `Nelknet.LibSQL.Data` (EF runtime **current**) | Soft-fork submodule [`external/Nelknet.LibSQL`](../external/Nelknet.LibSQL) → [nareshjois/Nelknet.LibSQL](https://github.com/nareshjois/Nelknet.LibSQL) `main` `@8b5a289` (upstream [`0.2.11`](https://github.com/nelknet/Nelknet.LibSQL/releases/tag/v0.2.11) + soft-fork patches; see [adr/0001-soft-fork-nelknet.md](adr/0001-soft-fork-nelknet.md)). Remains EF default until [ADR-0002](adr/0002-nj-libsql-data.md) Phase 3 cutover. |
-| `Nj.LibSql.Data` / `Nj.LibSql.Bindings` (parallel) | In-monorepo clean rewrite ([ADR-0002](adr/0002-nj-libsql-data.md)); **not** consumed by EF until Phase 3. Local file/`:memory:` DriverContract green. Natives: committed `runtimes/` pin `libsql-server-v0.24.32` (`40c272de…`); rebuild/publish via [eng/native/README.md](../eng/native/README.md) / `.github/workflows/libsql-native.yml` → `native-libsql-v0.24.32`. |
-| Bundled libSQL (soft-fork bindings) | `libsql-server-v0.24.32` — see [driver-contract.md](driver-contract.md) |
-| Bundled libSQL (`Nj.LibSql.Bindings`) | Same pin as soft-fork for Phase 1 (`libsql-server-v0.24.32`); see `src/Nj.LibSql.Bindings/runtimes/LIBSQL_VERSION` |
+| `Nj.LibSql.Data` / `Nj.LibSql.Bindings` (EF runtime) | In-monorepo clean rewrite ([ADR-0002](adr/0002-nj-libsql-data.md)); EF provider ProjectReferences Data. Natives: committed `runtimes/` pin `libsql-server-v0.24.32` (`40c272de…`); rebuild/publish via [eng/native/README.md](../eng/native/README.md) / `.github/workflows/libsql-native.yml` → `native-libsql-v0.24.32`. |
+| Bundled libSQL (`Nj.LibSql.Bindings`) | `libsql-server-v0.24.32` — see `src/Nj.LibSql.Bindings/runtimes/LIBSQL_VERSION` and [driver-contract.md](driver-contract.md) |
 | Provider package | `10.0.0-preview.1` |
 | `dotnet-ef` tool | `10.0.10` |
 | `libsql-server` image (Testcontainers + compose) | `ghcr.io/tursodatabase/libsql-server:ef758d9@sha256:817fb6c6865d048a509f5c120905629fb9b5af20ad0c526cdc68a6d8793898ad` |
@@ -22,7 +20,7 @@ Pinned at repository scaffold (2026-07-15). Update this file when bumps land.
 
 - Keep **all** EF runtime / relational / design / specification-test packages on
   the **identical** patch.
-- Record the native libSQL version exposed by Nelknet after dependency bumps
+- Record the native libSQL version exposed by `Nj.LibSql.Bindings` after bumps
   (see [driver-contract.md](driver-contract.md)).
 - Before stable: re-validate against current and previous supported `sqld`
   releases when practical.

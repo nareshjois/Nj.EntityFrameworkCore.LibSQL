@@ -9,7 +9,6 @@
     <Project Path="test/Nj.EntityFrameworkCore.LibSql.UnitTests/Nj.EntityFrameworkCore.LibSql.UnitTests.csproj" />
     <Project Path="test/Nj.EntityFrameworkCore.LibSql.FunctionalTests/Nj.EntityFrameworkCore.LibSql.FunctionalTests.csproj" />
     <Project Path="test/Nj.EntityFrameworkCore.LibSql.ComplianceTests/Nj.EntityFrameworkCore.LibSql.ComplianceTests.csproj" />
-    <Project Path="test/Nj.EntityFrameworkCore.LibSql.DriverContractTests/Nj.EntityFrameworkCore.LibSql.DriverContractTests.csproj" />
     <Project Path="test/Nj.LibSql.DriverContractTests/Nj.LibSql.DriverContractTests.csproj" />
     <Project Path="test/Nj.EntityFrameworkCore.LibSql.PackageTests/Nj.EntityFrameworkCore.LibSql.PackageTests.csproj" />
     <Project Path="test/Nj.EntityFrameworkCore.LibSql.TypeMappingDifferentialTests/Nj.EntityFrameworkCore.LibSql.TypeMappingDifferentialTests.csproj" />

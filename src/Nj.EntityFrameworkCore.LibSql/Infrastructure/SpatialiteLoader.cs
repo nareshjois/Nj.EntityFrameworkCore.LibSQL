@@ -9,7 +9,7 @@ namespace Microsoft.EntityFrameworkCore.Infrastructure;
 ///     SpatiaLite / loadable SQLite extensions are not supported by this provider.
 /// </summary>
 /// <remarks>
-///     Nelknet.LibSQL.Data does not expose <c>sqlite3_load_extension</c>. Remote <c>sqld</c>
+///     Nj.LibSql.Data does not expose <c>sqlite3_load_extension</c>. Remote <c>sqld</c>
 ///     endpoints also typically disallow arbitrary extension loading. See docs/limitations.md.
 /// </remarks>
 public static class SpatialiteLoader
@@ -31,6 +31,6 @@ public static class SpatialiteLoader
         Check.NotNull(connection);
         throw new NotSupportedException(
             "Loading SpatiaLite or other SQLite extensions is not supported by Nj.EntityFrameworkCore.LibSql. "
-            + "Nelknet.LibSQL.Data does not expose sqlite3_load_extension; see docs/limitations.md.");
+            + "Nj.LibSql.Data does not expose sqlite3_load_extension; see docs/limitations.md.");
     }
 }

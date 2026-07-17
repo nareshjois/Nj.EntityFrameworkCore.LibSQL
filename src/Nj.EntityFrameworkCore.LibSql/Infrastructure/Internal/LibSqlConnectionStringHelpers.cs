@@ -1,7 +1,7 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-using Nelknet.LibSQL.Data;
+using Nj.LibSql.Data;
 
 namespace Nj.EntityFrameworkCore.LibSql.Infrastructure.Internal;
 
@@ -13,7 +13,7 @@ public static class LibSqlConnectionStringHelpers
     /// <summary>
     ///     Parses a Nelknet connection string; returns null if empty/invalid.
     /// </summary>
-    public static LibSQLConnectionStringBuilder? TryParse(string? connectionString)
+    public static LibSqlConnectionStringBuilder? TryParse(string? connectionString)
     {
         if (string.IsNullOrWhiteSpace(connectionString))
         {
@@ -22,7 +22,7 @@ public static class LibSqlConnectionStringHelpers
 
         try
         {
-            return new LibSQLConnectionStringBuilder(connectionString);
+            return new LibSqlConnectionStringBuilder(connectionString);
         }
         catch
         {
@@ -57,7 +57,7 @@ public static class LibSqlConnectionStringHelpers
             return false;
         }
 
-        if (builder.Mode == LibSQLConnectionMode.Remote)
+        if (builder.Mode == LibSqlConnectionMode.Remote)
         {
             return true;
         }

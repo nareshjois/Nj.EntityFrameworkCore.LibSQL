@@ -7,7 +7,7 @@
 | `Nj.EntityFrameworkCore.LibSql.UnitTests` | Fast provider unit tests |
 | `Nj.EntityFrameworkCore.LibSql.FunctionalTests` | EF + local/remote integration |
 | `Nj.EntityFrameworkCore.LibSql.ComplianceTests` | Published EF relational specification suites |
-| `Nj.EntityFrameworkCore.LibSql.DriverContractTests` | Soft-fork (Nelknet) ADO.NET contract — EF default until cutover |
+| `Nj.LibSql.DriverContractTests` | ADO.NET driver contract (`Nj.LibSql.Data`) |
 | `Nj.LibSql.DriverContractTests` | Clean-driver (`Nj.LibSql.Data`) contract mirror ([ADR-0002](adr/0002-nj-libsql-data.md)); path-filtered CI via `.github/workflows/libsql-driver.yml` |
 | `Nj.EntityFrameworkCore.LibSql.PackageTests` | Pack + clean NuGet install verification |
 | `TestUtilities` | Shared helpers (connection strings, env) |
@@ -21,7 +21,7 @@ stays on xUnit v2 while EF `Specification.Tests` packages depend on `xunit.core`
 ```bash
 # Format (SDK built-in)
 dotnet format Nj.EntityFrameworkCore.LibSql.slnx --verify-no-changes
-# Imported EF SQLite baseline and soft-forked Nelknet are excluded from format:
+# Imported EF SQLite baseline is excluded from format:
 #   --exclude ./src/Nj.EntityFrameworkCore.LibSql/** --exclude ./external/**
 
 # Build
@@ -66,10 +66,7 @@ export LIBSQL_DISABLE_REMOTE_TESTS=1            # skip remote suite
 # or
 export LIBSQL_DISABLE_TESTCONTAINERS=1          # require LIBSQL_TEST_URL
 
-# Soft-fork driver contract (EF default until cutover)
-dotnet test test/Nj.EntityFrameworkCore.LibSql.DriverContractTests -c Release
-
-# Clean driver (Nj.LibSql.Data) — Phase 2: local + Testcontainers sqld; Turso when secrets set
+# Driver contract (Nj.LibSql.Data)
 dotnet test test/Nj.LibSql.DriverContractTests -c Release
 
 # Force remote failure instead of skip (CI remote-sqld job)

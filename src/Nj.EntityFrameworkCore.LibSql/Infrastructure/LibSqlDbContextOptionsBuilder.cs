@@ -34,11 +34,11 @@ public class LibSqlDbContextOptionsBuilder : RelationalDbContextOptionsBuilder<L
     ///     SpatiaLite is not supported. Always throws <see cref="NotSupportedException" />.
     /// </summary>
     /// <remarks>
-    ///     Nelknet.LibSQL.Data does not expose loadable extensions. See docs/limitations.md.
+    ///     Nj.LibSql.Data does not expose loadable extensions. See docs/limitations.md.
     /// </remarks>
     /// <returns>Never returns.</returns>
     public virtual LibSqlDbContextOptionsBuilder UseSpatialite()
         => throw new NotSupportedException(
             "SpatiaLite / loadable SQLite extensions are not supported by Nj.EntityFrameworkCore.LibSql. "
-            + "Nelknet.LibSQL.Data does not expose sqlite3_load_extension; see docs/limitations.md.");
+            + "Nj.LibSql.Data does not expose sqlite3_load_extension; see docs/limitations.md.");
 }

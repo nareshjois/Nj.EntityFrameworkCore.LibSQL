@@ -6,7 +6,7 @@ using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
 using Microsoft.EntityFrameworkCore.Scaffolding.Metadata;
-using Nelknet.LibSQL.Data;
+using Nj.LibSql.Data;
 using Nj.EntityFrameworkCore.LibSql.Internal;
 
 namespace Nj.EntityFrameworkCore.LibSql.Scaffolding.Internal;
@@ -159,7 +159,7 @@ public class LibSqlDatabaseModelFactory : DatabaseModelFactory
     /// </summary>
     public override DatabaseModel Create(string connectionString, DatabaseModelFactoryOptions options)
     {
-        using var connection = new LibSQLConnection(connectionString);
+        using var connection = new LibSqlConnection(connectionString);
         return Create(connection, options);
     }
 
@@ -372,7 +372,7 @@ ORDER BY "cid"
 
             _logger.ColumnFound(table.Name, columnName, dataType, notNull, defaultValueSql);
 
-            // Nelknet does not expose sqlite3_table_column_metadata (and HTTP cannot use it).
+            // Nj.LibSql.Data does not expose sqlite3_table_column_metadata (and HTTP cannot use it).
             // Read COLLATE / AUTOINCREMENT from sqlite_master CREATE TABLE SQL instead.
             string? collation = null;
             var autoIncrement = false;

@@ -11,7 +11,7 @@ Security fixes are considered for supported preview and stable releases of
 | `10.0.x` (stable) | Yes, once published |
 | Older majors | No — providers generally require a new build per EF major |
 
-See [docs/versions.md](docs/versions.md) for the currently pinned EF / Nelknet
+See [docs/versions.md](docs/versions.md) for the currently pinned EF / Nj.LibSql
 versions.
 
 ## Reporting a vulnerability
@@ -43,7 +43,7 @@ disclosure.
 
 - Creating, deleting, or administering Turso / `sqld` databases, namespaces,
   tokens, or backups is **out of scope** for this provider.
-- Dependency vulnerabilities in EF Core, Nelknet.LibSQL.Data, or native libSQL
+- Dependency vulnerabilities in EF Core, Nj.LibSql.Data, or native libSQL
   bindings should also be reported upstream when applicable. This project will
   track and bump pinned versions after verification.
 

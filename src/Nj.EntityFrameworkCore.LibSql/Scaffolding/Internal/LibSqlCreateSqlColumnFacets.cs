@@ -7,7 +7,7 @@ namespace Nj.EntityFrameworkCore.LibSql.Scaffolding.Internal;
 
 /// <summary>
 ///     Parses column COLLATE / AUTOINCREMENT facets from <c>sqlite_master.sql</c>.
-///     Used because Nelknet does not expose <c>sqlite3_table_column_metadata</c>
+///     Used because Nj.LibSql.Data does not expose <c>sqlite3_table_column_metadata</c>
 ///     (and HTTP connections cannot use that native API anyway).
 /// </summary>
 internal static partial class LibSqlCreateSqlColumnFacets

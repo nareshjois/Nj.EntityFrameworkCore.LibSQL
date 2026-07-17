@@ -2,10 +2,10 @@
 
 ## Status
 
-Accepted — 2026-07-16
+**Implemented** (Phase 3 cutover) — 2026-07-17. Supersedes
+[ADR-0001](0001-soft-fork-nelknet.md).
 
-**Supersedes** [ADR-0001](0001-soft-fork-nelknet.md) at **Phase 3 cutover** (not before).
-Until cutover, ADR-0001 remains in force for the EF provider on `main`.
+Accepted — 2026-07-16 (design); soft-fork remained EF default until cutover.
 
 ## Context
 
@@ -44,9 +44,9 @@ Work proceeds **in parallel** with the soft-fork so existing EF gates stay green
 
 ## Consequences
 
-- Soft-fork submodule remains until Phase 3.
-- Never reference both soft-fork and `Nj.LibSql.Data` in the same project.
-- Connection-string keys stay Nelknet/Turso-compatible.
+- Soft-fork submodule removed at Phase 3; EF uses `Nj.LibSql.Data` only.
+- Never dual-reference soft-fork and `Nj.LibSql.Data`.
+- Connection-string keys stay Turso-compatible.
 - Embedded replica: accept CS keys; sync deferred to Preview 2.
 - WP-11 and soft-fork work must not be blocked by this track.
 - **Native bump:** run `.github/workflows/libsql-native.yml`, update

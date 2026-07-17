@@ -13,13 +13,14 @@ Participation is governed by [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).
 - Docker Desktop (or compatible engine) for remote `sqld` integration tests
 - Optional: `dotnet tool restore` for local `dotnet-ef`
 
-Clone with submodules (ADO.NET soft-fork):
+Clone:
 
 ```bash
-git clone --recurse-submodules https://github.com/nareshjois/Nj.EntityFrameworkCore.LibSQL.git
-# or after a plain clone:
-git submodule update --init --recursive
+git clone https://github.com/nareshjois/Nj.EntityFrameworkCore.LibSQL.git
 ```
+
+The ADO.NET driver lives in-repo (`src/Nj.LibSql.Data` / `Nj.LibSql.Bindings`;
+[ADR-0002](docs/adr/0002-nj-libsql-data.md)). No git submodule is required.
 
 Install the local format gate (once per clone):
 
@@ -60,7 +61,7 @@ dotnet restore Nj.EntityFrameworkCore.LibSql.slnx
 dotnet format Nj.EntityFrameworkCore.LibSql.slnx --verify-no-changes --exclude ./src/Nj.EntityFrameworkCore.LibSql/** --exclude ./external/**
 dotnet build Nj.EntityFrameworkCore.LibSql.slnx -c Release
 dotnet test test/Nj.EntityFrameworkCore.LibSql.UnitTests -c Release
-dotnet test test/Nj.EntityFrameworkCore.LibSql.DriverContractTests -c Release
+dotnet test test/Nj.LibSql.DriverContractTests -c Release
 dotnet test test/Nj.EntityFrameworkCore.LibSql.FunctionalTests -c Release
 dotnet test test/Nj.EntityFrameworkCore.LibSql.ComplianceTests -c Release \
   --filter "FullyQualifiedName~LibSqlComplianceTest|FullyQualifiedName~UpdatesLibSqlTest"
@@ -74,7 +75,7 @@ Remote `sqld` (integration):
 ./eng/start-sqld.sh
 ./eng/wait-for-sqld.sh
 export LIBSQL_TEST_URL=http://127.0.0.1:8080
-dotnet test test/Nj.EntityFrameworkCore.LibSql.DriverContractTests -c Release
+dotnet test test/Nj.LibSql.DriverContractTests -c Release
 ```
 
 More detail: [`docs/testing.md`](docs/testing.md).
