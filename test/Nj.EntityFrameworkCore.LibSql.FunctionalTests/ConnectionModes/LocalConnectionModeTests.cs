@@ -129,7 +129,7 @@ public sealed class LocalConnectionModeTests
                     && await context.Items.AnyAsync(TestContext.Current.CancellationToken));
             }
 
-            LibSqlConnection.ClearAllPools();
+            LibSqlConnection.ClearPool(new LibSqlConnection($"Data Source={path}"));
         }
         finally
         {

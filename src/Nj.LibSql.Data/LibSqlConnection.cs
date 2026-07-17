@@ -103,9 +103,9 @@ public sealed class LibSqlConnection : DbConnection
         => _connectionStringBuilder ??= new LibSqlConnectionStringBuilder(_connectionString);
 
     /// <summary>
-    /// Closes <paramref name="connection"/> if it is still open and waits for native finalizers.
-    /// Prefer this over <see cref="ClearAllPools"/> when other connections may be in use
-    /// (e.g. parallel tests).
+    /// Closes <paramref name="connection"/> if it is still open and removes it from the
+    /// process tracking set. Prefer this over <see cref="ClearAllPools"/> when other
+    /// connections may be in use (e.g. parallel tests).
     /// </summary>
     public static void ClearPool(LibSqlConnection connection)
     {
@@ -121,11 +121,12 @@ public sealed class LibSqlConnection : DbConnection
         }
 
         OpenConnections.TryRemove(connection, out _);
-        GC.Collect();
-        GC.WaitForPendingFinalizers();
     }
 
-    /// <summary>Closes all open <see cref="LibSqlConnection"/> instances in this process.</summary>
+    /// <summary>
+    /// Closes all open <see cref="LibSqlConnection"/> instances in this process.
+    /// Do not call from parallel tests — use <see cref="ClearPool"/> for a single connection.
+    /// </summary>
     public static void ClearAllPools()
     {
         foreach (var connection in OpenConnections.Keys)
@@ -141,8 +142,6 @@ public sealed class LibSqlConnection : DbConnection
         }
 
         OpenConnections.Clear();
-        GC.Collect();
-        GC.WaitForPendingFinalizers();
     }
 
     /// <inheritdoc />

@@ -56,28 +56,6 @@ public sealed class RemoteSqldConnectionModeTests
     }
 
     [Fact]
-    public async Task Kill_sqld_mid_commit_is_ambiguous_without_auto_retry()
-    {
-        EnsureAvailable();
-        Assert.True(_fixture.CanStopContainer, "Fault injection requires Testcontainers-managed sqld.");
-
-        await using var context = CreateContext(_fixture.ConnectionString);
-        await context.Database.EnsureCreatedAsync(TestContext.Current.CancellationToken);
-
-        await using var tx = await context.Database.BeginTransactionAsync(
-            TestContext.Current.CancellationToken);
-        context.Items.Add(new ModeItem { Name = "fault" });
-        await context.SaveChangesAsync(TestContext.Current.CancellationToken);
-
-        await _fixture.StopContainerAsync();
-
-        var ex = await Assert.ThrowsAnyAsync<Exception>(
-            () => tx.CommitAsync(TestContext.Current.CancellationToken));
-        Assert.False(string.IsNullOrWhiteSpace(ex.Message));
-        // No automatic retry — single failure surfaces to the caller.
-    }
-
-    [Fact]
     public async Task Cancelled_SaveChangesAsync_surfaces_without_auto_retry()
     {
         EnsureAvailable();
@@ -129,6 +107,51 @@ public sealed class RemoteSqldConnectionModeTests
         => new(new DbContextOptionsBuilder<ModeDbContext>().UseLibSql(cs).Options);
 }
 
+/// <summary>
+/// Fault-injection against a dedicated sqld container so stopping it cannot
+/// poison the shared <see cref="ConnectionModesSqldCollection"/> suite.
+/// </summary>
+[Collection(ConnectionModesSqldFaultCollection.Name)]
+public sealed class RemoteSqldFaultInjectionTests
+{
+    private readonly ConnectionModesSqldFixture _fixture;
+
+    public RemoteSqldFaultInjectionTests(ConnectionModesSqldFixture fixture)
+        => _fixture = fixture;
+
+    [Fact]
+    public async Task Kill_sqld_mid_commit_is_ambiguous_without_auto_retry()
+    {
+        if (!_fixture.IsAvailable)
+        {
+            if (TestEnvironment.RemoteTestsRequired)
+            {
+                Assert.Fail("sqld required but unavailable: " + (_fixture.UnavailableReason ?? "unknown"));
+            }
+
+            Assert.Skip("sqld unavailable: " + (_fixture.UnavailableReason ?? "unknown"));
+        }
+
+        Assert.True(_fixture.CanStopContainer, "Fault injection requires Testcontainers-managed sqld.");
+
+        await using var context = new ModeDbContext(
+            new DbContextOptionsBuilder<ModeDbContext>().UseLibSql(_fixture.ConnectionString).Options);
+        await context.Database.EnsureCreatedAsync(TestContext.Current.CancellationToken);
+
+        await using var tx = await context.Database.BeginTransactionAsync(
+            TestContext.Current.CancellationToken);
+        context.Items.Add(new ModeItem { Name = "fault" });
+        await context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        await _fixture.StopContainerAsync();
+
+        var ex = await Assert.ThrowsAnyAsync<Exception>(
+            () => tx.CommitAsync(TestContext.Current.CancellationToken));
+        Assert.False(string.IsNullOrWhiteSpace(ex.Message));
+        // No automatic retry — single failure surfaces to the caller.
+    }
+}
+
 public sealed class ConnectionModesSqldFixture : IAsyncLifetime
 {
     private IContainer? _sqld;
@@ -165,7 +188,7 @@ public sealed class ConnectionModesSqldFixture : IAsyncLifetime
                 .Build();
             await _sqld.StartAsync();
             ConnectionString = TestEnvironment.RemoteConnectionStringFromUrl(
-                $"http://{_sqld.Hostname}:{_sqld.GetMappedPublicPort(8080)}");
+                $"http://127.0.0.1:{_sqld.GetMappedPublicPort(8080)}");
 
             await using var probe = new ModeDbContext(
                 new DbContextOptionsBuilder<ModeDbContext>().UseLibSql(ConnectionString).Options);
@@ -220,4 +243,10 @@ public sealed class ConnectionModesSqldFixture : IAsyncLifetime
 public sealed class ConnectionModesSqldCollection : ICollectionFixture<ConnectionModesSqldFixture>
 {
     public const string Name = "ConnectionModesSqld";
+}
+
+[CollectionDefinition(Name)]
+public sealed class ConnectionModesSqldFaultCollection : ICollectionFixture<ConnectionModesSqldFixture>
+{
+    public const string Name = "ConnectionModesSqldFault";
 }
