@@ -4,10 +4,13 @@ Community [EF Core](https://learn.microsoft.com/ef/core/) 10 provider for
 [libSQL](https://docs.turso.tech/libsql), backed by in-repo
 [`Nj.LibSql.Data`](src/Nj.LibSql.Data) ([architecture](docs/architecture.md)).
 
-> **Status:** `10.0.0-preview.1` (prerelease). APIs may change. Do **not** use in
-> production until a stable `10.0.x` release. Install with
-> `dotnet add package Nj.EntityFrameworkCore.LibSql --prerelease` once published
-> to NuGet.org — see [releasing](docs/releasing.md).
+> **Status:** [`10.0.0-preview.1`](https://www.nuget.org/packages/Nj.EntityFrameworkCore.LibSql/10.0.0-preview.1)
+> (prerelease on NuGet.org). APIs may change. Do **not** use in production until a
+> stable `10.0.x` release. See [releasing](docs/releasing.md).
+
+```bash
+dotnet add package Nj.EntityFrameworkCore.LibSql --prerelease
+```
 
 ## Package identity
 
