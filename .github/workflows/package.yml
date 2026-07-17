@@ -2,6 +2,11 @@ name: package
 
 on:
   workflow_dispatch:
+    inputs:
+      publish:
+        description: Push packed nupkgs to nuget.org (Trusted Publishing / OIDC)
+        type: boolean
+        default: false
   push:
     tags:
       - "v*"
@@ -54,4 +59,26 @@ jobs:
         uses: actions/attest-build-provenance@v2
         with:
           subject-path: artifacts/packages/*.nupkg
-      # Publishing to nuget.org is manual / sole-maintainer approved until automation secrets exist.
+
+      # Trusted Publishing: https://learn.microsoft.com/nuget/nuget-org/trusted-publishing
+      # Requires nuget.org policy (owner=nareshjois, repo=Nj.EntityFrameworkCore.LibSQL,
+      # workflow=package.yml) and secret NUGET_USER = nuget.org profile username (not email).
+      - name: NuGet login (OIDC → temp API key)
+        if: >-
+          github.event_name == 'push' ||
+          (github.event_name == 'workflow_dispatch' && inputs.publish)
+        uses: NuGet/login@v1
+        id: nuget-login
+        with:
+          user: ${{ secrets.NUGET_USER }}
+
+      - name: Push to nuget.org
+        if: >-
+          github.event_name == 'push' ||
+          (github.event_name == 'workflow_dispatch' && inputs.publish)
+        run: |
+          set -euo pipefail
+          dotnet nuget push artifacts/packages/*.nupkg \
+            --api-key "${{ steps.nuget-login.outputs.NUGET_API_KEY }}" \
+            --source https://api.nuget.org/v3/index.json \
+            --skip-duplicate

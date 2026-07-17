@@ -3,6 +3,22 @@
 Runbook for shipping `Nj.EntityFrameworkCore.LibSql` / `Nj.LibSql.Data` /
 `Nj.LibSql.Bindings` to NuGet.org.
 
+## One-time: Trusted Publishing setup
+
+Prefer [Trusted Publishing](https://learn.microsoft.com/nuget/nuget-org/trusted-publishing)
+(OIDC → short-lived API key) over long-lived NuGet API keys.
+
+1. On [nuget.org → Trusted Publishing](https://www.nuget.org/account/trustedpublishing),
+   add a policy owned by your nuget.org account (or org):
+   - **Repository Owner:** `nareshjois`
+   - **Repository:** `Nj.EntityFrameworkCore.LibSQL`
+   - **Workflow File:** `package.yml` (file name only)
+   - **Environment:** leave empty (workflow does not use a GitHub Environment)
+2. In GitHub → Settings → Secrets → Actions, add **`NUGET_USER`**: your
+   nuget.org **profile username** (not email). Used by `NuGet/login@v1`.
+3. First successful publish permanently activates the policy (IDs from GitHub’s
+   token). Private-repo policies may be temporarily active for 7 days until then.
+
 ## Preview (`10.0.0-preview.N`)
 
 1. **Green `main`** — CI + integration (sqld) + driver suites as required.
@@ -16,20 +32,17 @@ Runbook for shipping `Nj.EntityFrameworkCore.LibSql` / `Nj.LibSql.Data` /
    git push origin v10.0.0-preview.1
    ```
 
-5. **Pack CI** — tag push runs [`.github/workflows/package.yml`](../.github/workflows/package.yml):
-   nupkgs, SBOM, build provenance attestation. Download the `nupkgs` artifact
-   (or pack locally: `./eng/pack.sh && ./eng/verify-package.sh`).
-6. **Push** (sole maintainer; API key with push permission):
+5. **Pack + publish CI** — tag push runs
+   [`.github/workflows/package.yml`](../.github/workflows/package.yml):
+   nupkgs, SBOM, provenance, then OIDC login + `dotnet nuget push`.
+
+   To republish without a new tag (e.g. after fixing Trusted Publishing setup):
 
    ```bash
-   export NUGET_API_KEY=…   # do not commit
-   dotnet nuget push artifacts/packages/*.nupkg \
-     --api-key "$NUGET_API_KEY" \
-     --source https://api.nuget.org/v3/index.json \
-     --skip-duplicate
+   gh workflow run package.yml -f publish=true
    ```
 
-7. **Verify** — create a throwaway console app:
+6. **Verify** — create a throwaway console app:
 
    ```bash
    dotnet new console -n PreviewSmoke
@@ -38,7 +51,19 @@ Runbook for shipping `Nj.EntityFrameworkCore.LibSql` / `Nj.LibSql.Data` /
    # UseLibSql + SELECT 1 / EnsureCreated on a temp file
    ```
 
-8. **GitHub Release** — attach notes from CHANGELOG; link compatibility + C-019.
+7. **GitHub Release** — attach notes from CHANGELOG; link compatibility + C-019.
+
+### Fallback: manual API key
+
+Only if Trusted Publishing is unavailable:
+
+```bash
+export NUGET_API_KEY=…   # do not commit
+dotnet nuget push artifacts/packages/*.nupkg \
+  --api-key "$NUGET_API_KEY" \
+  --source https://api.nuget.org/v3/index.json \
+  --skip-duplicate
+```
 
 ## Stable backlog (post-preview)
 
