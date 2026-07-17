@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System.Text;
+using Nj.LibSql.Data;
 
 namespace Nj.EntityFrameworkCore.LibSql.Infrastructure.Internal;
 
@@ -116,8 +117,8 @@ public class LibSqlOptionsExtension : RelationalOptionsExtension
                 if (_logFragment == null)
                 {
                     var builder = new StringBuilder();
-
-                    builder.Append(base.LogFragment);
+                    var fragment = ScrubSensitive(base.LogFragment, Extension.ConnectionString);
+                    builder.Append(fragment);
 
                     if (Extension._loadSpatialite)
                     {
@@ -129,6 +130,39 @@ public class LibSqlOptionsExtension : RelationalOptionsExtension
 
                 return _logFragment;
             }
+        }
+
+        private static string ScrubSensitive(string fragment, string? connectionString)
+        {
+            if (string.IsNullOrEmpty(fragment) || string.IsNullOrEmpty(connectionString))
+            {
+                return fragment;
+            }
+
+            var redacted = LibSqlConnectionStringBuilder.Redact(connectionString);
+            if (fragment.Contains(connectionString, StringComparison.Ordinal))
+            {
+                return fragment.Replace(connectionString, redacted, StringComparison.Ordinal);
+            }
+
+            try
+            {
+                var parsed = new LibSqlConnectionStringBuilder(connectionString);
+                foreach (var secret in new[] { parsed.AuthToken, parsed.SyncAuthToken, parsed.EncryptionKey })
+                {
+                    if (!string.IsNullOrEmpty(secret)
+                        && fragment.Contains(secret, StringComparison.Ordinal))
+                    {
+                        fragment = fragment.Replace(secret, "***REDACTED***", StringComparison.Ordinal);
+                    }
+                }
+            }
+            catch
+            {
+                // best-effort
+            }
+
+            return fragment;
         }
 
         public override void PopulateDebugInfo(IDictionary<string, string> debugInfo)

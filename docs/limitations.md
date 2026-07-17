@@ -37,6 +37,14 @@ See waiver **C-001** in [compatibility.md](compatibility.md).
 
 - Distributed transactions are not supported.
 - Nested / savepoint behavior follows the driver and libSQL.
+- **No automatic write retries.** A transport failure during commit may leave an
+  ambiguous outcome (write may or may not have applied). Callers must reconcile.
+
+## Cancellation
+
+Remote HTTP/WebSocket commands honor `CancellationToken` (best-effort). Local
+native execute and mid-flight `libsql_sync2` are **not** abortable — see
+[connection-modes.md](connection-modes.md).
 
 ## Provider policy
 
@@ -57,10 +65,11 @@ See waiver **C-001** in [compatibility.md](compatibility.md).
 
 ## Preview scope
 
-- **Preview 1:** local + remote.
-- **Preview 2+:** embedded replicas and EF sync API that delegates to the driver.
+- **Preview 1:** local, remote (`sqld` / Turso HTTP), and embedded replica sync
+  (validated against self-hosted `sqld`; Turso replica Sync — see **C-019**).
 
-## Scaffolding
+## Deployment
 
-- Virtual tables are not reverse-engineered (`C-004`).
-- libSQL vector / `FLOAT32` types have no first-class CLR mapping in Preview 1.
+See [deployment.md](deployment.md) for advertised RIDs and publish/container smoke.
+Single-file and self-contained are supported for Preview on those RIDs; extra
+RIDs / musl / NativeAOT are not advertised yet.

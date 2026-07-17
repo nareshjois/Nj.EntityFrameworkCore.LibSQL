@@ -17,21 +17,21 @@ below (rationale + tracked issue).
 
 | Capability | Local file | Remote (`sqld` / Turso) | Embedded replica |
 |------------|------------|-------------------------|------------------|
-| Connect via connection string | Yes | Yes | Preview 2+ |
-| Connect via existing `LibSqlConnection` | Yes | Yes | Preview 2+ |
-| Type mapping / parameter round-trips | Yes | Yes | Preview 2+ |
-| Store-generated keys (`INSERT…RETURNING`) | Yes | Yes | Preview 2+ |
-| LINQ / queries | Yes | Yes | Preview 2+ |
-| CRUD / `SaveChanges` | Yes | Yes | Preview 2+ |
-| Transactions / SQL savepoints | Yes | Yes | Preview 2+ |
-| Migrations `Up`/`Down` / `Database.Migrate` | Yes | Yes (schema in existing DB) | Preview 2+ |
-| Reverse engineering / design-time | Yes | Yes (CLR sampling may warn; C-003) | Preview 2+ |
-| Virtual tables / vector scaffold | **No** (C-004) | **No** (C-004) | Preview 2+ |
-| `EnsureCreated` | Yes (may create file) | Schema only | Preview 2+ |
+| Connect via connection string | Yes | Yes | Yes (local path + `Sync URL`) |
+| Connect via existing `LibSqlConnection` | Yes | Yes | Yes |
+| Type mapping / parameter round-trips | Yes | Yes | Yes (after Sync) |
+| Store-generated keys (`INSERT…RETURNING`) | Yes | Yes | Yes |
+| LINQ / queries | Yes | Yes | Yes |
+| CRUD / `SaveChanges` | Yes | Yes | Yes |
+| Transactions / SQL savepoints | Yes | Yes | Yes |
+| Migrations `Up`/`Down` / `Database.Migrate` | Yes | Yes (schema in existing DB) | Schema on primary; replica via Sync |
+| Reverse engineering / design-time | Yes | Yes (CLR sampling may warn; C-003) | Local replica file |
+| Virtual tables / vector scaffold | **No** (C-004) | **No** (C-004) | **No** (C-004) |
+| `EnsureCreated` | Yes (may create file) | Schema only | Schema on local file / Sync |
 | `EnsureDeleted` | Yes (may delete file) | **No** — throws | **No** — throws |
 | SpatiaLite / loadable extensions | **No** | **No** | **No** |
 | Turso admin (create DB / tokens) | N/A | **Out of scope** | **Out of scope** |
-| DatabaseFacade sync API | N/A | N/A | Preview 2+ |
+| `Database.Sync` / `LibSqlConnection.Sync` | N/A | N/A | Yes (`sqld` validated; Turso C-019) |
 
 Server-version gated features (e.g. `RETURNING`, some JSON functions) use
 `LibSqlDatabaseCapabilities` against the bundled / remote libSQL version — not
@@ -56,6 +56,8 @@ Server-version gated features (e.g. `RETURNING`, some JSON functions) use
 | C-014 | Compliance | Optimistic concurrency offline-lock paths | Sqlite-parity skip (EF Core `#2195`): no DB `rowversion`. | — | provider |
 | C-015 | Compliance | Inheritance FK type-mismatch throws | **Resolved** — raises `DbUpdateException` after constraint surfacing. | — | provider |
 | C-016 | Compliance | `BuiltInDataTypesRemoteLibSqlTest` | Remote-only; excluded from local CI gate. Tracked in `integration.yml`. | — | provider |
+| C-018 | Remote HTTP | Large buffered result sets | HTTP Hrana buffers rows in memory; prefer `ws://` against self-hosted sqld for very large cursors. Turso stays on HTTP. | — | driver |
+| C-019 | Embedded replica | Turso Cloud `Sync` hang | Pinned native (`libsql-server-v0.24.32`) opens a Turso replica but `libsql_sync2` hangs; Sync is validated on self-hosted `sqld` only. | [#24](https://github.com/nareshjois/Nj.EntityFrameworkCore.LibSQL/issues/24) | driver |
 
 ## Driver behavior notes
 

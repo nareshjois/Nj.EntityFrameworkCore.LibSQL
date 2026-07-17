@@ -29,8 +29,11 @@ mode-specific `Use*` helpers.
 | Mode | Preview 1 | Notes |
 |------|-----------|--------|
 | Local libSQL file | Yes | File create/delete like EF SQLite |
-| Remote self-hosted `sqld` / Turso | Yes | Database must already exist |
-| Embedded replica | Preview 2+ | Sync API deferred |
+| Remote self-hosted `sqld` / Turso | Yes | Database must already exist; Turso via HTTPS/`libsql://` (no WebSocket) |
+| Embedded replica | Yes (vs `sqld`) | `Database.Sync` / `LibSqlConnection.Sync`; Turso Cloud Sync hangs — **C-019** |
+
+Mode is selected only through the connection string (or an existing
+`LibSqlConnection`). See [connection-modes.md](docs/connection-modes.md).
 
 ## Quick start (development)
 
@@ -52,6 +55,7 @@ Remote `sqld` for integration tests:
 - [Docs index](docs/README.md)
 - [Architecture](docs/architecture.md)
 - [Connection modes](docs/connection-modes.md)
+- [Observability](docs/observability.md)
 - [Limitations](docs/limitations.md)
 - [Testing](docs/testing.md)
 - [Contributing](CONTRIBUTING.md)

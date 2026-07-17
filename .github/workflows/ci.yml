@@ -60,7 +60,7 @@ jobs:
         run: >
           dotnet test test/Nj.LibSql.DriverContractTests/Nj.LibSql.DriverContractTests.csproj
           -c Release --no-build
-          --filter "FullyQualifiedName!~Remote&FullyQualifiedName!~Turso"
+          --filter "FullyQualifiedName!~Remote&FullyQualifiedName!~Turso&FullyQualifiedName!~EmbeddedReplica"
           --logger "trx;LogFileName=driver-${{ matrix.os }}.trx"
           --results-directory artifacts/test-results
 
@@ -68,7 +68,16 @@ jobs:
         run: >
           dotnet test test/Nj.EntityFrameworkCore.LibSql.FunctionalTests/Nj.EntityFrameworkCore.LibSql.FunctionalTests.csproj
           -c Release --no-build
+          --filter "FullyQualifiedName!~TursoConnectionMode&FullyQualifiedName!~RemoteSqldConnectionMode&FullyQualifiedName!~EmbeddedReplicaConnectionMode"
           --logger "trx;LogFileName=func-${{ matrix.os }}.trx"
+          --results-directory artifacts/test-results
+
+      - name: ConnectionModes local
+        run: >
+          dotnet test test/Nj.EntityFrameworkCore.LibSql.FunctionalTests/Nj.EntityFrameworkCore.LibSql.FunctionalTests.csproj
+          -c Release --no-build
+          --filter "FullyQualifiedName~LocalConnectionMode"
+          --logger "trx;LogFileName=connection-modes-local-${{ matrix.os }}.trx"
           --results-directory artifacts/test-results
 
       - name: Compliance local gate (Linux)
@@ -108,6 +117,35 @@ jobs:
               --results-directory artifacts/test-results
             dotnet run --project samples/LocalSample/LocalSample.csproj -c Release --no-build
           fi
+
+      - name: Publish smoke (FDD / SC / single-file)
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "${{ runner.os }}" == "Windows" ]]; then
+            bash eng/smoke-publish.sh win-x64
+          else
+            bash eng/smoke-publish.sh linux-x64
+          fi
+
+      - name: Container smoke (Linux)
+        if: runner.os == 'Linux'
+        run: bash eng/smoke-container.sh
+
+      - name: Benchmarks (Linux, artifact only)
+        if: runner.os == 'Linux'
+        run: |
+          set -euo pipefail
+          chmod +x eng/run-benchmarks.sh
+          bash eng/run-benchmarks.sh
+
+      - name: Upload benchmarks
+        if: runner.os == 'Linux' && always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: benchmarks-${{ matrix.os }}
+          path: artifacts/benchmarks
+          if-no-files-found: warn
 
       - name: Upload test results
         if: failure()

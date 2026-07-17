@@ -275,3 +275,110 @@ public sealed class TursoDriverCollection : ICollectionFixture<TursoDriverFixtur
 {
     public const string Name = "TursoDriver";
 }
+
+/// <summary>
+/// Always starts Testcontainers <c>sqld</c> for embedded-replica sync tests.
+/// Ignores <c>LIBSQL_TEST_URL</c> (Turso HTTP is not a valid replica primary for the
+/// pinned native client — C-019).
+/// </summary>
+public sealed class SqldReplicaFixture : DriverFixture
+{
+    private IContainer? _sqld;
+    private string? _connectionString;
+
+    public override DriverConnectionMode Mode => DriverConnectionMode.RemoteSqld;
+
+    public bool IsAvailable { get; private set; }
+
+    public string? UnavailableReason { get; private set; }
+
+    public string PrimaryHttpUrl
+        => _connectionString is null
+            ? throw new InvalidOperationException("Replica fixture was not initialized.")
+            : new LibSqlConnectionStringBuilder(_connectionString).DataSource!;
+
+    public override string CreateConnectionString()
+        => _connectionString
+           ?? throw new InvalidOperationException(
+               "Replica fixture was not initialized. " + (UnavailableReason ?? string.Empty));
+
+    public override async ValueTask InitializeAsync()
+    {
+        if (TestEnvironment.RemoteTestsDisabled)
+        {
+            UnavailableReason = $"Set {TestEnvironment.DisableRemoteEnvironmentVariable}=0 to enable.";
+            IsAvailable = false;
+            return;
+        }
+
+        if (TestEnvironment.TestcontainersDisabled)
+        {
+            UnavailableReason =
+                $"{TestEnvironment.DisableTestcontainersEnvironmentVariable}=1 — "
+                + "embedded replica tests require Testcontainers sqld.";
+            IsAvailable = false;
+            return;
+        }
+
+        try
+        {
+            _sqld = new ContainerBuilder(TestEnvironment.SqldImage)
+                .WithEnvironment("SQLD_NODE", "primary")
+                .WithPortBinding(8080, assignRandomHostPort: true)
+                .WithWaitStrategy(
+                    Wait.ForUnixContainer()
+                        .UntilHttpRequestIsSucceeded(request => request
+                            .ForPath("/v2")
+                            .ForPort(8080)))
+                .Build();
+
+            await _sqld.StartAsync();
+            var host = _sqld.Hostname;
+            var port = _sqld.GetMappedPublicPort(8080);
+            _connectionString = TestEnvironment.RemoteConnectionStringFromUrl($"http://{host}:{port}");
+
+            await using var connection = await CreateOpenConnectionAsync(
+                TestContext.Current.CancellationToken);
+            await using var command = connection.CreateCommand();
+            command.CommandText = "SELECT 1";
+            _ = await command.ExecuteScalarAsync(TestContext.Current.CancellationToken);
+            IsAvailable = true;
+        }
+        catch (Exception ex)
+        {
+            IsAvailable = false;
+            UnavailableReason = ex.GetType().Name + ": " + ex.Message;
+            await DisposeContainerQuietlyAsync();
+        }
+    }
+
+    public override async ValueTask DisposeAsync()
+        => await DisposeContainerQuietlyAsync();
+
+    private async ValueTask DisposeContainerQuietlyAsync()
+    {
+        if (_sqld is null)
+        {
+            return;
+        }
+
+        try
+        {
+            await _sqld.DisposeAsync();
+        }
+        catch
+        {
+            // Best-effort.
+        }
+        finally
+        {
+            _sqld = null;
+        }
+    }
+}
+
+[CollectionDefinition(Name)]
+public sealed class SqldReplicaCollection : ICollectionFixture<SqldReplicaFixture>
+{
+    public const string Name = "SqldReplica";
+}

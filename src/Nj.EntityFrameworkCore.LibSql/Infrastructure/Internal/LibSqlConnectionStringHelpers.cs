@@ -47,7 +47,8 @@ public static class LibSqlConnectionStringHelpers
     }
 
     /// <summary>
-    ///     True when the connection string targets a remote HTTP(S)/libsql endpoint.
+    ///     True when the connection string targets a remote HTTP(S)/libsql endpoint
+    ///     (not an embedded replica with a local file path).
     /// </summary>
     public static bool IsRemote(string? connectionString)
     {
@@ -62,6 +63,11 @@ public static class LibSqlConnectionStringHelpers
             return true;
         }
 
+        if (builder.Mode == LibSqlConnectionMode.EmbeddedReplica)
+        {
+            return false;
+        }
+
         var dataSource = builder.DataSource ?? string.Empty;
         return dataSource.StartsWith("http://", StringComparison.OrdinalIgnoreCase)
                || dataSource.StartsWith("https://", StringComparison.OrdinalIgnoreCase)
@@ -71,11 +77,21 @@ public static class LibSqlConnectionStringHelpers
     }
 
     /// <summary>
-    ///     Best-effort local file path from a connection string (null for memory/remote).
+    ///     True when the connection string configures an embedded replica
+    ///     (<c>Sync URL</c> present with a local <c>Data Source</c>).
+    /// </summary>
+    public static bool IsEmbeddedReplica(string? connectionString)
+    {
+        var builder = TryParse(connectionString);
+        return builder?.Mode == LibSqlConnectionMode.EmbeddedReplica;
+    }
+
+    /// <summary>
+    ///     Best-effort local file path from a connection string (null for memory/remote/replica).
     /// </summary>
     public static string? TryGetLocalFilePath(string? connectionString)
     {
-        if (IsInMemory(connectionString) || IsRemote(connectionString))
+        if (IsInMemory(connectionString) || IsRemote(connectionString) || IsEmbeddedReplica(connectionString))
         {
             return null;
         }

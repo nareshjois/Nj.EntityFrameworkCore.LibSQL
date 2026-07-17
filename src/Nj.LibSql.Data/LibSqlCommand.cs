@@ -119,7 +119,71 @@ public sealed class LibSqlCommand : DbCommand
 
     public override void Cancel()
     {
-        // libSQL does not support cancellation of in-flight operations.
+        // Local native execute cannot abort mid-flight. Remote: best-effort via HTTP CTS.
+        _remoteCommand?.Cancel();
+    }
+
+    public override async Task<int> ExecuteNonQueryAsync(CancellationToken cancellationToken)
+    {
+        EnsureConnectionOpen();
+        cancellationToken.ThrowIfCancellationRequested();
+
+        if (string.IsNullOrWhiteSpace(CommandText))
+        {
+            throw new InvalidOperationException("CommandText property has not been properly initialized.");
+        }
+
+        if (_remoteCommand != null)
+        {
+            SyncRemoteParameters();
+            return await _remoteCommand.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
+        }
+
+        var result = ExecuteNonQuery();
+        cancellationToken.ThrowIfCancellationRequested();
+        return result;
+    }
+
+    public override async Task<object?> ExecuteScalarAsync(CancellationToken cancellationToken)
+    {
+        EnsureConnectionOpen();
+        cancellationToken.ThrowIfCancellationRequested();
+
+        if (string.IsNullOrWhiteSpace(CommandText))
+        {
+            throw new InvalidOperationException("CommandText property has not been properly initialized.");
+        }
+
+        if (_remoteCommand != null)
+        {
+            SyncRemoteParameters();
+            return await _remoteCommand.ExecuteScalarAsync(cancellationToken).ConfigureAwait(false);
+        }
+
+        var result = ExecuteScalar();
+        cancellationToken.ThrowIfCancellationRequested();
+        return result;
+    }
+
+    protected override async Task<DbDataReader> ExecuteDbDataReaderAsync(
+        CommandBehavior behavior,
+        CancellationToken cancellationToken)
+    {
+        EnsureConnectionOpen();
+        cancellationToken.ThrowIfCancellationRequested();
+
+        if (_remoteCommand != null)
+        {
+            SyncRemoteParameters();
+            var reader = await _remoteCommand
+                .ExecuteReaderAsync(behavior, cancellationToken)
+                .ConfigureAwait(false);
+            return new LibSqlDataReader((LibSqlHttpDataReader)reader);
+        }
+
+        var local = ExecuteDbDataReader(behavior);
+        cancellationToken.ThrowIfCancellationRequested();
+        return local;
     }
 
     public override int ExecuteNonQuery()

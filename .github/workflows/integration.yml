@@ -30,14 +30,30 @@ jobs:
           restore-keys: |
             nuget-${{ runner.os }}-
 
-      - name: Driver contract (Testcontainers sqld)
+      - name: Driver contract (Testcontainers sqld + EmbeddedReplica)
+        env:
+          LIBSQL_REQUIRE_REMOTE: "1"
+          LIBSQL_TEST_URL: ""
+          LIBSQL_TEST_AUTH_TOKEN: ""
         run: |
           dotnet restore Nj.EntityFrameworkCore.LibSql.slnx
           dotnet test test/Nj.LibSql.DriverContractTests/Nj.LibSql.DriverContractTests.csproj \
             -c Release \
-            --filter "FullyQualifiedName~Remote&FullyQualifiedName!~Turso" \
+            --filter "FullyQualifiedName~Remote|FullyQualifiedName~EmbeddedReplica&FullyQualifiedName!~Turso" \
             --logger "trx;LogFileName=driver-remote.trx" \
             --results-directory artifacts/test-results
+
+      - name: Functional ConnectionModes (sqld + replica)
+        env:
+          LIBSQL_REQUIRE_REMOTE: "1"
+          LIBSQL_TEST_URL: ""
+          LIBSQL_TEST_AUTH_TOKEN: ""
+        run: >
+          dotnet test test/Nj.EntityFrameworkCore.LibSql.FunctionalTests/Nj.EntityFrameworkCore.LibSql.FunctionalTests.csproj
+          -c Release
+          --filter "FullyQualifiedName~ConnectionModes&FullyQualifiedName!~Turso"
+          --logger "trx;LogFileName=connection-modes-sqld.trx"
+          --results-directory artifacts/test-results
 
       - name: Remote compliance slice
         id: remote-compliance
@@ -71,3 +87,52 @@ jobs:
           name: integration-failure
           path: |
             artifacts/test-results
+
+  turso:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Require Turso secrets
+        env:
+          LIBSQL_TEST_URL: ${{ secrets.LIBSQL_TEST_URL }}
+          LIBSQL_TEST_AUTH_TOKEN: ${{ secrets.LIBSQL_TEST_AUTH_TOKEN }}
+        run: |
+          if [ -z "$LIBSQL_TEST_URL" ] || [ -z "$LIBSQL_TEST_AUTH_TOKEN" ]; then
+            echo "::error::Missing Turso secrets. Configure LIBSQL_TEST_URL and LIBSQL_TEST_AUTH_TOKEN (no silent skip)."
+            exit 1
+          fi
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          global-json-file: global.json
+
+      - name: Cache NuGet
+        uses: actions/cache@v6
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('**/Directory.Packages.props', '**/NuGet.config', '**/global.json') }}
+          restore-keys: |
+            nuget-${{ runner.os }}-
+
+      - name: Functional ConnectionModes (Turso HTTP)
+        env:
+          LIBSQL_REQUIRE_TURSO: "1"
+          LIBSQL_DISABLE_TESTCONTAINERS: "1"
+          LIBSQL_TEST_URL: ${{ secrets.LIBSQL_TEST_URL }}
+          LIBSQL_TEST_AUTH_TOKEN: ${{ secrets.LIBSQL_TEST_AUTH_TOKEN }}
+        run: >
+          dotnet test test/Nj.EntityFrameworkCore.LibSql.FunctionalTests/Nj.EntityFrameworkCore.LibSql.FunctionalTests.csproj
+          -c Release
+          --filter "FullyQualifiedName~TursoConnectionMode"
+          --logger "trx;LogFileName=connection-modes-turso.trx"
+          --results-directory artifacts/test-results
+
+      - name: Upload Turso results
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: connection-modes-turso
+          path: artifacts/test-results
+          if-no-files-found: ignore

@@ -1,0 +1,11 @@
+# WP-12 Preview: linux-x64 container smoke for LocalSample (framework-dependent).
+# Force amd64 so committed linux-x64 natives match (Apple Silicon hosts use --platform).
+FROM --platform=linux/amd64 mcr.microsoft.com/dotnet/sdk:10.0 AS build
+WORKDIR /src
+COPY . .
+RUN dotnet publish samples/LocalSample/LocalSample.csproj -c Release -r linux-x64 --self-contained false -o /app/publish --nologo -v q
+
+FROM --platform=linux/amd64 mcr.microsoft.com/dotnet/runtime:10.0
+WORKDIR /app
+COPY --from=build /app/publish .
+ENTRYPOINT ["dotnet", "LocalSample.dll"]

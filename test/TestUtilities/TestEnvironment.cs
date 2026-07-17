@@ -95,4 +95,29 @@ public static class TestEnvironment
 
         return $"Data Source={raw}";
     }
+
+    /// <summary>
+    /// Embedded replica: local file path + Sync URL primary (+ auth token).
+    /// </summary>
+    public static string EmbeddedReplicaConnectionString(
+        string localReplicaPath,
+        string primaryUrl,
+        string? authToken = null,
+        bool readYourWrites = true)
+    {
+        var token = authToken ?? AuthToken;
+        var builder = new System.Data.Common.DbConnectionStringBuilder
+        {
+            ["Data Source"] = localReplicaPath,
+            ["Sync URL"] = primaryUrl.Trim(),
+            ["Read Your Writes"] = readYourWrites
+        };
+
+        if (!string.IsNullOrWhiteSpace(token))
+        {
+            builder["Auth Token"] = token;
+        }
+
+        return builder.ConnectionString;
+    }
 }
