@@ -38,6 +38,25 @@ engine for local EF is planned via
 | `Filename` | Alias of `Data Source` |
 | MDS-compat keywords (`Mode`, `Cache`, `Foreign Keys`, …) | Accepted and ignored |
 | `$name` / `@name` / `:name` | Interchangeable prefixes |
+| `IsAotCompatible` + PublishAot smoke | Yes — `./eng/smoke-aot.sh` / `samples/AotLocalSample` (dynamic natives) |
+| Extra desktop RIDs (`win-arm64`, …) | **Deferred** — not advertised |
+
+## Bake-off checklist (manual)
+
+Shared scenarios against one Turso DB / local sqld. Not a hard CI gate against
+Turso’s package — record pass/fail here when run.
+
+| # | Scenario | Nj | Turso.Data |
+|---|----------|----|------------|
+| 1 | Local open + SELECT 1 | Yes | Yes |
+| 2 | Remote open + parameterized SELECT | Yes | Yes |
+| 3 | Txn + SAVEPOINT | Yes | Yes |
+| 4 | EF local EnsureCreated + SaveChanges | Yes (`UseLibSql`) | Yes (`UseTurso`) |
+| 5 | EF remote query | Yes | N/A (local EF only) |
+| 6 | Replica Sync | Yes vs sqld; Turso Cloud C-019 | Fail-early until sync kit |
+| 7 | Remote `DbBatch` | Yes (`CreateBatch`) | Yes |
+| 8 | EF local + `NativeEngine(Turso)` | Planned | N/A |
+| 9 | PublishAot local ADO SELECT 1 | Yes (`smoke-aot.sh`) | NativeAot packages exist |
 
 ## Keyword parity (Nj `LibSqlConnectionStringBuilder`)
 
