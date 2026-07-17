@@ -1,6 +1,6 @@
 name: libsql-driver
 
-# Path-filtered CI for Nj.LibSql.Data / Bindings (ADR-0002).
+# Path-filtered CI for Nj.LibSql.Data / Bindings.
 # Independent of EF provider CI (ci.yml). Does not run on EF-only changes.
 #
 # Turso secrets (required for turso job — missing secrets fail the job):
@@ -74,7 +74,6 @@ jobs:
         run: >
           dotnet format Nj.EntityFrameworkCore.LibSql.slnx --verify-no-changes --no-restore
           --exclude ./src/Nj.EntityFrameworkCore.LibSql/**
-          --exclude ./external/**
 
       - name: Build (committed natives)
         run: >

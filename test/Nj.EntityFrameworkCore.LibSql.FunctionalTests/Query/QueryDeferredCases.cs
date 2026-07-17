@@ -6,7 +6,7 @@ using Xunit;
 namespace Nj.EntityFrameworkCore.LibSql.FunctionalTests.Query;
 
 /// <summary>
-/// WP-10 deferred WP-06 query cases (TPH, libSQL function goldens, compiled queries, interceptors).
+/// Deferred query edge cases (TPH, libSQL function goldens, compiled queries, interceptors).
 /// </summary>
 internal static class QueryDeferredCases
 {

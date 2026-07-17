@@ -22,7 +22,7 @@ internal static class ScaffoldingTestHelpers
 
     public static async Task ApplySchemaAsync(ScaffoldProbeDbContext context, CancellationToken cancellationToken)
     {
-        // Nelknet may not execute multi-statement batches as one ADO.NET command.
+        // Driver may not execute multi-statement batches as one ADO.NET command.
         foreach (var statement in ScaffoldingSampleSchema.Statements)
         {
             await context.Database.ExecuteSqlRawAsync(statement, cancellationToken);

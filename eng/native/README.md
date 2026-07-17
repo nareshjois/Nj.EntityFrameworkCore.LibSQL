@@ -2,7 +2,7 @@
 
 Phase 1 ships committed RID assets under
 `src/Nj.LibSql.Bindings/runtimes/{linux-x64,osx-arm64,win-x64}/native/`
-(bootstrapped from the soft-fork pin `libsql-server-v0.24.32`).
+(pin `libsql-server-v0.24.32`).
 
 ## Rebuild / publish
 

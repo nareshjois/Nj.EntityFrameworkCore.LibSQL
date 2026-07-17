@@ -1,7 +1,7 @@
 namespace Nj.EntityFrameworkCore.LibSql.FunctionalTests.Scaffolding;
 
 /// <summary>
-/// Shared DDL for the WP-09 scaffolding FunctionalTests matrix.
+/// Shared DDL for the scaffolding FunctionalTests matrix.
 /// </summary>
 internal static class ScaffoldingSampleSchema
 {

@@ -70,7 +70,7 @@ public class LibSqlRelationalConnection : RelationalConnection, ILibSqlRelationa
     /// </summary>
     public virtual ILibSqlRelationalConnection CreateReadOnlyConnection()
     {
-        // Nelknet has no dedicated read-only open mode; reuse the same connection string
+        // libSQL has no dedicated read-only open mode; reuse the same connection string
         // for Exists probes (open may fail if the local file is missing).
         var connectionString = GetValidatedConnectionString();
         var contextOptions = new DbContextOptionsBuilder().UseLibSql(connectionString).Options;
@@ -93,6 +93,6 @@ public class LibSqlRelationalConnection : RelationalConnection, ILibSqlRelationa
         }
 
         // Nj.LibSql.Data does not support sqlite3_create_function / aggregates.
-        // Decimal LINQ → REAL/CAST; Regex.IsMatch → native REGEXP (docs/udf-gap.md).
+        // Decimal LINQ → REAL/CAST; Regex.IsMatch → native REGEXP (docs/limitations.md).
     }
 }

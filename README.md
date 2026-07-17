@@ -2,7 +2,7 @@
 
 Community [EF Core](https://learn.microsoft.com/ef/core/) 10 provider for
 [libSQL](https://docs.turso.tech/libsql), backed by in-repo
-[`Nj.LibSql.Data`](src/Nj.LibSql.Data) ([ADR-0002](docs/adr/0002-nj-libsql-data.md)).
+[`Nj.LibSql.Data`](src/Nj.LibSql.Data) ([architecture](docs/architecture.md)).
 
 > **Status:** early development (`10.0.0-preview.1`). `UseLibSql` works in-repo
 > against `Nj.LibSql.Data`. Not published to NuGet.org yet — do not use in
@@ -17,7 +17,7 @@ Community [EF Core](https://learn.microsoft.com/ef/core/) 10 provider for
 | Current local version | `10.0.0-preview.1` |
 | License | MIT |
 | EF Core | `10.0.10` |
-| ADO.NET | `Nj.LibSql.Data` + `Nj.LibSql.Bindings` (see [docs/versions.md](docs/versions.md)) |
+| ADO.NET | `Nj.LibSql.Data` + `Nj.LibSql.Bindings` ([versions](docs/versions.md)) |
 
 Public API follows Microsoft’s Sqlite naming pattern (`UseLibSql`,
 `AddEntityFrameworkLibSql`, …). Connection modes (local file, remote `sqld` /
@@ -50,6 +50,7 @@ Remote `sqld` for integration tests:
 ## Documentation
 
 - [Docs index](docs/README.md)
+- [Architecture](docs/architecture.md)
 - [Connection modes](docs/connection-modes.md)
 - [Limitations](docs/limitations.md)
 - [Testing](docs/testing.md)

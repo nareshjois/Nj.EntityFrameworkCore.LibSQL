@@ -69,7 +69,7 @@ public class LibSqlDateOnlyTypeMapping : DateOnlyTypeMapping
     /// <inheritdoc />
     protected override void ConfigureParameter(DbParameter parameter)
     {
-        // Nelknet remote readers parse DateOnly via invariant ISO; culture ToString breaks GetFieldValue.
+        // Remote readers parse DateOnly via invariant ISO; culture ToString breaks GetFieldValue.
         if (parameter.Value is DateOnly dateOnly)
         {
             parameter.Value = dateOnly.ToString(StoreFormat, CultureInfo.InvariantCulture);

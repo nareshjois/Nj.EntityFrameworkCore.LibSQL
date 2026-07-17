@@ -10,7 +10,6 @@ staged_cs="$(
   git diff --cached --name-only --diff-filter=ACMR \
     | grep '\.cs$' \
     | grep -v '^src/Nj.EntityFrameworkCore.LibSql/' \
-    | grep -v '^external/' \
     || true
 )"
 
@@ -23,16 +22,14 @@ if ! command -v dotnet >/dev/null 2>&1; then
   exit 0
 fi
 
-echo "pre-commit: formatting staged C# (CI excludes: provider + external/)..."
+echo "pre-commit: formatting staged C# (CI excludes: EF provider baseline)..."
 
 # Apply whitespace + style so commits match Ubuntu format verify.
 dotnet format whitespace Nj.EntityFrameworkCore.LibSql.slnx \
-  --exclude ./src/Nj.EntityFrameworkCore.LibSql/** \
-  --exclude ./external/**
+  --exclude ./src/Nj.EntityFrameworkCore.LibSql/**
 
 dotnet format style Nj.EntityFrameworkCore.LibSql.slnx \
-  --exclude ./src/Nj.EntityFrameworkCore.LibSql/** \
-  --exclude ./external/**
+  --exclude ./src/Nj.EntityFrameworkCore.LibSql/**
 
 # Re-stage files that were already part of this commit and format touched.
 while IFS= read -r file; do
@@ -44,7 +41,6 @@ done <<< "${staged_cs}"
 
 echo "pre-commit: verifying format (same as CI)..."
 dotnet format Nj.EntityFrameworkCore.LibSql.slnx --verify-no-changes \
-  --exclude ./src/Nj.EntityFrameworkCore.LibSql/** \
-  --exclude ./external/**
+  --exclude ./src/Nj.EntityFrameworkCore.LibSql/**
 
 echo "pre-commit: format OK"

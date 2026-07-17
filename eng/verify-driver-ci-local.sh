@@ -13,8 +13,7 @@ dotnet restore Nj.EntityFrameworkCore.LibSql.slnx
 if [[ "${OS}" == "Linux" || "${OS}" == "Darwin" ]]; then
   echo "==> format verify (same excludes as ci.yml / libsql-driver Linux)"
   dotnet format Nj.EntityFrameworkCore.LibSql.slnx --verify-no-changes --no-restore \
-    --exclude ./src/Nj.EntityFrameworkCore.LibSql/** \
-    --exclude ./external/**
+    --exclude ./src/Nj.EntityFrameworkCore.LibSql/**
 fi
 
 echo "==> build solution (Release)"

@@ -26,8 +26,8 @@ Baseline recorded 2026-07-15:
   - Details: docs/upstream-baseline.md
 
 Microsoft-authored baseline files retain their original copyright headers.
-Community modifications for libSQL / Nelknet.LibSQL.Data remain in separate
-commits so the customization delta stays reviewable.
+Community modifications for libSQL remain in separate commits so the
+customization delta stays reviewable.
 
 ================================================================================
 Third-party dependencies (runtime)
@@ -40,9 +40,7 @@ Pinned versions live in Directory.Packages.props (see docs/versions.md).
       Copyright (c) .NET Foundation and Contributors — MIT
       https://github.com/dotnet/efcore
 
-  - Nelknet.LibSQL.Data (and its binding package)
-      Copyright (c) Nelknet contributors — see the package license on NuGet
-      https://www.nuget.org/packages/Nelknet.LibSQL.Data
-      https://github.com/nelknet/Nelknet.LibSQL
+  - Nj.LibSql.Data / Nj.LibSql.Bindings (in-monorepo ADO.NET + natives)
+      Copyright (c) 2026 Naresh Jois and contributors — MIT
 
 Additional transitive packages appear in the generated nupkg dependency graph.

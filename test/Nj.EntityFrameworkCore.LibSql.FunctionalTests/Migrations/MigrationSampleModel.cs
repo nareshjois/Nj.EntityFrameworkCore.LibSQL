@@ -21,7 +21,7 @@ public sealed class MigrationDbContext : DbContext
 }
 
 /// <summary>
-/// Single in-assembly migration used by the WP-08 FunctionalTests matrix.
+/// Single in-assembly migration used by the migrations FunctionalTests matrix.
 /// </summary>
 [DbContext(typeof(MigrationDbContext))]
 [Migration("20260715000000_AddWidgets")]

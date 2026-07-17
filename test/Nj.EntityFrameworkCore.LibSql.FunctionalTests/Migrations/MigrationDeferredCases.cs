@@ -8,7 +8,7 @@ using Xunit;
 namespace Nj.EntityFrameworkCore.LibSql.FunctionalTests.Migrations;
 
 /// <summary>
-/// WP-10 deferred WP-08 migration cases (concurrency, extended ops, failure recovery).
+/// Deferred migration edge cases (concurrency, extended ops, failure recovery).
 /// </summary>
 internal static class MigrationDeferredCases
 {

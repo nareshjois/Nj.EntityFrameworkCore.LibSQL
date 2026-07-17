@@ -10,61 +10,35 @@ with EF Core major/minor lines.
 
 ### Changed
 
-- Soft-fork [nareshjois/Nelknet.LibSQL](https://github.com/nareshjois/Nelknet.LibSQL)
-  as git submodule `external/Nelknet.LibSQL` (ProjectReference; ADR-0001) at
-  `@8b5a289` (rebased onto upstream [Nelknet 0.2.11](https://github.com/nelknet/Nelknet.LibSQL/releases/tag/v0.2.11)).
-  Upstream absorbed RETURNING drain + HTTP stream/baton fixes (`C-002`); soft-fork
-  keeps unprefixed parameter names, Close/`ClearPool` (`C-005`), and EF compliance
-  patches (constraint surfacing, batch `ExecuteNonQuery`, trigger-aware splitter).
-- Type-mapping round-trips use store-generated integer keys (no longer
-  `ValueGeneratedNever`).
-- Scaffolding reads COLLATE / AUTOINCREMENT from `sqlite_master` CREATE SQL
-  (replaces deferred `sqlite3_table_column_metadata`). Fix embedded
-  `LibSqlStrings` resource name so scaffolding logs resolve.
-- **C-001:** rewrite decimal LINQ (`ef_*` / `EF_DECIMAL`) to REAL/`CAST`;
-  translate `Regex.IsMatch` to native libSQL `REGEXP` (PCRE2). Document
-  precision / regex-engine differences in `docs/udf-gap.md`.
+- EF provider now uses in-repo `Nj.LibSql.Data` / `Nj.LibSql.Bindings` (HTTP +
+  WebSocket Hrana, local natives). Documentation streamlined: architecture,
+  connection modes, testing, compatibility, limitations — ADRs and work-package
+  handoffs removed.
+- Type-mapping round-trips use store-generated integer keys.
+- Scaffolding reads COLLATE / AUTOINCREMENT from `sqlite_master` CREATE SQL.
+- Decimal LINQ rewritten to REAL/`CAST`; `Regex.IsMatch` → native libSQL
+  `REGEXP` (PCRE2). See `docs/limitations.md` and waiver C-001.
 
 ### Added
 
-- WP-09 G9: MigrationsSample (Blog/Post + design-time factory + InitialCreate),
-  `eng/verify-migrations-sample.sh` CLI smoke, reverse-engineer / migration
-  script / virtual-table goldens, and `docs/wp-09-handoff.md` (G9 closed).
-- WP-09 first-slice scaffolding FunctionalTests matrix (local + remote
-  `IDatabaseModelFactory` catalog cases + design DI / `UseLibSql` codegen)
-  and initial `docs/wp-09-handoff.md`.
-- WP-08 first-slice migrations FunctionalTests matrix (local + remote
-  EnsureCreated/Deleted + Migrate) and `docs/wp-08-handoff.md`.
-- WP-07 first-slice update / transaction FunctionalTests matrix (local + remote)
-  and `docs/wp-07-handoff.md`.
-- WP-06 first-slice query translation FunctionalTests matrix (local + remote)
-  with thin SQL capture, and `docs/wp-06-handoff.md`.
+- Migrations sample + `eng/verify-migrations-sample.sh`, reverse-engineer /
+  migration script / virtual-table goldens.
+- Functional matrices for scaffolding, migrations, updates/transactions, and
+  query translation (local + remote).
+- Driver contract tests (`Nj.LibSql.DriverContractTests`) with Testcontainers
+  sqld + Turso CI jobs.
+- Attributed EF Core 10.0.10 SQLite baseline import and upstream-diff tooling.
+- xunit.v3 for primary suites; ComplianceTests remains on xUnit v2 for EF Spec.
+- Governance docs, Contributor Covenant, pack/install verification.
 
 ### Fixed
 
-- **C-005:** `EnsureDeleted` on Windows — soft-fork Close finalizes commands +
-  `ClearPool`; if `File.Delete` still fails, wipe schema and tombstone the path
-  so `Exists()` is false (file may linger until process exit).
-- Scaffolding skips `CREATE VIRTUAL TABLE` (C-004); CLR type inference tolerates
-  remote/sqld `typeof(max(...))` sampling failures (warn and continue; C-003).
-- Migration lock acquire under Nelknet: `LibSqlHistoryRepository` no longer
-  relies on multi-statement `SELECT changes()` via ExecuteScalar.
-- WP-05 type-mapping / SQL generation round-trips (local + remote), Nelknet
-  temporal parameter formats, differential tests vs EF SQLite, `HasTables`
-  connection open, and `docs/wp-05-handoff.md`.
-- WP-04 Nelknet-backed `UseLibSql` / relational connection (local + remote
-  `SELECT 1`, DI/factory/pooled factory smoke tests). Dropped temporary
-  `Microsoft.Data.Sqlite.Core`. Catalogued Microsoft EF SQLite UDF gaps
-  (`docs/udf-gap.md`); decimal paths later rewritten (Unreleased Changed).
-- WP-03 attributed EF Core 10.0.10 `EFCore.Sqlite.Core` baseline import, mechanical
-  `LibSql` rename, service map / capabilities docs, and upstream-diff tooling.
-- WP-02 Nelknet ADO.NET driver contract tests (local + remote via Testcontainers)
-  and `docs/driver-contract.md` findings.
-- Migrated primary test suites to `xunit.v3` (`3.2.2`); ComplianceTests stays on
-  xUnit v2 while EF Specification.Tests depends on it.
-- Full Contributor Covenant 2.1 code of conduct and expanded contributing guide.
-- Completed governance and docs for connection modes, limitations, compatibility
-  waivers, migrations policy, testing, release policy, and NOTICE attribution.
+- Windows `EnsureDeleted` when the native handle stays locked (C-005).
+- Scaffolding skips virtual tables (C-004); CLR sampling tolerates remote
+  failures (C-003).
+- Migration lock acquire uses split commands for reliable `ExecuteScalar`.
+- Store-generated keys / RETURNING drain, constraint surfacing, batch
+  `ExecuteNonQuery` (C-002 / C-011).
 
 ## [10.0.0-preview.1] — unreleased (local scaffold)
 
@@ -73,7 +47,7 @@ with EF Core major/minor lines.
 - Repository scaffold: solution layout, central package management, CI workflows,
   `sqld` compose (pinned digest), eng scripts, and pack/install verification.
 - Placeholder public surface `LibSqlProviderInfo` for package smoke tests.
-- Initial MIT license, security policy, and documentation stubs (now expanded).
+- Initial MIT license, security policy, and documentation stubs.
 
 [Unreleased]: https://github.com/nareshjois/Nj.EntityFrameworkCore.LibSQL/compare/main...HEAD
 [10.0.0-preview.1]: https://github.com/nareshjois/Nj.EntityFrameworkCore.LibSQL/releases/tag/v10.0.0-preview.1
