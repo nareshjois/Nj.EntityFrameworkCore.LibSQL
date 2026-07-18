@@ -164,7 +164,7 @@ internal sealed class LibSqlHttpClient : ILibSqlHranaSession
                 nameof(url));
         }
 
-        return LibSqlRemoteTransport.NormalizeLibSqlToHttpUrl(url);
+        return LibSqlRemoteTransport.NormalizeLibSqlToHttpUrl(url, tls: true);
     }
 
     private static Uri ParseStreamBaseUri(string baseUrl, Uri? currentBaseUri)

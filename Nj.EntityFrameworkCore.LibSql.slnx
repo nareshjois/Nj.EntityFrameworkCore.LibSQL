@@ -20,5 +20,6 @@
     <Project Path="samples/EmbeddedReplicaSample/EmbeddedReplicaSample.csproj" />
     <Project Path="samples/DiPoolingSample/DiPoolingSample.csproj" />
     <Project Path="samples/MigrationsSample/MigrationsSample.csproj" />
+    <Project Path="samples/AotLocalSample/AotLocalSample.csproj" />
   </Folder>
 </Solution>

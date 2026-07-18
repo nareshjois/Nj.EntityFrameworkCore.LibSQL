@@ -41,8 +41,17 @@ Preview packaging notes for `Nj.LibSql.Bindings` / `Nj.EntityFrameworkCore.LibSq
   open.
 - **Single-file:** natives must extract beside the host; if load fails on a RID,
   treat single-file as unsupported for that RID (do not invent extract hacks).
-- **AOT / heavy trimming:** not a Preview product line; do not rely on
-  `PublishAot` yet.
+- **AOT / trimming:** `Nj.LibSql.Data` / `Bindings` declare `IsAotCompatible`.
+  Smoke PublishAot with **dynamic** RID natives (not static link kits):
+
+  ```bash
+  chmod +x eng/smoke-aot.sh
+  ./eng/smoke-aot.sh            # current machine RID
+  ./eng/smoke-aot.sh osx-arm64  # or linux-x64 / win-x64
+  ```
+
+  Full EF `PublishAot` is still out of scope; use the ADO sample
+  (`samples/AotLocalSample`). Extra desktop RIDs / musl remain unadvertised.
 - **Auth tokens in logs:** use `LibSqlConnectionStringBuilder.Redact`; see
   [observability.md](observability.md).
 

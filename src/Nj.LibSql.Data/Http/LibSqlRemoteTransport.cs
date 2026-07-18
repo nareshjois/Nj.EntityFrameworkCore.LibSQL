@@ -21,12 +21,17 @@ internal static class LibSqlRemoteTransport
            || url.StartsWith("https://", StringComparison.OrdinalIgnoreCase)
            || url.StartsWith("libsql://", StringComparison.OrdinalIgnoreCase);
 
-    /// <summary>Maps <c>libsql://</c> to <c>https://</c> for the HTTP transport.</summary>
-    public static string NormalizeLibSqlToHttpUrl(string url)
+    /// <summary>
+    /// Maps <c>libsql://</c> to HTTP(S) for the HTTP transport.
+    /// When <paramref name="tls"/> is <see langword="false"/>, uses <c>http://</c>
+    /// (local/dev sqld); otherwise <c>https://</c> (Turso Cloud default).
+    /// </summary>
+    public static string NormalizeLibSqlToHttpUrl(string url, bool tls = true)
     {
         if (url.StartsWith("libsql://", StringComparison.OrdinalIgnoreCase))
         {
-            return string.Concat("https://", url.AsSpan("libsql://".Length));
+            var scheme = tls ? "https://" : "http://";
+            return string.Concat(scheme, url.AsSpan("libsql://".Length));
         }
 
         return url;

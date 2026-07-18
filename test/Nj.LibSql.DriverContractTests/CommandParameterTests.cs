@@ -84,6 +84,16 @@ public sealed class CommandParameterLocalTests
     }
 
     [Fact]
+    public void Dollar_named_parameter_accepts_at_prefix_on_parameter()
+    {
+        using var connection = _fixture.CreateOpenConnection();
+        using var command = connection.CreateCommand();
+        command.CommandText = "SELECT $v";
+        command.Parameters.AddWithValue("@v", 7);
+        Assert.Equal(7L, Convert.ToInt64(command.ExecuteScalar()));
+    }
+
+    [Fact]
     public void Repeated_named_parameter_reference_works()
     {
         using var connection = _fixture.CreateOpenConnection();

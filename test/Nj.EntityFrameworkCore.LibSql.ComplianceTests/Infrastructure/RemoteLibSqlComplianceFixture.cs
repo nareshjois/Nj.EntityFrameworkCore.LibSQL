@@ -59,7 +59,7 @@ public sealed class RemoteLibSqlComplianceFixture : IAsyncLifetime
 
                 await _sqld.StartAsync();
                 ConnectionString = TestEnvironment.RemoteConnectionStringFromUrl(
-                    $"http://{_sqld.Hostname}:{_sqld.GetMappedPublicPort(8080)}");
+                    $"http://127.0.0.1:{_sqld.GetMappedPublicPort(8080)}");
             }
 
             await using var context = new ProbeDbContext(

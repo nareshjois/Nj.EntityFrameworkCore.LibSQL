@@ -10,6 +10,7 @@
     <PackageOutputPath>$(ArtifactsDir)packages/</PackageOutputPath>
     <!-- CS1591 enforced: missing XML docs on public APIs are errors. -->
     <WarningsAsErrors>$(WarningsAsErrors);CS1591</WarningsAsErrors>
+    <IsAotCompatible>true</IsAotCompatible>
   </PropertyGroup>
 
   <ItemGroup>
