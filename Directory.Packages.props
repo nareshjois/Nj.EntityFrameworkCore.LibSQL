@@ -20,15 +20,15 @@
     <!-- Public API analyzers for the UseLibSql surface. -->
     <PackageVersion Include="Microsoft.CodeAnalysis.PublicApiAnalyzers" Version="3.3.4" />
     <!-- Test -->
-    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.8.1" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.10.1" />
     <!-- xunit.v3 for our suites; xunit 2.x retained for EF Specification.Tests (still v2-bound). -->
-    <PackageVersion Include="xunit.v3" Version="3.2.2" />
+    <PackageVersion Include="xunit.v3" Version="4.0.1" />
     <PackageVersion Include="xunit" Version="2.9.3" />
-    <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.5" />
-    <PackageVersion Include="coverlet.collector" Version="10.0.1" />
+    <PackageVersion Include="xunit.runner.visualstudio" Version="4.0.0" />
+    <PackageVersion Include="coverlet.collector" Version="10.1.0" />
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="10.0.10" />
     <PackageVersion Include="Testcontainers" Version="4.13.0" />
     <PackageVersion Include="BenchmarkDotNet" Version="0.15.4" />
-    <PackageVersion Include="NetTopologySuite" Version="2.6.0" />    <PackageVersion Include="Xunit.SkippableFact" Version="1.5.23" />
+    <PackageVersion Include="NetTopologySuite" Version="2.6.0" />    <PackageVersion Include="Xunit.SkippableFact" Version="1.5.85" />
   </ItemGroup>
 </Project>
