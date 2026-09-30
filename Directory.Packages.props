@@ -16,7 +16,7 @@
     <!-- Differential tests only (compare vs EF Sqlite); provider uses Nj.LibSql.Data. -->
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Sqlite" Version="$(EfCoreVersion)" />
     <!-- Build / packaging -->
-    <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="10.0.301" />
+    <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="10.0.401" />
     <!-- Public API analyzers for the UseLibSql surface. -->
     <PackageVersion Include="Microsoft.CodeAnalysis.PublicApiAnalyzers" Version="3.3.4" />
     <!-- Test -->
