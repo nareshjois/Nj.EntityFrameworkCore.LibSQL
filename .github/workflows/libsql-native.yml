@@ -157,7 +157,7 @@ jobs:
           zip -r "../libsql-${{ matrix.output }}.zip" native
           ls -la "../libsql-${{ matrix.output }}.zip"
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: libsql-${{ matrix.output }}
           path: |
@@ -175,7 +175,7 @@ jobs:
             echo "LIBSQL_REF=${{ inputs.libsql_ref }}"
           } > version-info/version.env
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: matrix.os == 'ubuntu-latest' && matrix.target == 'x86_64-unknown-linux-gnu'
         with:
           name: version-info
